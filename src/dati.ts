@@ -47,6 +47,10 @@ export type PastoRisolto = {
   quando?: string
   note?: string
   varianti?: { nome: string; alimenti: Alimento[] }[]
+  /** Merende: tag per filtrare (ufficio, salata…). */
+  tags?: string[]
+  /** Cene: tipi giornata in cui il pasto è ammesso (es. C4 solo VERDE e GRIGIO). */
+  soloTipiGiornata?: string[]
 }
 
 export function isTipoGiornata(tipo: string): tipo is TipoGiornata {
@@ -61,6 +65,7 @@ type ConVersioni = {
   proteine: number
   alimenti: Alimento[]
   note?: string
+  soloTipiGiornata?: string[]
   ridotto?: { id: string; kcal: number; cho: number; modifiche: string }
   maggiorato?: { id: string; kcal: number; cho: number; modifiche: string }
   varianti?: {
@@ -153,6 +158,7 @@ export function trovaPasto(categoria: CategoriaConId, id: string): PastoRisolto 
             proteine: merenda.proteine,
             alimenti: [],
             composizione: merenda.composizione,
+            tags: 'tags' in merenda ? merenda.tags : [],
           }
         : null
     }
@@ -165,4 +171,31 @@ export function preCorsa(): PastoRisolto {
 
 export function spuntinoSerale(): PastoRisolto {
   return { ...dati.blocchi.spuntinoSerale }
+}
+
+/** Id di tutti i pasti che si possono scegliere per una categoria, nell'ordine del JSON. */
+export function idAlternative(categoria: CategoriaConId): string[] {
+  const conVersioni = (elenco: ConVersioni[]) =>
+    elenco.flatMap((p) => [
+      p.id,
+      ...(p.varianti ?? []).map((v) => v.id),
+      ...(p.maggiorato ? [p.maggiorato.id] : []),
+      ...(p.ridotto ? [p.ridotto.id] : []),
+    ])
+  switch (categoria) {
+    case 'colazione':
+      return dati.blocchi.colazioni.map((c) => c.id)
+    case 'spuntino':
+      return dati.blocchi.spuntini.map((s) => s.id)
+    case 'pranzo':
+      return conVersioni(dati.pranzi)
+    case 'cena':
+      return conVersioni(dati.cene)
+    case 'merenda':
+      return [...dati.merende.map((m) => m.id), dati.merendaRidotta.id]
+  }
+}
+
+export function isCategoriaConId(categoria: CategoriaPasto): categoria is CategoriaConId {
+  return ['colazione', 'spuntino', 'pranzo', 'cena', 'merenda'].includes(categoria)
 }

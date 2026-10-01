@@ -15,3 +15,9 @@ export function formatData(data: string): string {
   const [anno, mese, giorno] = data.split('-').map(Number)
   return dataLunga.format(new Date(anno, mese - 1, giorno))
 }
+
+/** 15 → "+15 g CHO", -15 → "−15 g CHO" (segno meno tipografico). */
+export function formatDifferenzaCho(differenza: number): string {
+  const segno = differenza > 0 ? '+' : '−'
+  return `${segno}${formatNumero(Math.abs(differenza))} g CHO`
+}

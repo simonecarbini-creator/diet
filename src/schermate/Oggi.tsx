@@ -1,9 +1,10 @@
 // Schermata Oggi (SPEC.md §3.1), in sola lettura: cosa mangio adesso.
 import { useEffect, useRef } from 'react'
 import { CardPasto } from '../componenti/CardPasto'
-import { dati, isTipoGiornata } from '../dati'
 import { formatData, formatNumero } from '../formato'
 import { cercaGiorno, indicePastoCorrente, totaliPasti, vociDelGiorno } from '../giornata'
+import { useStatoGiorno } from '../statoGiorno'
+import { dati, isCategoriaConId, isTipoGiornata } from '../dati'
 
 type Props = {
   data: string
@@ -13,7 +14,8 @@ type Props = {
 
 export function Oggi({ data, ora }: Props) {
   const trovato = cercaGiorno(data)
-  const voci = trovato ? vociDelGiorno(trovato.giorno) : []
+  const { stato, scegli, segnaConsumato } = useStatoGiorno(data)
+  const voci = trovato ? vociDelGiorno(trovato.giorno, stato.scelte) : []
   const corrente = ora !== null && voci.length > 0 ? indicePastoCorrente(voci, ora) : null
   const categoriaCorrente = corrente !== null ? voci[corrente].categoria : null
 
@@ -117,7 +119,17 @@ export function Oggi({ data, ora }: Props) {
 
       <section className="mt-5 space-y-3">
         {voci.map((voce, i) => (
-          <CardPasto key={voce.categoria} voce={voce} corrente={i === corrente} />
+          <CardPasto
+            key={voce.categoria}
+            voce={voce}
+            corrente={i === corrente}
+            consumato={stato.consumati.includes(voce.categoria)}
+            tipoGiorno={giorno.tipo}
+            onConsumato={(consumato) => segnaConsumato(voce.categoria, consumato)}
+            onScegli={(id) => {
+              if (isCategoriaConId(voce.categoria)) scegli(voce.categoria, id, voce.idPiano)
+            }}
+          />
         ))}
       </section>
     </>

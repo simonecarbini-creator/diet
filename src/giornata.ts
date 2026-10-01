@@ -5,6 +5,7 @@ import {
   preCorsa,
   spuntinoSerale,
   trovaPasto,
+  type CategoriaConId,
   type CategoriaPasto,
   type Giorno,
   type PastoRisolto,
@@ -14,30 +15,48 @@ import {
 export type VocePasto = {
   categoria: CategoriaPasto
   orario: string
-  /** null: pasto da scegliere (merenda non assegnata) o id non trovato. */
+  /** Il pasto effettivo. null: da scegliere (merenda non assegnata) o id non trovato. */
   pasto: PastoRisolto | null
+  /** Il pasto previsto dal piano, se diverso da quello scelto per oggi. */
+  delPiano?: PastoRisolto | null
+  /** Id previsto dal piano (null se il piano lo lascia da scegliere). */
+  idPiano: string | null
 }
 
-export function vociDelGiorno(giorno: Giorno): VocePasto[] {
+export function vociDelGiorno(
+  giorno: Giorno,
+  scelte: Partial<Record<CategoriaConId, string>> = {},
+): VocePasto[] {
   const orari = dati.orariPasti
   const voci: VocePasto[] = []
 
+  const voce = (categoria: CategoriaConId, idPiano: string | null): VocePasto => {
+    const delPiano = idPiano === null ? null : trovaPasto(categoria, idPiano)
+    const idScelto = scelte[categoria]
+    // Una scelta che non esiste più in dati.json viene ignorata.
+    const scelto = idScelto && idScelto !== idPiano ? trovaPasto(categoria, idScelto) : null
+    return scelto
+      ? { categoria, orario: orari[categoria], pasto: scelto, delPiano, idPiano }
+      : { categoria, orario: orari[categoria], pasto: delPiano, idPiano }
+  }
+
   if (valutaCondizione(dati.blocchi.preCorsa.saltaSe, giorno) !== true) {
-    voci.push({ categoria: 'preCorsa', orario: orari.preCorsa, pasto: preCorsa() })
+    voci.push({ categoria: 'preCorsa', orario: orari.preCorsa, pasto: preCorsa(), idPiano: null })
   }
   voci.push(
-    { categoria: 'colazione', orario: orari.colazione, pasto: trovaPasto('colazione', giorno.colazione) },
-    { categoria: 'spuntino', orario: orari.spuntino, pasto: trovaPasto('spuntino', giorno.spuntino) },
-    { categoria: 'pranzo', orario: orari.pranzo, pasto: trovaPasto('pranzo', giorno.pranzo) },
-    {
-      categoria: 'merenda',
-      orario: orari.merenda,
-      pasto: giorno.merenda === null ? null : trovaPasto('merenda', giorno.merenda),
-    },
-    { categoria: 'cena', orario: orari.cena, pasto: trovaPasto('cena', giorno.cena) },
+    voce('colazione', giorno.colazione),
+    voce('spuntino', giorno.spuntino),
+    voce('pranzo', giorno.pranzo),
+    voce('merenda', giorno.merenda),
+    voce('cena', giorno.cena),
   )
   if (giorno.spuntinoSerale) {
-    voci.push({ categoria: 'spuntinoSerale', orario: orari.spuntinoSerale, pasto: spuntinoSerale() })
+    voci.push({
+      categoria: 'spuntinoSerale',
+      orario: orari.spuntinoSerale,
+      pasto: spuntinoSerale(),
+      idPiano: null,
+    })
   }
 
   return voci.sort((a, b) => a.orario.localeCompare(b.orario))
