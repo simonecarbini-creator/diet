@@ -5,6 +5,7 @@ import { link, useRotta } from './navigazione'
 import { Oggi } from './schermate/Oggi'
 import { Settimana } from './schermate/Settimana'
 import { verificaDati } from './verifica'
+import { compilaDatiDiProva } from './prova'
 
 function App() {
   const errori = verificaDati(dati)
@@ -18,9 +19,17 @@ function App() {
   }, [])
 
   const oggi = dataLocale(adesso)
+
+  // TEMPORANEO: vedi prova.ts.
+  useEffect(() => {
+    if (rotta.schermata === 'prova') {
+      void compilaDatiDiProva(oggi).then(() => window.location.replace(link.settimana()))
+    }
+  }, [rotta.schermata, oggi])
+
   const schede = [
-    { href: link.oggi, etichetta: 'Oggi', attiva: rotta.schermata === 'oggi' },
     { href: link.settimana(), etichetta: 'Settimana', attiva: rotta.schermata !== 'oggi' },
+    { href: link.oggi, etichetta: 'Oggi', attiva: rotta.schermata === 'oggi' },
   ]
 
   return (

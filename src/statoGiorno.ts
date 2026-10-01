@@ -55,3 +55,20 @@ export function useStatoGiorno(data: string) {
     },
   }
 }
+
+/** Le scelte salvate di più giorni (es. una settimana), lette una volta all'apertura. */
+export function useStatiGiorni(date: string[]): Record<string, StatoGiorno> {
+  const [stati, setStati] = useState<Record<string, StatoGiorno>>({})
+  const chiave = date.join(',')
+  useEffect(() => {
+    let annullato = false
+    const elenco = chiave ? chiave.split(',') : []
+    void Promise.all(elenco.map(leggiStatoGiorno)).then((letti) => {
+      if (!annullato) setStati(Object.fromEntries(elenco.map((d, i) => [d, letti[i]])))
+    })
+    return () => {
+      annullato = true
+    }
+  }, [chiave])
+  return stati
+}

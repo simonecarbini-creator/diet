@@ -65,15 +65,17 @@ export function vociDelGiorno(
 export type TotaliPasti = {
   kcal: number
   cho: number
-  /** null se almeno un pasto non ha le proteine in dati.json. */
-  proteine: number | null
+  /** Somma delle proteine dei pasti che le riportano in dati.json. */
+  proteine: number
+  /** Id dei pasti senza proteine in dati.json (es. versioni ridotte e maggiorate). */
+  senzaProteine: string[]
   /** Pasti senza valori (da scegliere): la somma è parziale. */
   pastiMancanti: CategoriaPasto[]
 }
 
 /** Somma dei pasti assegnati. Il gel in corsa non è un pasto e non entra mai qui. */
 export function totaliPasti(voci: VocePasto[]): TotaliPasti {
-  const totali: TotaliPasti = { kcal: 0, cho: 0, proteine: 0, pastiMancanti: [] }
+  const totali: TotaliPasti = { kcal: 0, cho: 0, proteine: 0, senzaProteine: [], pastiMancanti: [] }
   for (const { categoria, pasto } of voci) {
     if (!pasto) {
       totali.pastiMancanti.push(categoria)
@@ -81,8 +83,8 @@ export function totaliPasti(voci: VocePasto[]): TotaliPasti {
     }
     totali.kcal += pasto.kcal
     totali.cho += pasto.cho
-    totali.proteine =
-      totali.proteine === null || pasto.proteine === null ? null : totali.proteine + pasto.proteine
+    if (pasto.proteine === null) totali.senzaProteine.push(pasto.id)
+    else totali.proteine += pasto.proteine
   }
   return totali
 }
@@ -113,4 +115,26 @@ export function dataLocale(adesso: Date): string {
 
 export function oraLocale(adesso: Date): string {
   return `${String(adesso.getHours()).padStart(2, '0')}:${String(adesso.getMinutes()).padStart(2, '0')}`
+}
+
+export type Esito = 'rispettato' | 'nonRispettato' | 'nonDichiarato'
+
+/**
+ * Riepilogo del giorno dai pasti spuntati: tutti → rispettato, nessuno → non dichiarato,
+ * solo alcuni → non rispettato. La merenda non scelta conta come non consumata.
+ */
+export function esitoGiorno(
+  giorno: Giorno,
+  stato: { scelte: Partial<Record<CategoriaConId, string>>; consumati: CategoriaPasto[] },
+): { esito: Esito; fatti: number; totali: number } {
+  const voci = vociDelGiorno(giorno, stato.scelte)
+  const fatti = voci.filter((v) => v.pasto && stato.consumati.includes(v.categoria)).length
+  const esito = fatti === 0 ? 'nonDichiarato' : fatti === voci.length ? 'rispettato' : 'nonRispettato'
+  return { esito, fatti, totali: voci.length }
+}
+
+/** "2026-10-03" → "2026-10-04" */
+export function giornoDopo(data: string): string {
+  const [anno, mese, giorno] = data.split('-').map(Number)
+  return dataLocale(new Date(anno, mese - 1, giorno + 1))
 }

@@ -3,8 +3,10 @@
 import { useEffect, useRef } from 'react'
 import { CardPasto } from '../componenti/CardPasto'
 import { formatData, formatNumero } from '../formato'
-import { cercaGiorno, indicePastoCorrente, totaliPasti, vociDelGiorno } from '../giornata'
-import { useStatoGiorno } from '../statoGiorno'
+import { cercaGiorno, giornoDopo, indicePastoCorrente, totaliPasti, vociDelGiorno } from '../giornata'
+import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
+import { conteggiCene, vincoliSeraPrima } from '../vincoli'
+import type { ContestoSettimana } from '../componenti/CardPasto'
 import { dati, isCategoriaConId, isTipoGiornata } from '../dati'
 
 type Props = {
@@ -18,6 +20,8 @@ type Props = {
 export function Oggi({ data, ora, solaLettura = false }: Props) {
   const trovato = cercaGiorno(data)
   const { stato, scegli, segnaConsumato } = useStatoGiorno(data)
+  const giorniSettimana = trovato?.settimana.giorni ?? []
+  const statiAltri = useStatiGiorni(giorniSettimana.map((g) => g.data).filter((d) => d !== data))
   const voci = trovato ? vociDelGiorno(trovato.giorno, stato.scelte) : []
   const corrente = ora !== null && voci.length > 0 ? indicePastoCorrente(voci, ora) : null
   const categoriaCorrente = corrente !== null ? voci[corrente].categoria : null
@@ -49,6 +53,20 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
   const { giorno } = trovato
   const tipo = isTipoGiornata(giorno.tipo) ? dati.tipiGiornata[giorno.tipo] : null
   const somma = totaliPasti(voci)
+
+  // Cene della settimana (con le sostituzioni salvate) per i contatori C2/C4.
+  const cenaEffettiva = (g: typeof giorno) =>
+    (g.data === data ? stato.scelte.cena : statiAltri[g.data]?.scelte.cena) ?? g.cena
+  const tipoDomani = cercaGiorno(giornoDopo(data))?.giorno.tipo
+  const contesto: ContestoSettimana = {
+    conteggi: conteggiCene(giorniSettimana, cenaEffettiva),
+    conteggiAltri: conteggiCene(
+      giorniSettimana.filter((g) => g.data !== data),
+      cenaEffettiva,
+    ),
+    promemoriaSera: vincoliSeraPrima(tipoDomani),
+    tipoDomani,
+  }
 
   return (
     <>
@@ -86,10 +104,16 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
           </div>
           <div className="text-sm opacity-70">
             {formatNumero(somma.kcal)} kcal ·{' '}
-            {somma.proteine !== null ? `${formatNumero(somma.proteine)} g proteine` : 'proteine n.d.'}
+            {formatNumero(somma.proteine)} g proteine
+            {somma.senzaProteine.length > 0 && '*'}
           </div>
           {somma.pastiMancanti.includes('merenda') && (
             <div className="mt-1 text-xs font-semibold">merenda da scegliere</div>
+          )}
+          {somma.senzaProteine.length > 0 && (
+            <div className="mt-1 text-xs opacity-70">
+              * senza {somma.senzaProteine.join(', ')}: proteine non presenti nel piano
+            </div>
           )}
         </div>
       </section>
@@ -129,6 +153,7 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
             consumato={stato.consumati.includes(voce.categoria)}
             tipoGiorno={giorno.tipo}
             solaLettura={solaLettura}
+            settimana={voce.categoria === 'cena' ? contesto : undefined}
             onConsumato={(consumato) => segnaConsumato(voce.categoria, consumato)}
             onScegli={(id) => {
               if (isCategoriaConId(voce.categoria)) scegli(voce.categoria, id, voce.idPiano)

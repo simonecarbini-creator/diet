@@ -11,6 +11,7 @@ export type Settimana = Dati['settimane'][number]
 export type Giorno = Settimana['giorni'][number]
 export type TipoGiornata = keyof Dati['tipiGiornata']
 export type InfoTipoGiornata = Dati['tipiGiornata'][TipoGiornata]
+export type Vincolo = Dati['regole']['vincoliSettimanali'][number]
 
 /** I pasti della giornata, nelle chiavi usate da `orariPasti`. */
 export type CategoriaPasto = Exclude<keyof Dati['orariPasti'], '_nota'>

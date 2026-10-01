@@ -47,7 +47,10 @@ Struttura (vedi il file per il dettaglio):
 
 ### 3.1 Oggi (home)
 
-È la schermata che si apre all'avvio ed è quella che viene usata il 90% delle volte. Deve rispondere a una sola domanda: **cosa mangio adesso**.
+*Decisione 2026-10-01: all'avvio si apre la Settimana; Oggi resta la vista giornaliera,
+che scorre al pasto dell'ora attuale.*
+
+È la schermata usata il 90% delle volte. Deve rispondere a una sola domanda: **cosa mangio adesso**.
 
 In cima:
 - Data, allenamento del giorno, badge del tipo giornata (colore da `tipiGiornata`)
@@ -207,7 +210,7 @@ Palette di partenza:
 | VERDE | `#2e8b57` |
 | ROSSO | `#d13b2e` |
 | GRIGIO | `#9aa7b4` |
-| CHO (accento) | `#c1662a` |
+| CHO (accento) | `#f25c05` (scuro: `#ff7a29`) — *2026-10-01: più vivace del `#c1662a` iniziale* |
 | Sfondo chiaro | `#f6f9fc` |
 
 Supporto al tema scuro: serve davvero, visto che l'app si apre alle 5 del mattino.

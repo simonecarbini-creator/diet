@@ -315,9 +315,13 @@ export type SpuntinoSeraleElement = {
 }
 
 export type VincoliSettimanali = {
-    id:      string;
-    regola:  string;
-    motivo?: string;
+    id:                string;
+    regola:            string;
+    motivo?:           string;
+    pasti?:            string[];
+    verdure?:          string[];
+    categoriaVerdure?: string;
+    seraPrimaDiTipo?:  string;
 }
 
 export type Settimane = {

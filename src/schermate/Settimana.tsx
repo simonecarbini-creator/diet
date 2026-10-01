@@ -1,9 +1,9 @@
 // Schermata Settimana (SPEC.md §3.2): il calendario a colpo d'occhio e i vincoli settimanali.
-import { useEffect, useState } from 'react'
 import { dati, isTipoGiornata, type Giorno, type Settimana as TipoSettimana } from '../dati'
 import { formatDataBreve, formatGiornoMese, formatNumero } from '../formato'
 import { link } from '../navigazione'
-import { leggiStatoGiorno, type StatoGiorno } from '../statoGiorno'
+import { esitoGiorno, type Esito } from '../giornata'
+import { useStatiGiorni, type StatoGiorno } from '../statoGiorno'
 import { controllaVincoli } from '../vincoli'
 
 /** La settimana richiesta, altrimenti quella che contiene oggi, altrimenti l'ultima. */
@@ -24,6 +24,35 @@ function Codice({ id, cambiato }: { id: string; cambiato?: boolean }) {
     >
       {id}
       {cambiato && '*'}
+    </span>
+  )
+}
+
+const badgeEsito: Record<Esito, { simbolo: string; etichetta: string; classe: string }> = {
+  rispettato: { simbolo: '👍', etichetta: 'piano rispettato', classe: 'bg-ok/15' },
+  nonRispettato: { simbolo: '👎', etichetta: 'piano non rispettato', classe: 'bg-red-600/15' },
+  nonDichiarato: { simbolo: 'ND', etichetta: 'pasti non registrati', classe: 'bg-bordo text-xs font-bold' },
+}
+
+/** Giorni passati: 👍 / 👎 / ND. Oggi: pasti spuntati finora. Giorni futuri: niente. */
+function Riepilogo({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGiorno; oggi: string }) {
+  if (giorno.data > oggi) return null
+  const { esito, fatti, totali } = esitoGiorno(giorno, stato ?? { scelte: {}, consumati: [] })
+  if (giorno.data === oggi) {
+    return (
+      <span className="rounded-full bg-bordo px-2 py-0.5 text-xs font-bold tabular-nums text-testo" title="pasti spuntati oggi">
+        {fatti}/{totali}
+      </span>
+    )
+  }
+  const badge = badgeEsito[esito]
+  return (
+    <span
+      className={`flex h-8 min-w-8 items-center justify-center rounded-full px-1.5 text-testo ${badge.classe}`}
+      title={badge.etichetta}
+      aria-label={badge.etichetta}
+    >
+      {badge.simbolo}
     </span>
   )
 }
@@ -83,6 +112,9 @@ function RigaGiorno({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGior
           <div className="text-2xl font-bold leading-none tabular-nums">{formatNumero(giorno.cho)}</div>
           <div className="text-xs font-semibold">g CHO</div>
           <div className="mt-1 text-xs text-testo opacity-70">{formatNumero(giorno.kcal)} kcal</div>
+          <div className="mt-2 flex justify-end">
+            <Riepilogo giorno={giorno} stato={stato} oggi={oggi} />
+          </div>
         </div>
       </a>
     </li>
@@ -96,20 +128,8 @@ type Props = {
 
 export function Settimana({ numero, oggi }: Props) {
   const settimana = scegliSettimana(numero, oggi)
-  const [stati, setStati] = useState<Record<string, StatoGiorno>>({})
-
   const giorni = settimana?.giorni ?? []
-  const chiave = giorni.map((g) => g.data).join(',')
-  useEffect(() => {
-    let annullato = false
-    const date = chiave ? chiave.split(',') : []
-    void Promise.all(date.map(leggiStatoGiorno)).then((letti) => {
-      if (!annullato) setStati(Object.fromEntries(date.map((d, i) => [d, letti[i]])))
-    })
-    return () => {
-      annullato = true
-    }
-  }, [chiave])
+  const stati = useStatiGiorni(giorni.map((g) => g.data))
 
   if (!settimana) {
     return <p>Nessuna settimana nel piano.</p>
@@ -159,7 +179,8 @@ export function Settimana({ numero, oggi }: Props) {
       </ul>
       <p className="mt-2 text-xs opacity-70">
         Codici: colazione · pranzo · cena · merenda. CHO e kcal sono quelli del piano.
-        {cambiamenti && ' * = cambiato per quel giorno.'}
+        {cambiamenti && ' * = cambiato per quel giorno.'} 👍 tutti i pasti spuntati · 👎 solo
+        alcuni · ND nessuno.
       </p>
 
       <section className="mt-6">

@@ -145,11 +145,11 @@
     "regolaSabato": "Si tagliano SOLO i cereali. Proteine (130 g) e grassi (90 g) restano identici agli altri giorni. Nessun pre-corsa, nessuno spuntino serale.",
 
     "vincoliSettimanali": [
-      { "id": "omega3", "regola": "cena C2 almeno 3 volte a settimana", "motivo": "omega-3 per il recupero" },
-      { "id": "formaggio", "regola": "cena C4 massimo 2-3 volte, solo nei giorni VERDE o GRIGIO", "motivo": "pochi CHO e molti grassi: rallenta lo svuotamento gastrico quando serve ricostituire glicogeno" },
-      { "id": "noC4conC2", "regola": "mai C4 nello stesso giorno di C2" },
-      { "id": "barbabietola", "regola": "barbabietola 2-3 volte a settimana", "motivo": "i nitrati migliorano l'efficienza a ritmo submassimale" },
-      { "id": "crucifere", "regola": "niente crucifere (broccoli, cavolfiore, cavoli, verze) la sera prima di un giorno ROSSO", "motivo": "fermentano: problemi intestinali alle 5:30" }
+      { "id": "omega3", "regola": "cena C2 almeno 3 volte a settimana", "motivo": "omega-3 per il recupero", "pasti": ["C2"] },
+      { "id": "formaggio", "regola": "cena C4 massimo 2-3 volte, solo nei giorni VERDE o GRIGIO", "motivo": "pochi CHO e molti grassi: rallenta lo svuotamento gastrico quando serve ricostituire glicogeno", "pasti": ["C4"] },
+      { "id": "noC4conC2", "regola": "mai C4 nello stesso giorno di C2", "pasti": ["C4", "C2"] },
+      { "id": "barbabietola", "regola": "barbabietola 2-3 volte a settimana", "motivo": "i nitrati migliorano l'efficienza a ritmo submassimale", "verdure": ["Barbabietola"] },
+      { "id": "crucifere", "regola": "niente crucifere (broccoli, cavolfiore, cavoli, verze) la sera prima di un giorno ROSSO", "motivo": "fermentano: problemi intestinali alle 5:30", "categoriaVerdure": "crucifera", "seraPrimaDiTipo": "ROSSO" }
     ]
   },
 

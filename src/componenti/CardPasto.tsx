@@ -1,9 +1,21 @@
 import { useState } from 'react'
-import { isCategoriaConId, type CategoriaPasto } from '../dati'
+import { dati, isCategoriaConId, type CategoriaPasto, type Vincolo } from '../dati'
 import type { VocePasto } from '../giornata'
 import { formatDifferenzaCho, formatNumero } from '../formato'
 import { ElencoAlimenti } from './Alimenti'
 import { PannelloScelta } from './PannelloScelta'
+import { ContatoreSettimana, PromemoriaSera } from './Vincoli'
+import { idBase, type ConteggioPasto } from '../vincoli'
+
+/** Contesto della settimana, solo per la cena: contatori e promemoria della sera. */
+export type ContestoSettimana = {
+  /** Conteggi della settimana, oggi compreso. */
+  conteggi: Record<string, ConteggioPasto>
+  /** Conteggi degli altri giorni: per dire "con questa arrivi a…" nel pannello. */
+  conteggiAltri: Record<string, ConteggioPasto>
+  promemoriaSera: Vincolo[]
+  tipoDomani?: string
+}
 
 const etichetteCategoria: Record<CategoriaPasto, string> = {
   preCorsa: 'Pre-corsa',
@@ -21,6 +33,7 @@ type Props = {
   consumato: boolean
   tipoGiorno: string
   solaLettura: boolean
+  settimana?: ContestoSettimana
   onConsumato: (consumato: boolean) => void
   onScegli: (id: string | null) => void
 }
@@ -31,6 +44,7 @@ export function CardPasto({
   consumato,
   tipoGiorno,
   solaLettura,
+  settimana,
   onConsumato,
   onScegli,
 }: Props) {
@@ -46,6 +60,9 @@ export function CardPasto({
     pasto?.composizione ??
     (pasto?.nome === etichetta ? pasto.alimenti.map((a) => a.nome).join(' · ') : pasto?.nome)
   const sostituito = delPiano !== undefined
+  const base = pasto && categoria === 'cena' ? idBase('cena', pasto.id) : null
+  const conteggio = base ? settimana?.conteggi[base] : undefined
+  const nomeBase = dati.cene.find((c) => c.id === base)?.nome ?? ''
 
   return (
     <article
@@ -129,6 +146,15 @@ export function CardPasto({
         </button>
       </div>
 
+      {pasto && (conteggio || (settimana && settimana.promemoriaSera.length > 0)) && (
+        <div className="space-y-2 px-4 pb-3">
+          {base && conteggio && <ContatoreSettimana id={base} nome={nomeBase} conteggio={conteggio} />}
+          {settimana?.tipoDomani && (
+            <PromemoriaSera vincoli={settimana.promemoriaSera} tipoDomani={settimana.tipoDomani} />
+          )}
+        </div>
+      )}
+
       {aperto && pasto && (
         <div className="space-y-3 border-t border-bordo px-4 pb-4 pt-3">
           {delPiano && (
@@ -181,6 +207,7 @@ export function CardPasto({
           nomeCategoria={etichetta.toLowerCase()}
           voce={voce}
           tipoGiorno={tipoGiorno}
+          conteggiAltri={settimana?.conteggiAltri}
           onChiudi={() => setPannello(false)}
           onScegli={(id) => {
             onScegli(id)

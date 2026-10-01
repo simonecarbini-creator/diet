@@ -13,7 +13,7 @@ export type EsitoVincolo = {
 }
 
 /** Id del pasto base: "C2rid" → "C2". */
-function idBase(categoria: 'pranzo' | 'cena', id: string): string {
+export function idBase(categoria: 'pranzo' | 'cena', id: string): string {
   return trovaPasto(categoria, id)?.base ?? id
 }
 
@@ -77,4 +77,48 @@ export function controllaVincoli(
     }
   }
   return esiti
+}
+
+export type ConteggioPasto = {
+  volte: number
+  giorni: string[]
+  minimo?: number
+  massimo?: number
+}
+
+/** Quante volte ogni cena (per id base: C2rid conta come C2) compare nei giorni dati. */
+export function conteggiCene(giorni: Giorno[], cenaEffettiva: (g: Giorno) => string): Record<string, ConteggioPasto> {
+  const conteggi: Record<string, ConteggioPasto> = {}
+  for (const cena of dati.cene) {
+    const conCena = giorni.filter((g) => idBase('cena', cenaEffettiva(g)) === cena.id)
+    conteggi[cena.id] = {
+      volte: conCena.length,
+      giorni: conCena.map((g) => g.data),
+      minimo: cena.minimoSettimanale,
+      massimo: cena.massimoSettimanale,
+    }
+  }
+  return conteggi
+}
+
+/** Le regole di "Da ricordare" che riguardano un pasto (per id base). */
+export function vincoliDelPasto(id: string) {
+  return dati.regole.vincoliSettimanali.filter((v) => v.pasti?.includes(id))
+}
+
+/** Le regole da ricordare la sera, quando il giorno dopo è di un certo tipo (es. crucifere prima di ROSSO). */
+export function vincoliSeraPrima(tipoDomani: string | undefined) {
+  return tipoDomani ? dati.regole.vincoliSettimanali.filter((v) => v.seraPrimaDiTipo === tipoDomani) : []
+}
+
+
+/** "2/3 max", "2/3 min": la frazione rispetto al limite che il pasto ha in dati.json. */
+export function frazioneLimite(conteggio: ConteggioPasto, volte = conteggio.volte): string | null {
+  if (conteggio.massimo !== undefined) return `${volte}/${conteggio.massimo} max`
+  if (conteggio.minimo !== undefined) return `${volte}/${conteggio.minimo} min`
+  return null
+}
+
+export function oltreMassimo(conteggio: ConteggioPasto, volte = conteggio.volte): boolean {
+  return conteggio.massimo !== undefined && volte > conteggio.massimo
 }

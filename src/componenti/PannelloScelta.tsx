@@ -5,6 +5,7 @@ import { dati, idAlternative, trovaPasto, type CategoriaConId, type PastoRisolto
 import { formatDifferenzaCho, formatNumero } from '../formato'
 import type { VocePasto } from '../giornata'
 import { RiassuntoAlimenti } from './Alimenti'
+import { frazioneLimite, oltreMassimo, type ConteggioPasto } from '../vincoli'
 
 /** "senzaYogurt" → "senza yogurt" */
 function etichettaTag(tag: string): string {
@@ -17,11 +18,21 @@ type Props = {
   nomeCategoria: string
   voce: VocePasto
   tipoGiorno: string
+  /** Solo per la cena: quante volte ogni cena compare negli altri giorni della settimana. */
+  conteggiAltri?: Record<string, ConteggioPasto>
   onScegli: (id: string | null) => void
   onChiudi: () => void
 }
 
-export function PannelloScelta({ categoria, nomeCategoria, voce, tipoGiorno, onScegli, onChiudi }: Props) {
+export function PannelloScelta({
+  categoria,
+  nomeCategoria,
+  voce,
+  tipoGiorno,
+  conteggiAltri,
+  onScegli,
+  onChiudi,
+}: Props) {
   const [selezionato, setSelezionato] = useState<string | null>(voce.pasto?.id ?? null)
   const [filtri, setFiltri] = useState<string[]>([])
 
@@ -108,6 +119,9 @@ export function PannelloScelta({ categoria, nomeCategoria, voce, tipoGiorno, onS
             const attivo = opzione.id === selezionato
             const ammesso = !opzione.soloTipiGiornata || opzione.soloTipiGiornata.includes(tipoGiorno)
             const diff = differenza(opzione)
+            const conteggio = conteggiAltri?.[opzione.base ?? opzione.id]
+            const conQuesta = conteggio ? conteggio.volte + 1 : 0
+            const frazione = conteggio ? frazioneLimite(conteggio, conQuesta) : null
             return (
               <li key={opzione.id}>
                 <button
@@ -153,6 +167,16 @@ export function PannelloScelta({ categoria, nomeCategoria, voce, tipoGiorno, onS
                     </div>
                   )}
                   {opzione.notaVersione && <p className="mt-1 text-sm">{opzione.notaVersione}</p>}
+                  {conteggio && frazione && (
+                    <p
+                      className={`mt-1 text-sm font-semibold ${
+                        oltreMassimo(conteggio, conQuesta) ? 'text-red-600' : ''
+                      }`}
+                    >
+                      Con questa, {opzione.base ?? opzione.id} questa settimana: {frazione}
+                      {oltreMassimo(conteggio, conQuesta) && ' · supereresti il massimo'}
+                    </p>
+                  )}
                   <p className="mt-1 text-xs opacity-70">
                     {formatNumero(opzione.kcal)} kcal
                     {opzione.tags && opzione.tags.length > 0 && ` · ${opzione.tags.map(etichettaTag).join(' · ')}`}
