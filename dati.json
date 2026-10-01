@@ -61,6 +61,17 @@
     }
   },
 
+  "orariPasti": {
+    "_nota": "Orari indicativi della giornata tipo, usati per ordinare i pasti ed evidenziare quello corrente.",
+    "preCorsa": "05:15",
+    "colazione": "07:00",
+    "spuntino": "10:30",
+    "pranzo": "13:00",
+    "merenda": "17:00",
+    "cena": "20:00",
+    "spuntinoSerale": "22:30"
+  },
+
   "regole": {
     "_nota": "Queste regole sono il motore dell'app: dall'allenamento inserito si deriva automaticamente tipo giornata, colazione, spuntino, gel e spuntino serale.",
 

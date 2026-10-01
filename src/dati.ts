@@ -12,7 +12,21 @@ export type Giorno = Settimana['giorni'][number]
 export type TipoGiornata = keyof Dati['tipiGiornata']
 export type InfoTipoGiornata = Dati['tipiGiornata'][TipoGiornata]
 
-export type CategoriaPasto = 'colazione' | 'spuntino' | 'pranzo' | 'cena' | 'merenda'
+/** I pasti della giornata, nelle chiavi usate da `orariPasti`. */
+export type CategoriaPasto = Exclude<keyof Dati['orariPasti'], '_nota'>
+
+/** Le categorie che il calendario assegna per id (es. "pranzo": "P1"). */
+export type CategoriaConId = 'colazione' | 'spuntino' | 'pranzo' | 'cena' | 'merenda'
+
+export type Alimento = {
+  nome: string
+  grammi?: number | null
+  pezzi?: number
+  note?: string
+  sostituibileCon?: string[]
+  /** Aggiunto alla colazione base (es. nella MAGG). */
+  aggiunto?: boolean
+}
 
 /** Un pasto come riferito dal calendario (es. "P1", "P3+", "C1rid", "Mrid"). */
 export type PastoRisolto = {
@@ -22,10 +36,17 @@ export type PastoRisolto = {
   cho: number
   /** null quando il JSON non lo riporta (es. versioni ridotte e maggiorate). */
   proteine: number | null
+  /** Vuoto per le merende, che hanno solo `composizione`. */
+  alimenti: Alimento[]
+  composizione?: string
   /** Per versioni ridotte e maggiorate: le modifiche rispetto al pasto base. */
   modifiche?: string
   /** Id del pasto da cui deriva la versione ridotta, maggiorata o variante. */
   base?: string
+  /** Indicazione testuale di quando consumarlo (es. colazione "al rientro…"). */
+  quando?: string
+  note?: string
+  varianti?: { nome: string; alimenti: Alimento[] }[]
 }
 
 export function isTipoGiornata(tipo: string): tipo is TipoGiornata {
@@ -38,15 +59,26 @@ type ConVersioni = {
   kcal: number
   cho: number
   proteine: number
+  alimenti: Alimento[]
+  note?: string
   ridotto?: { id: string; kcal: number; cho: number; modifiche: string }
   maggiorato?: { id: string; kcal: number; cho: number; modifiche: string }
-  varianti?: { id: string; nome: string; kcal: number; cho: number; proteine: number }[]
+  varianti?: {
+    id: string
+    nome: string
+    kcal: number
+    cho: number
+    proteine: number
+    alimenti: Alimento[]
+    note?: string
+  }[]
 }
 
 function cercaConVersioni(elenco: ConVersioni[], id: string): PastoRisolto | null {
   for (const pasto of elenco) {
     if (pasto.id === id) {
-      return { id, nome: pasto.nome, kcal: pasto.kcal, cho: pasto.cho, proteine: pasto.proteine }
+      const { ridotto: _r, maggiorato: _m, varianti: _v, ...resto } = pasto
+      return resto
     }
     for (const [versione, etichetta] of [
       [pasto.ridotto, 'ridotto'],
@@ -59,8 +91,10 @@ function cercaConVersioni(elenco: ConVersioni[], id: string): PastoRisolto | nul
           kcal: versione.kcal,
           cho: versione.cho,
           proteine: null,
+          alimenti: pasto.alimenti,
           modifiche: versione.modifiche,
           base: pasto.id,
+          note: pasto.note,
         }
       }
     }
@@ -72,15 +106,37 @@ function cercaConVersioni(elenco: ConVersioni[], id: string): PastoRisolto | nul
   return null
 }
 
-export function trovaPasto(categoria: CategoriaPasto, id: string): PastoRisolto | null {
+function trovaColazione(id: string): PastoRisolto | null {
+  const colazione = dati.blocchi.colazioni.find((c) => c.id === id)
+  if (!colazione) return null
+  const base = colazione.base
+    ? dati.blocchi.colazioni.find((c) => c.id === colazione.base)
+    : undefined
+  const rimozioni = colazione.rimozioni ?? []
+  const alimenti: Alimento[] = [
+    ...(colazione.alimenti ?? base?.alimenti ?? []).filter((a) => !rimozioni.includes(a.nome)),
+    ...(colazione.aggiunte ?? []).map((a) => ({ ...a, aggiunto: true })),
+  ]
+  return {
+    id,
+    nome: colazione.nome,
+    kcal: colazione.kcal,
+    cho: colazione.cho,
+    proteine: colazione.proteine,
+    alimenti,
+    base: colazione.base,
+    quando: colazione.orario ?? base?.orario,
+    note: colazione.note ?? base?.note,
+  }
+}
+
+export function trovaPasto(categoria: CategoriaConId, id: string): PastoRisolto | null {
   switch (categoria) {
     case 'colazione':
+      return trovaColazione(id)
     case 'spuntino': {
-      const elenco = categoria === 'colazione' ? dati.blocchi.colazioni : dati.blocchi.spuntini
-      const pasto = elenco.find((p) => p.id === id)
-      return pasto
-        ? { id, nome: pasto.nome, kcal: pasto.kcal, cho: pasto.cho, proteine: pasto.proteine }
-        : null
+      const spuntino = dati.blocchi.spuntini.find((s) => s.id === id)
+      return spuntino ? { ...spuntino } : null
     }
     case 'pranzo':
       return cercaConVersioni(dati.pranzi, id)
@@ -91,12 +147,22 @@ export function trovaPasto(categoria: CategoriaPasto, id: string): PastoRisolto 
       return merenda
         ? {
             id,
-            nome: merenda.composizione,
+            nome: merenda.id,
             kcal: merenda.kcal,
             cho: merenda.cho,
             proteine: merenda.proteine,
+            alimenti: [],
+            composizione: merenda.composizione,
           }
         : null
     }
   }
+}
+
+export function preCorsa(): PastoRisolto {
+  return { ...dati.blocchi.preCorsa }
+}
+
+export function spuntinoSerale(): PastoRisolto {
+  return { ...dati.blocchi.spuntinoSerale }
 }

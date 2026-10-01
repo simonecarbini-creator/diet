@@ -1,13 +1,35 @@
 @import "tailwindcss";
 
 /* Palette da SPEC.md §6. I colori dei tipi giornata arrivano da dati.json. */
-@theme {
-  --color-testo: #0f2b46;
-  --color-sfondo: #f6f9fc;
-  --color-cho: #c1662a;
+:root {
+  color-scheme: light dark;
+  --testo: #0f2b46;
+  --sfondo: #f6f9fc;
+  --superficie: #ffffff;
+  --bordo: #dde5ee;
+  --cho: #c1662a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --testo: #e4ebf2;
+    --sfondo: #0b1520;
+    --superficie: #142231;
+    --bordo: #23364a;
+    --cho: #e8894a;
+  }
+}
+
+@theme inline {
+  --color-testo: var(--testo);
+  --color-sfondo: var(--sfondo);
+  --color-superficie: var(--superficie);
+  --color-bordo: var(--bordo);
+  --color-cho: var(--cho);
 }
 
 body {
-  background-color: var(--color-sfondo);
-  color: var(--color-testo);
+  background-color: var(--sfondo);
+  color: var(--testo);
+  -webkit-text-size-adjust: 100%;
 }

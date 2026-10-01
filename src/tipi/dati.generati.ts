@@ -6,6 +6,7 @@ export type Dati = {
     atleta:                Atleta;
     target:                Target;
     tipiGiornata:          TipiGiornata;
+    orariPasti:            OrariPasti;
     regole:                Regole;
     blocchi:               Blocchi;
     pranzi:                Pranzi[];
@@ -193,6 +194,17 @@ export type Merende = {
     proteine:     number;
     composizione: string;
     tags:         string[];
+}
+
+export type OrariPasti = {
+    _nota:          string;
+    preCorsa:       string;
+    colazione:      string;
+    spuntino:       string;
+    pranzo:         string;
+    merenda:        string;
+    cena:           string;
+    spuntinoSerale: string;
 }
 
 export type Pranzi = {
