@@ -1,0 +1,635 @@
+{
+  "$schema": "./dati.schema.json",
+  "versione": "1.0.0",
+  "aggiornato": "2026-10-01",
+  "_nota": "Fonte di verita' unica del piano alimentare. kcal e CHO sono valori calcolati; le proteine sono stime arrotondate. Tutti i grammi degli alimenti sono A CRUDO, tranne i legumi che sono indicati lessati e sgocciolati.",
+
+  "atleta": {
+    "altezzaCm": 178,
+    "pesoKg": 75.0,
+    "pesoObiettivoKg": 75.0,
+    "fase": "mantenimento",
+    "gara": {
+      "nome": "Maratona di Firenze",
+      "data": "2026-11-29"
+    },
+    "orarioAllenamento": "05:30-06:00",
+    "giornoRiposo": "sabato",
+    "alimentazione": {
+      "carne": "limitata, occasionale",
+      "pesce": true,
+      "vegetariano": false,
+      "nonGraditi": ["datteri"]
+    }
+  },
+
+  "target": {
+    "proteineGrammiDie": 130,
+    "proteineNota": "fisse tutti i giorni, riposo incluso",
+    "grassiGrammiDieMin": 80,
+    "grassiGrammiDieMax": 90,
+    "carboidratiGrammiPerKgMin": 6,
+    "carboidratiGrammiPerKgMax": 9,
+    "carboidratiNota": "e' la variabile che si modifica in base al tipo di giornata",
+    "sogliaPesoAlto": 75.5,
+    "sogliaPesoBasso": 74.5,
+    "azioneSopraSoglia": "togliere 150-200 kcal dai giorni VERDE",
+    "azioneSottoSoglia": "rimettere colazione MAGG nei giorni ROSSO"
+  },
+
+  "tipiGiornata": {
+    "VERDE": {
+      "etichetta": "Lento / facile",
+      "colore": "#2e8b57",
+      "kcalTarget": 3100,
+      "choTargetMin": 400,
+      "choTargetMax": 425
+    },
+    "ROSSO": {
+      "etichetta": "Qualita' o lungo",
+      "colore": "#d13b2e",
+      "kcalTarget": 3600,
+      "choTargetMin": 450,
+      "choTargetMax": 495
+    },
+    "GRIGIO": {
+      "etichetta": "Riposo",
+      "colore": "#9aa7b4",
+      "kcalTarget": 2300,
+      "choTargetMin": 250,
+      "choTargetMax": 270
+    }
+  },
+
+  "regole": {
+    "_nota": "Queste regole sono il motore dell'app: dall'allenamento inserito si deriva automaticamente tipo giornata, colazione, spuntino, gel e spuntino serale.",
+
+    "classificazioneGiornata": [
+      {
+        "id": "riposo",
+        "se": "allenamento assente o 'riposo'",
+        "tipo": "GRIGIO",
+        "priorita": 1
+      },
+      {
+        "id": "lungo",
+        "se": "distanzaTotaleKm >= 18",
+        "tipo": "ROSSO",
+        "priorita": 2
+      },
+      {
+        "id": "qualita",
+        "se": "contiene ripetute, salite, frazionato, medio, progressiva lunga, o minutiSopraRitmoMedio >= 20",
+        "tipo": "ROSSO",
+        "priorita": 3
+      },
+      {
+        "id": "lento",
+        "se": "altrimenti",
+        "tipo": "VERDE",
+        "priorita": 4
+      }
+    ],
+    "classificazioneNota": "Una progressiva breve (14-15 km che chiude veloce negli ultimi km) resta VERDE: chiude veloce ma dura poco. Una seduta di qualita' lunga come 10x1000 (~18 km, oltre un'ora sopra il ritmo medio) e' ROSSO e va trattata come un lungo.",
+
+    "sceltaColazione": [
+      {
+        "colazione": "MAGG",
+        "se": "distanzaTotaleKm >= 20 OPPURE minutiSopraRitmoMedio >= 50 OPPURE e' il lungo domenicale"
+      },
+      {
+        "colazione": "RID",
+        "se": "tipo == GRIGIO E il giorno successivo NON e' ROSSO pesante"
+      },
+      {
+        "colazione": "STD",
+        "se": "altrimenti"
+      }
+    ],
+
+    "sceltaSpuntino": [
+      { "spuntino": "intero", "se": "tipo == ROSSO OPPURE distanzaTotaleKm >= 15" },
+      { "spuntino": "soloFrutto", "se": "altrimenti" }
+    ],
+
+    "spuntinoSerale": [
+      { "valore": true, "se": "tipo == ROSSO" },
+      { "valore": true, "se": "distanzaTotaleKm >= 20", "obbligatorio": true, "motivo": "anti-ipoglicemia notturna post-lungo" },
+      { "valore": false, "se": "altrimenti" }
+    ],
+
+    "gelInCorsa": [
+      { "grammiCho": 0, "se": "durataMinuti < 75" },
+      { "grammiChoPerOra": 30, "se": "durataMinuti tra 75 e 100" },
+      { "grammiChoPerOra": 60, "se": "durataMinuti > 100" },
+      { "grammiChoPerOra": 70, "se": "e' il lungo domenicale", "nota": "protocollo gara: stesso gel, stessi intervalli, glicemia annotata prima/durante/dopo" }
+    ],
+
+    "sabatoRicarica": {
+      "condizione": "la domenica successiva e' ROSSO pesante (lungo >= 20 km o qualita' estesa)",
+      "effetto": "colazione STD invece di RID e pranzo pieno invece di ridotto; si tagliano solo merenda e cena",
+      "motivo": "non e' un riposo qualsiasi, e' la ricarica prima della seduta pesante"
+    },
+
+    "regolaSabato": "Si tagliano SOLO i cereali. Proteine (130 g) e grassi (90 g) restano identici agli altri giorni. Nessun pre-corsa, nessuno spuntino serale.",
+
+    "vincoliSettimanali": [
+      { "id": "omega3", "regola": "cena C2 almeno 3 volte a settimana", "motivo": "omega-3 per il recupero" },
+      { "id": "formaggio", "regola": "cena C4 massimo 2-3 volte, solo nei giorni VERDE o GRIGIO", "motivo": "pochi CHO e molti grassi: rallenta lo svuotamento gastrico quando serve ricostituire glicogeno" },
+      { "id": "noC4conC2", "regola": "mai C4 nello stesso giorno di C2" },
+      { "id": "barbabietola", "regola": "barbabietola 2-3 volte a settimana", "motivo": "i nitrati migliorano l'efficienza a ritmo submassimale" },
+      { "id": "crucifere", "regola": "niente crucifere (broccoli, cavolfiore, cavoli, verze) la sera prima di un giorno ROSSO", "motivo": "fermentano: problemi intestinali alle 5:30" }
+    ]
+  },
+
+  "blocchi": {
+    "preCorsa": {
+      "id": "preCorsa",
+      "nome": "Pre-corsa",
+      "orario": "05:15",
+      "kcal": 110,
+      "cho": 25,
+      "proteine": 1,
+      "alimenti": [
+        { "nome": "Banana", "grammi": 120 },
+        { "nome": "Caffe'", "grammi": null },
+        { "nome": "Acqua", "grammi": null, "note": "1 bicchiere" }
+      ],
+      "note": "Evita iniezioni su coscia e polpaccio nelle ore precedenti. Niente polioli (marmellata 0 zuccheri) prima della corsa.",
+      "saltaSe": "tipo == GRIGIO"
+    },
+
+    "colazioni": [
+      {
+        "id": "STD",
+        "nome": "Colazione standard",
+        "orario": "al rientro, entro 45' dalla fine della corsa",
+        "kcal": 700,
+        "cho": 90,
+        "proteine": 33,
+        "alimenti": [
+          { "nome": "Yogurt greco 0%", "grammi": 200, "sostituibileCon": ["Ricotta 200 g", "Latte o bevanda di soia 300 ml + fonte proteica"] },
+          { "nome": "Avena (fiocchi)", "grammi": 70, "sostituibileCon": ["Fiocchi d'orzo 70 g", "Fiocchi di farro 70 g", "Muesli senza zuccheri aggiunti 65 g"] },
+          { "nome": "Frutta secca", "grammi": 20 },
+          { "nome": "Gocce di cioccolato fondente", "grammi": 5 },
+          { "nome": "Frutta disidratata", "grammi": 10 },
+          { "nome": "Fette biscottate integrali", "grammi": null, "pezzi": 3 },
+          { "nome": "Composta di frutta", "grammi": 40 }
+        ],
+        "note": "E' il pasto post-allenamento: il momento in cui i carboidrati sono meglio tollerati."
+      },
+      {
+        "id": "MAGG",
+        "nome": "Colazione maggiorata",
+        "kcal": 840,
+        "cho": 121,
+        "proteine": 34,
+        "base": "STD",
+        "aggiunte": [
+          { "nome": "Banana", "grammi": 120 },
+          { "nome": "Fetta biscottata integrale", "pezzi": 1 }
+        ]
+      },
+      {
+        "id": "RID",
+        "nome": "Colazione ridotta",
+        "kcal": 590,
+        "cho": 62,
+        "proteine": 32,
+        "base": "STD",
+        "rimozioni": ["Fette biscottate integrali", "Composta di frutta"]
+      }
+    ],
+
+    "spuntini": [
+      {
+        "id": "intero",
+        "nome": "Spuntino intero",
+        "orario": "10:30",
+        "kcal": 255,
+        "cho": 22,
+        "proteine": 7,
+        "alimenti": [
+          { "nome": "Frutto", "grammi": 150 },
+          { "nome": "Mandorle", "grammi": 30 }
+        ]
+      },
+      {
+        "id": "soloFrutto",
+        "nome": "Solo frutto",
+        "orario": "10:30",
+        "kcal": 95,
+        "cho": 20,
+        "proteine": 1,
+        "alimenti": [{ "nome": "Frutto", "grammi": 150 }]
+      }
+    ],
+
+    "spuntinoSerale": {
+      "id": "serale",
+      "nome": "Spuntino serale",
+      "kcal": 300,
+      "cho": 25,
+      "proteine": 20,
+      "alimenti": [
+        { "nome": "Yogurt greco", "grammi": 170 },
+        { "nome": "Avena", "grammi": 30 },
+        { "nome": "Noci", "grammi": 15 }
+      ],
+      "varianti": [
+        {
+          "nome": "Con ricotta",
+          "alimenti": [
+            { "nome": "Ricotta", "grammi": 180 },
+            { "nome": "Avena", "grammi": 30 },
+            { "nome": "Miele", "grammi": 10 }
+          ]
+        }
+      ],
+      "note": "E' l'anti-ipoglicemia notturna dopo qualita' e lungo. Prima di dormire guarda la FRECCIA del Libre, non solo il valore."
+    }
+  },
+
+  "pranzi": [
+    {
+      "id": "P1",
+      "nome": "Pasta e legumi",
+      "primaScelta": true,
+      "kcal": 1030,
+      "cho": 154,
+      "proteine": 38,
+      "alimenti": [
+        { "nome": "Pasta", "grammi": 120 },
+        { "nome": "Legumi lessati (ceci, lenticchie, fagioli)", "grammi": 230, "note": "una confezione intera" },
+        { "nome": "Verdure", "grammi": 200 },
+        { "nome": "Olio EVO", "grammi": 20 },
+        { "nome": "Pane", "grammi": 40 }
+      ],
+      "varianti": [
+        {
+          "id": "P1-fiocchi",
+          "nome": "Con fiocchi di latte al posto dei legumi",
+          "kcal": 970,
+          "cho": 129,
+          "proteine": 35,
+          "alimenti": [
+            { "nome": "Pasta", "grammi": 160 },
+            { "nome": "Fiocchi di latte", "grammi": 210 },
+            { "nome": "Verdure", "grammi": 200 },
+            { "nome": "Olio EVO", "grammi": 20 }
+          ],
+          "note": "I fiocchi di latte hanno ottime proteine ma zero carboidrati: ogni volta che sostituiscono i legumi, alzare la pasta di 40 g e togliere il pane."
+        }
+      ],
+      "ridotto": { "id": "P1rid", "kcal": 790, "cho": 104, "modifiche": "pasta 80 g, niente pane" },
+      "note": "Indice glicemico contenuto e ottimo profilo aminoacidico. La passata di pomodoro si puo' aggiungere liberamente (200 g = 60 kcal, 12 g CHO) e aiuta l'assorbimento del ferro."
+    },
+    {
+      "id": "P2",
+      "nome": "Cereale e pesce",
+      "kcal": 1030,
+      "cho": 148,
+      "proteine": 40,
+      "alimenti": [
+        { "nome": "Riso o farro", "grammi": 140 },
+        { "nome": "Tonno al naturale", "grammi": 120, "sostituibileCon": ["Salmone 130 g", "Salmone affumicato 120 g (togliere l'olio)"] },
+        { "nome": "Verdure", "grammi": 200 },
+        { "nome": "Olio EVO", "grammi": 20 },
+        { "nome": "Pane", "grammi": 60 }
+      ],
+      "ridotto": { "id": "P2rid", "kcal": 750, "cho": 100, "modifiche": "cereale 100 g, niente pane" },
+      "note": "La piu' comoda in ufficio: si mangia bene anche fredda.",
+      "tags": ["ufficio", "freddo"]
+    },
+    {
+      "id": "P3",
+      "nome": "Pollo ai ferri",
+      "kcal": 1030,
+      "cho": 108,
+      "proteine": 45,
+      "alimenti": [
+        { "nome": "Pollo ai ferri", "grammi": 180 },
+        { "nome": "Patate", "grammi": 350 },
+        { "nome": "Verdure", "grammi": 200 },
+        { "nome": "Olio EVO", "grammi": 20 },
+        { "nome": "Pane", "grammi": 80 }
+      ],
+      "maggiorato": { "id": "P3+", "kcal": 1130, "cho": 133, "modifiche": "patate 450 g oppure pane 110 g" },
+      "ridotto": { "id": "P3rid", "kcal": 750, "cho": 85, "modifiche": "patate 250 g, pane 40 g" },
+      "note": "Ha meno CHO delle altre due opzioni: nei giorni ROSSO usare la versione maggiorata."
+    }
+  ],
+
+  "cene": [
+    {
+      "id": "C1",
+      "nome": "Pesce bianco",
+      "kcal": 810,
+      "cho": 89,
+      "proteine": 45,
+      "alimenti": [
+        { "nome": "Pesce bianco (merluzzo, orata, branzino)", "grammi": 200, "note": "a crudo" },
+        { "nome": "Patate", "grammi": 300 },
+        { "nome": "Verdure", "grammi": 200 },
+        { "nome": "Olio EVO", "grammi": 15 },
+        { "nome": "Pane", "grammi": 60 }
+      ],
+      "ridotto": { "id": "C1rid", "kcal": 640, "cho": 64, "modifiche": "patate 200 g, pane 40 g" }
+    },
+    {
+      "id": "C2",
+      "nome": "Pesce grasso",
+      "kcal": 790,
+      "cho": 75,
+      "proteine": 42,
+      "minimoSettimanale": 3,
+      "alimenti": [
+        { "nome": "Salmone, sgombro, sardine o alici", "grammi": 180, "note": "a crudo o al naturale; 130-140 g se sott'olio sgocciolato" },
+        { "nome": "Patate", "grammi": 250 },
+        { "nome": "Verdure", "grammi": 200 },
+        { "nome": "Olio EVO", "grammi": 10 },
+        { "nome": "Pane", "grammi": 50 }
+      ],
+      "ridotto": { "id": "C2rid", "kcal": 620, "cho": 50, "modifiche": "patate 170 g, pane 30 g" },
+      "note": "Omega-3 per il recupero. Preferire il vasetto in vetro alla latta, filetti interi e non pezzi."
+    },
+    {
+      "id": "C3",
+      "nome": "Uova",
+      "kcal": 770,
+      "cho": 79,
+      "proteine": 32,
+      "alimenti": [
+        { "nome": "Uova", "pezzi": 3 },
+        { "nome": "Parmigiano", "grammi": 20 },
+        { "nome": "Pane", "grammi": 100 },
+        { "nome": "Verdure", "grammi": 200 },
+        { "nome": "Olio EVO", "grammi": 15 },
+        { "nome": "Frutto", "pezzi": 1 }
+      ],
+      "note": "Ha 10 g di CHO in meno di C1: nei giorni ROSSO aggiungere 40 g di pane."
+    },
+    {
+      "id": "C4",
+      "nome": "Formaggio fresco",
+      "kcal": 820,
+      "cho": 85,
+      "proteine": 35,
+      "massimoSettimanale": 3,
+      "soloTipiGiornata": ["VERDE", "GRIGIO"],
+      "incompatibileCon": ["C2"],
+      "alimenti": [
+        { "nome": "Mozzarella o primo sale", "grammi": 130, "sostituibileCon": ["Ricotta vaccina 250 g", "Ricotta di pecora 180-200 g"] },
+        { "nome": "Patate", "grammi": 280 },
+        { "nome": "Verdure", "grammi": 200 },
+        { "nome": "Olio EVO", "grammi": 8, "note": "meno del solito: il grasso lo porta gia' il formaggio" },
+        { "nome": "Pane", "grammi": 70 }
+      ],
+      "note": "Il pasto grasso sposta la curva glicemica in avanti di 3-5 ore. La mozzarella la accentua piu' della ricotta: le prime volte guardare il Libre a 4-5 ore da cena."
+    }
+  ],
+
+  "merende": [
+    { "id": "M1", "kcal": 350, "cho": 62, "proteine": 18, "composizione": "Pane 60 g + miele 30 g + yogurt greco 170 g", "tags": [] },
+    { "id": "M2", "kcal": 360, "cho": 62, "proteine": 18, "composizione": "Yogurt greco 170 g + banana 150 g + 4 gallette di mais o 5 fette biscottate integrali", "tags": ["ufficio"] },
+    { "id": "M3", "kcal": 370, "cho": 56, "proteine": 14, "composizione": "Pane 70 g + ricotta 80 g + 1 mela o pera 130 g", "tags": [] },
+    { "id": "M4", "kcal": 375, "cho": 54, "proteine": 7, "composizione": "Banana 150 g + mela 180 g + mandorle 25 g", "tags": ["ufficio", "senzaYogurt", "senzaCucchiaio", "pocheProteine"] },
+    { "id": "M5", "kcal": 350, "cho": 58, "proteine": 20, "composizione": "Pane 80 g + bresaola o salmone affumicato 60 g + pomodorini + 1 frutto", "tags": ["salata", "senzaYogurt"] },
+    { "id": "M6", "kcal": 355, "cho": 60, "proteine": 13, "composizione": "Avena 50 g ammollata in latte 250 ml + banana 150 g + cannella", "tags": ["ufficio", "preparareSeraPrima"] },
+    { "id": "M7", "kcal": 360, "cho": 56, "proteine": 8, "composizione": "Pane 80 g + cioccolato fondente 70-85% 25 g + 1 frutto", "tags": ["senzaYogurt", "pocheProteine"] },
+    { "id": "M8", "kcal": 355, "cho": 57, "proteine": 14, "composizione": "2 fette di pane integrale + ricotta 100 g + composta 30 g + 1 frutto", "tags": [] },
+    { "id": "M9", "kcal": 370, "cho": 58, "proteine": 14, "composizione": "Latte 300 ml + banana 150 g + avena 40 g + burro d'arachidi 10 g", "tags": ["ufficio", "daBere", "preparareSeraPrima"] },
+    { "id": "M10", "kcal": 385, "cho": 55, "proteine": 17, "composizione": "Pane 70 g + parmigiano 30 g + 1 frutto 150 g", "tags": ["salata", "senzaYogurt", "senzaCucchiaio", "ufficio"] },
+    { "id": "M11", "kcal": 400, "cho": 48, "proteine": 8, "composizione": "Banana 150 g + mandorle o noci 30 g + 3 fette biscottate integrali", "tags": ["ufficio", "senzaYogurt", "senzaCucchiaio", "pocheProteine"] },
+    { "id": "M12", "kcal": 390, "cho": 55, "proteine": 12, "composizione": "Bruschetta: pane 70 g + pomodorini + parmigiano 20 g + olio EVO 5 g + 1 frutto", "tags": ["salata", "senzaYogurt", "senzaCucchiaio"] }
+  ],
+  "merendaRidotta": {
+    "id": "Mrid",
+    "kcal": 160,
+    "cho": 18,
+    "proteine": 12,
+    "composizione": "1 frutto + parmigiano 20 g, oppure yogurt greco + frutta secca",
+    "usoSe": "tipo == GRIGIO"
+  },
+  "merendaNote": [
+    "Le merende con tag pocheProteine (M4, M7, M11) vanno usate nei giorni con cena C1, C2 o C4.",
+    "Se pesa lo stomaco: M9 si beve, oppure spezzare la merenda (pane alle 17, parte proteica alle 18).",
+    "Gallette: di mais o multicereali, mai di riso soffiato, e sempre insieme allo yogurt."
+  ],
+
+  "sostituzioni": {
+    "proteiche": {
+      "riferimento": "Yogurt greco 170 g (~20 g proteine)",
+      "equivalenti": [
+        { "nome": "Parmigiano", "grammi": 30, "proteine": 17, "note": "~9 g di grassi e mezzo grammo di sale: se usato ogni giorno, togliere 5 g d'olio a cena" },
+        { "nome": "Ricotta", "grammi": 150, "proteine": 13 },
+        { "nome": "Skyr", "grammi": 150, "proteine": 17 },
+        { "nome": "Fiocchi di latte", "grammi": 180, "proteine": 20 },
+        { "nome": "Uova sode", "pezzi": 2, "proteine": 12 },
+        { "nome": "Bresaola o salmone affumicato", "grammi": 60, "proteine": 18 },
+        { "nome": "Latte 300 ml + proteine in polvere 20 g", "proteine": 26 }
+      ]
+    },
+    "cereali": {
+      "riferimento": "Avena 70 g",
+      "equivalenti": [
+        { "nome": "Fiocchi d'orzo", "grammi": 70, "qualita": "ottima", "note": "stessi beta-glucani dell'avena" },
+        { "nome": "Fiocchi di farro", "grammi": 70, "qualita": "buona", "note": "meno beta-glucani: curva un po' piu' rapida" },
+        { "nome": "Fiocchi di grano saraceno", "grammi": 70, "qualita": "buona", "note": "senza glutine" },
+        { "nome": "Muesli senza zuccheri aggiunti", "grammi": 65, "qualita": "media", "note": "leggere l'etichetta: CHO sotto 60 g/100 g" },
+        { "nome": "Pane integrale o di segale", "grammi": 90, "qualita": "buona", "note": "cambia formato: colazione da spalmare" }
+      ],
+      "daEvitare": ["Cereali soffiati (riso, farro, kamut)", "Flakes e cereali estrusi", "Qualsiasi prodotto con zucchero o succo concentrato aggiunto"],
+      "comeRiconoscere": "Cercare 'fiocchi', non 'flakes': un solo ingrediente in etichetta, spessi e opachi, si ammorbidiscono nel latte invece di sbriciolarsi. 'Ricco di fibre' NON significa a basso indice glicemico."
+    }
+  },
+
+  "verdure": {
+    "porzioneStandardGrammi": 200,
+    "note": "I 200 g possono essere divisi in due o tre tipi diversi.",
+    "elenco": [
+      { "nome": "Zucchine", "choPer200g": 5, "categoria": "neutra" },
+      { "nome": "Spinaci", "choPer200g": 6, "categoria": "neutra", "benefici": ["ferro", "folati", "potassio"], "cottura": "padella o vapore, mai lessati a lungo" },
+      { "nome": "Insalata", "choPer200g": 4, "categoria": "neutra" },
+      { "nome": "Melanzane", "choPer200g": 6, "categoria": "neutra" },
+      { "nome": "Pomodori", "choPer200g": 7, "categoria": "neutra", "benefici": ["vitamina C per il ferro", "licopene"], "abbinaA": ["P1"] },
+      { "nome": "Peperoni", "choPer200g": 8, "categoria": "neutra", "benefici": ["vitamina C"], "abbinaA": ["P1"] },
+      { "nome": "Finocchi", "choPer200g": 6, "categoria": "neutra" },
+      { "nome": "Zucca", "choPer200g": 15, "categoria": "amidacea", "note": "sta a meta' tra verdura e patata; al forno caramellizza e sale piu' in fretta che lessa" },
+      { "nome": "Carote", "choPer200g": 16, "categoria": "amidacea", "benefici": ["betacarotene"], "cottura": "padella con olio, al dente: la cottura libera il betacarotene, la cottura eccessiva accelera la curva" },
+      { "nome": "Barbabietola", "choPer200g": 20, "categoria": "amidacea", "benefici": ["nitrati: efficienza a ritmo submassimale"], "frequenzaSettimanale": "2-3", "note": "colora le urine di rosso, e' normale" },
+      { "nome": "Piselli", "choPer200g": 14, "categoria": "legume", "note": "contarli come legumi, non come verdura" },
+      { "nome": "Fave", "choPer200g": 12, "categoria": "legume" },
+      { "nome": "Broccoli", "choPer200g": 7, "categoria": "crucifera", "evitareSe": "la sera prima di un giorno ROSSO" },
+      { "nome": "Cavolfiore", "choPer200g": 6, "categoria": "crucifera", "evitareSe": "la sera prima di un giorno ROSSO" },
+      { "nome": "Verza", "choPer200g": 6, "categoria": "crucifera", "evitareSe": "la sera prima di un giorno ROSSO" }
+    ]
+  },
+
+  "conversioniCrudoCotto": {
+    "_nota": "Tutti i grammi del piano sono A CRUDO. Questa tabella serve solo se si pesa l'alimento gia' cotto.",
+    "voci": [
+      { "alimento": "Pasta", "crudo": 140, "cotto": 320 },
+      { "alimento": "Riso", "crudo": 140, "cotto": 380 },
+      { "alimento": "Farro", "crudo": 140, "cotto": 350 },
+      { "alimento": "Patate (pelate)", "crudo": 300, "cotto": 290 },
+      { "alimento": "Pesce", "crudo": 200, "cotto": 155 },
+      { "alimento": "Pollo", "crudo": 180, "cotto": 130 }
+    ],
+    "legumi": "Indicati gia' lessati e sgocciolati: 230 g lessati = circa 85-90 g secchi."
+  },
+
+  "settimane": [
+    {
+      "numero": 4,
+      "dal": "2026-09-28",
+      "al": "2026-10-04",
+      "kmTotali": 98,
+      "giorni": [
+        {
+          "data": "2026-09-28",
+          "allenamento": "Corsa lenta 15 km + 6x100",
+          "distanzaKm": 15,
+          "tipo": "VERDE",
+          "colazione": "STD",
+          "spuntino": "soloFrutto",
+          "pranzo": "P2",
+          "cena": "C4",
+          "merenda": null,
+          "spuntinoSerale": false,
+          "gelCho": 0,
+          "kcal": 3110,
+          "cho": 426
+        },
+        {
+          "data": "2026-09-29",
+          "allenamento": "15 km con gli ultimi km in leggera progressione",
+          "distanzaKm": 15,
+          "tipo": "VERDE",
+          "colazione": "STD",
+          "spuntino": "intero",
+          "pranzo": "P1",
+          "cena": "C2",
+          "merenda": null,
+          "spuntinoSerale": false,
+          "gelCho": 30,
+          "kcal": 3180,
+          "cho": 422
+        },
+        {
+          "data": "2026-09-30",
+          "allenamento": "Ripetute: riscaldamento 4 km + 10x1000 rec 2' corsetta + 1 km defaticamento",
+          "distanzaKm": 18,
+          "tipo": "ROSSO",
+          "colazione": "MAGG",
+          "spuntino": "intero",
+          "pranzo": "P1",
+          "cena": "C1",
+          "merenda": null,
+          "spuntinoSerale": true,
+          "gelCho": 90,
+          "kcal": 3700,
+          "cho": 494,
+          "note": "La qualita' piu' lunga del blocco: oltre un'ora sopra il ritmo medio. Si comporta in modo ibrido sulla glicemia (l'intensita' la fa salire, la durata la fa scendere): guardare il Libre dal quinto 1000 in poi."
+        },
+        {
+          "data": "2026-10-01",
+          "allenamento": "Corsa lenta 15 km",
+          "distanzaKm": 15,
+          "tipo": "VERDE",
+          "colazione": "STD",
+          "spuntino": "intero",
+          "pranzo": "P3+",
+          "cena": "C2",
+          "merenda": null,
+          "spuntinoSerale": false,
+          "gelCho": 0,
+          "kcal": 3240,
+          "cho": 403
+        },
+        {
+          "data": "2026-10-02",
+          "allenamento": "Ripetute: riscaldamento 4 km + 12x400 rec 200 corsetta + 1 km defaticamento",
+          "distanzaKm": 12,
+          "tipo": "ROSSO",
+          "colazione": "STD",
+          "spuntino": "intero",
+          "pranzo": "P1",
+          "cena": "C3",
+          "merenda": null,
+          "spuntinoSerale": true,
+          "gelCho": 30,
+          "kcal": 3500,
+          "cho": 439
+        },
+        {
+          "data": "2026-10-03",
+          "allenamento": "Riposo",
+          "distanzaKm": 0,
+          "tipo": "GRIGIO",
+          "ricarica": true,
+          "colazione": "STD",
+          "spuntino": "soloFrutto",
+          "pranzo": "P1",
+          "cena": "C1rid",
+          "merenda": "Mrid",
+          "spuntinoSerale": false,
+          "gelCho": 0,
+          "kcal": 2635,
+          "cho": 343,
+          "note": "Riposo di ricarica: domenica c'e' il frazionato. Colazione STD e pranzo pieno, si tagliano solo merenda e cena."
+        },
+        {
+          "data": "2026-10-04",
+          "allenamento": "Frazionato 22 km: 12 km a 4'50\" + 6 km a 4'30\" + 4 km a 4'20\" + 1 km defaticamento",
+          "distanzaKm": 23,
+          "tipo": "ROSSO",
+          "lungoDomenicale": true,
+          "colazione": "MAGG",
+          "spuntino": "intero",
+          "pranzo": "P1",
+          "cena": "C2",
+          "merenda": null,
+          "spuntinoSerale": true,
+          "gelCho": 150,
+          "kcal": 3700,
+          "cho": 494,
+          "note": "Prova di gara: stesso protocollo gel di Firenze, glicemie annotate prima, durante e dopo."
+        }
+      ]
+    }
+  ],
+
+  "promemoriaGlicemico": [
+    {
+      "id": "qualitaBreve",
+      "titolo": "Giorni ROSSO di qualita' breve",
+      "testo": "Ripetute corte e salite fanno salire le catecolamine: la glicemia spesso SALE durante e subito dopo. E' normale. Il rischio arriva dopo, quando quel picco rientra: da qui lo spuntino serale."
+    },
+    {
+      "id": "lungo",
+      "titolo": "Giorni ROSSO di lungo",
+      "testo": "Qui la glicemia SCENDE e continua a farlo: la sensibilita' insulinica resta aumentata fino a 24 ore. L'ipoglicemia notturna post-lungo e' il rischio principale della preparazione. Non tagliare la cena; prima di dormire guarda la freccia del Libre, non solo il valore."
+    },
+    {
+      "id": "mattina",
+      "titolo": "Ore 5:15 — perche' e' la finestra migliore",
+      "testo": "Poca insulina attiva a bordo e cortisolo mattutino che sostiene la glicemia. Evitare coscia e polpaccio come sito di iniezione nelle ore prima della corsa. Se al risveglio la glicemia e' molto alta: controllare i chetoni — con chetoni positivi non si corre, e in particolare non si fanno ripetute."
+    },
+    {
+      "id": "pastiGrassi",
+      "titolo": "Cene grasse e serate fuori",
+      "testo": "Frittura, formaggi e pasti ricchi di grassi spostano la curva in avanti di 4-6 ore. Guardare il Libre a 2, 4 e 6 ore, non solo subito dopo. In quelle sere lo spuntino serale non serve: ci pensa gia' il pasto."
+    }
+  ],
+
+  "controlli": [
+    { "id": "peso", "cosa": "Peso a digiuno", "frequenza": "2-3 volte a settimana", "nota": "conta la media settimanale, non il singolo valore" },
+    { "id": "libreTempoAttivo", "cosa": "Tempo attivo del sensore", "frequenza": "settimanale", "nota": "sotto il 90% il GMI non e' affidabile" },
+    { "id": "libreTAR", "cosa": "Time above range", "frequenza": "settimanale" },
+    { "id": "libreTBR", "cosa": "Time below range", "frequenza": "settimanale", "nota": "sopra il 4% parlarne al controllo" },
+    { "id": "glicemiaLungo", "cosa": "Glicemia prima / durante / dopo il lungo", "frequenza": "ogni lungo", "nota": "sono i dati piu' utili da portare al diabetologo" }
+  ],
+
+  "disclaimer": "Piano nutrizionale di supporto elaborato su dati riferiti dall'atleta. Non sostituisce il parere del medico curante. Ogni aggiustamento della terapia insulinica va concordato esclusivamente con il proprio diabetologo."
+}
