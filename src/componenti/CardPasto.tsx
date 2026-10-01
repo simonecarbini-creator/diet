@@ -3,6 +3,7 @@ import { dati, isCategoriaConId, type CategoriaPasto, type Vincolo } from '../da
 import type { VocePasto } from '../giornata'
 import { formatDifferenzaCho, formatNumero } from '../formato'
 import { ElencoAlimenti } from './Alimenti'
+import { DifferenzaKcal } from './DifferenzaKcal'
 import { PannelloScelta } from './PannelloScelta'
 import { ContatoreSettimana, PromemoriaSera } from './Vincoli'
 import { idBase, type ConteggioPasto } from '../vincoli'
@@ -115,9 +116,12 @@ export function CardPasto({
                     </span>
                   )}
                 </div>
-                <div className="text-sm opacity-70">
-                  {formatNumero(pasto.kcal)} kcal
-                  {pasto.proteine !== null && ` · ${formatNumero(pasto.proteine)} g proteine`}
+                <div className="text-sm">
+                  <span className="opacity-70">{formatNumero(pasto.kcal)} kcal</span>
+                  {delPiano && <DifferenzaKcal differenza={pasto.kcal - delPiano.kcal} />}
+                  {pasto.proteine !== null && (
+                    <span className="opacity-70"> · {formatNumero(pasto.proteine)} g proteine</span>
+                  )}
                 </div>
                 {sostituito && (
                   <div className="text-sm font-semibold text-cho">

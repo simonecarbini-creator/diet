@@ -38,3 +38,17 @@ export function formatDataBreve(data: string): string {
 export function formatGiornoMese(data: string): string {
   return giornoMese.format(comeDate(data))
 }
+
+/** 90 → "+90 kcal", -90 → "−90 kcal" */
+export function formatDifferenzaKcal(differenza: number): string {
+  const segno = differenza > 0 ? '+' : '−'
+  return `${segno}${formatNumero(Math.abs(differenza))} kcal`
+}
+
+const meseAnno = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' })
+
+/** "2026-10" → "ottobre 2026" */
+export function formatMese(mese: string): string {
+  const [anno, numero] = mese.split('-').map(Number)
+  return meseAnno.format(new Date(anno, numero - 1, 1))
+}

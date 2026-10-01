@@ -7,7 +7,7 @@ import { frazioneLimite, oltreMassimo, vincoliDelPasto, type ConteggioPasto } fr
 import { Popup } from './Popup'
 
 function coloreStato(conteggio: ConteggioPasto): string {
-  if (oltreMassimo(conteggio)) return 'text-red-600'
+  if (oltreMassimo(conteggio)) return 'text-ko'
   if (conteggio.minimo !== undefined && conteggio.volte >= conteggio.minimo) return 'text-ok'
   return ''
 }

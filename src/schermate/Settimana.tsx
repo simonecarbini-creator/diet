@@ -2,7 +2,8 @@
 import { dati, isTipoGiornata, type Giorno, type Settimana as TipoSettimana } from '../dati'
 import { formatDataBreve, formatGiornoMese, formatNumero } from '../formato'
 import { link } from '../navigazione'
-import { esitoGiorno, type Esito } from '../giornata'
+import { esitoGiorno } from '../giornata'
+import { BadgeEsito } from '../componenti/BadgeEsito'
 import { useStatiGiorni, type StatoGiorno } from '../statoGiorno'
 import { controllaVincoli } from '../vincoli'
 
@@ -16,6 +17,7 @@ function scegliSettimana(numero: number | null, oggi: string): TipoSettimana | u
 }
 
 function Codice({ id, cambiato }: { id: string; cambiato?: boolean }) {
+  // Stesso aspetto per codici dei pasti, spuntino serale e gel.
   return (
     <span
       className={`rounded px-1.5 py-0.5 text-xs font-semibold ${
@@ -26,12 +28,6 @@ function Codice({ id, cambiato }: { id: string; cambiato?: boolean }) {
       {cambiato && '*'}
     </span>
   )
-}
-
-const badgeEsito: Record<Esito, { simbolo: string; etichetta: string; classe: string }> = {
-  rispettato: { simbolo: '👍', etichetta: 'piano rispettato', classe: 'bg-ok/15' },
-  nonRispettato: { simbolo: '👎', etichetta: 'piano non rispettato', classe: 'bg-red-600/15' },
-  nonDichiarato: { simbolo: 'ND', etichetta: 'pasti non registrati', classe: 'bg-bordo text-xs font-bold' },
 }
 
 /** Giorni passati: 👍 / 👎 / ND. Oggi: pasti spuntati finora. Giorni futuri: niente. */
@@ -45,16 +41,7 @@ function Riepilogo({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGiorn
       </span>
     )
   }
-  const badge = badgeEsito[esito]
-  return (
-    <span
-      className={`flex h-8 min-w-8 items-center justify-center rounded-full px-1.5 text-testo ${badge.classe}`}
-      title={badge.etichetta}
-      aria-label={badge.etichetta}
-    >
-      {badge.simbolo}
-    </span>
-  )
+  return <BadgeEsito esito={esito} />
 }
 
 function RigaGiorno({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGiorno; oggi: string }) {
@@ -97,15 +84,8 @@ function RigaGiorno({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGior
               <Codice key={i} id={pasto.id} cambiato={pasto.cambiato} />
             ))}
             {merenda && <Codice id={merenda} cambiato={!!scelte.merenda} />}
-            {giorno.spuntinoSerale && (
-              <span className="flex items-center gap-1 text-xs">
-                <span className="h-2 w-2 rounded-full bg-cho" aria-hidden="true" />
-                serale
-              </span>
-            )}
-            {giorno.gelCho > 0 && (
-              <span className="text-xs">gel {formatNumero(giorno.gelCho)} g</span>
-            )}
+            {giorno.spuntinoSerale && <Codice id="serale" />}
+            {giorno.gelCho > 0 && <Codice id={`gel ${formatNumero(giorno.gelCho)} g`} />}
           </div>
         </div>
         <div className="shrink-0 text-right text-cho">
@@ -178,9 +158,9 @@ export function Settimana({ numero, oggi }: Props) {
         ))}
       </ul>
       <p className="mt-2 text-xs opacity-70">
-        Codici: colazione · pranzo · cena · merenda. CHO e kcal sono quelli del piano.
-        {cambiamenti && ' * = cambiato per quel giorno.'} 👍 tutti i pasti spuntati · 👎 solo
-        alcuni · ND nessuno.
+        Codici: colazione · pranzo · cena · merenda, poi spuntino serale e gel se previsti. CHO
+        e kcal sono quelli del piano.{cambiamenti && ' * = cambiato per quel giorno.'} Pollice
+        su: tutti i pasti spuntati · pollice giù: solo alcuni · ND: nessuno.
       </p>
 
       <section className="mt-6">

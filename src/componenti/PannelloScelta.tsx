@@ -5,6 +5,7 @@ import { dati, idAlternative, trovaPasto, type CategoriaConId, type PastoRisolto
 import { formatDifferenzaCho, formatNumero } from '../formato'
 import type { VocePasto } from '../giornata'
 import { RiassuntoAlimenti } from './Alimenti'
+import { DifferenzaKcal } from './DifferenzaKcal'
 import { frazioneLimite, oltreMassimo, type ConteggioPasto } from '../vincoli'
 
 /** "senzaYogurt" → "senza yogurt" */
@@ -170,17 +171,20 @@ export function PannelloScelta({
                   {conteggio && frazione && (
                     <p
                       className={`mt-1 text-sm font-semibold ${
-                        oltreMassimo(conteggio, conQuesta) ? 'text-red-600' : ''
+                        oltreMassimo(conteggio, conQuesta) ? 'text-ko' : ''
                       }`}
                     >
                       Con questa, {opzione.base ?? opzione.id} questa settimana: {frazione}
                       {oltreMassimo(conteggio, conQuesta) && ' · supereresti il massimo'}
                     </p>
                   )}
-                  <p className="mt-1 text-xs opacity-70">
-                    {formatNumero(opzione.kcal)} kcal
-                    {opzione.tags && opzione.tags.length > 0 && ` · ${opzione.tags.map(etichettaTag).join(' · ')}`}
-                    {!ammesso && ` · solo nei giorni ${opzione.soloTipiGiornata?.join(' e ')}`}
+                  <p className="mt-1 text-sm">
+                    <span className="opacity-70">{formatNumero(opzione.kcal)} kcal</span>
+                    {riferimento && <DifferenzaKcal differenza={opzione.kcal - riferimento.kcal} />}
+                    <span className="text-xs opacity-70">
+                      {opzione.tags && opzione.tags.length > 0 && ` · ${opzione.tags.map(etichettaTag).join(' · ')}`}
+                      {!ammesso && ` · solo nei giorni ${opzione.soloTipiGiornata?.join(' e ')}`}
+                    </span>
                   </p>
                 </button>
               </li>

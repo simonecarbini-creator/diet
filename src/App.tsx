@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { dati } from './dati'
 import { dataLocale, oraLocale } from './giornata'
 import { link, useRotta } from './navigazione'
+import { Mese } from './schermate/Mese'
 import { Oggi } from './schermate/Oggi'
 import { Settimana } from './schermate/Settimana'
 import { verificaDati } from './verifica'
@@ -9,7 +10,7 @@ import { compilaDatiDiProva } from './prova'
 
 function App() {
   const errori = verificaDati(dati)
-  const rotta = useRotta()
+  const { rotta, provenienza } = useRotta()
   const [adesso, setAdesso] = useState(() => new Date())
 
   // Aggiorna l'ora ogni minuto: il pasto corrente cambia anche ad app aperta.
@@ -27,9 +28,12 @@ function App() {
     }
   }, [rotta.schermata, oggi])
 
+  // Nel dettaglio di un giorno resta attiva la scheda da cui si è arrivati.
+  const schedaAttiva = rotta.schermata === 'giorno' ? provenienza.schermata : rotta.schermata
   const schede = [
-    { href: link.settimana(), etichetta: 'Settimana', attiva: rotta.schermata !== 'oggi' },
-    { href: link.oggi, etichetta: 'Oggi', attiva: rotta.schermata === 'oggi' },
+    { href: link.mese(), etichetta: 'Mese', attiva: schedaAttiva === 'mese' },
+    { href: link.settimana(), etichetta: 'Settimana', attiva: schedaAttiva === 'settimana' },
+    { href: link.oggi, etichetta: 'Oggi', attiva: schedaAttiva === 'oggi' },
   ]
 
   return (
@@ -44,11 +48,12 @@ function App() {
         )}
 
         {rotta.schermata === 'oggi' && <Oggi key={oggi} data={oggi} ora={oraLocale(adesso)} />}
+        {rotta.schermata === 'mese' && <Mese mese={rotta.mese} oggi={oggi} />}
         {rotta.schermata === 'settimana' && <Settimana numero={rotta.numero} oggi={oggi} />}
         {rotta.schermata === 'giorno' && (
           <>
-            <a href={link.settimana()} className="mb-3 inline-block py-1 font-medium text-cho">
-              ‹ Settimana
+            <a href={provenienza.href} className="mb-3 inline-block py-1 font-medium text-cho">
+              ‹ {provenienza.schermata === 'mese' ? 'Mese' : 'Settimana'}
             </a>
             <Oggi
               key={rotta.data}
