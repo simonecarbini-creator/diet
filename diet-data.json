@@ -1,0 +1,13 @@
+{
+  "settimana": "esempio",
+  "aggiornata": "2026-10-01",
+  "giorni": [
+    {
+      "giorno": "Lunedì",
+      "pasti": [
+        { "nome": "Colazione", "alimenti": ["Esempio: yogurt greco 150 g"] },
+        { "nome": "Pranzo", "alimenti": ["Esempio: pasta 80 g"] }
+      ]
+    }
+  ]
+}
