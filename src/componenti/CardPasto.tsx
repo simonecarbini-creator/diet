@@ -20,18 +20,27 @@ type Props = {
   corrente: boolean
   consumato: boolean
   tipoGiorno: string
+  solaLettura: boolean
   onConsumato: (consumato: boolean) => void
   onScegli: (id: string | null) => void
 }
 
-export function CardPasto({ voce, corrente, consumato, tipoGiorno, onConsumato, onScegli }: Props) {
+export function CardPasto({
+  voce,
+  corrente,
+  consumato,
+  tipoGiorno,
+  solaLettura,
+  onConsumato,
+  onScegli,
+}: Props) {
   const [aperto, setAperto] = useState(false)
   const [pannello, setPannello] = useState(false)
   const { pasto, categoria, delPiano } = voce
   const etichetta = etichetteCategoria[categoria]
-  const sceglibile = isCategoriaConId(categoria)
+  const sceglibile = !solaLettura && isCategoriaConId(categoria)
   // Codici del piano (STD, P1, C2, Mrid…) solo dove il calendario li assegna.
-  const mostraCodice = sceglibile && categoria !== 'spuntino'
+  const mostraCodice = isCategoriaConId(categoria) && categoria !== 'spuntino'
   // Se il nome ripete la categoria (es. "Pre-corsa"), meglio elencare gli alimenti.
   const titolo =
     pasto?.composizione ??
@@ -49,10 +58,10 @@ export function CardPasto({ voce, corrente, consumato, tipoGiorno, onConsumato, 
         <button
           type="button"
           onClick={() => onConsumato(!consumato)}
-          disabled={!pasto}
+          disabled={!pasto || solaLettura}
           aria-pressed={consumato}
           aria-label={consumato ? `${etichetta}: consumato` : `Segna ${etichetta} come consumato`}
-          className="flex shrink-0 self-stretch py-4 pl-4 pr-1 disabled:opacity-30"
+          className={`flex shrink-0 self-stretch py-4 pl-4 pr-1 ${pasto ? '' : 'opacity-30'}`}
         >
           <span
             className={`flex h-7 w-7 items-center justify-center rounded-full border-2 text-sm font-bold ${
@@ -66,7 +75,7 @@ export function CardPasto({ voce, corrente, consumato, tipoGiorno, onConsumato, 
         <button
           type="button"
           // Senza pasto (merenda da scegliere) non c'è niente da aprire: si va dritti alla scelta.
-          onClick={() => (pasto ? setAperto(!aperto) : setPannello(true))}
+          onClick={() => (pasto ? setAperto(!aperto) : sceglibile && setPannello(true))}
           aria-expanded={pasto ? aperto : undefined}
           className={`flex min-w-0 flex-1 items-start gap-3 py-4 pl-2 pr-4 text-left ${
             consumato ? 'opacity-60' : ''
@@ -106,7 +115,8 @@ export function CardPasto({ voce, corrente, consumato, tipoGiorno, onConsumato, 
               </>
             ) : (
               <div className="font-semibold">
-                Da scegliere <span className="text-cho">›</span>
+                {solaLettura ? 'Non scelta' : 'Da scegliere'}
+                {sceglibile && <span className="text-cho"> ›</span>}
               </div>
             )}
           </div>

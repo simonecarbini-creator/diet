@@ -336,7 +336,7 @@
       "maggiorato": {
         "id": "P3+", "kcal": 1130, "cho": 133, "modifiche": "patate 450 g oppure pane 110 g",
         "modificheGrammi": [{ "nome": "Patate", "grammi": 450 }],
-        "nota": "In alternativa: patate 350 g e pane 110 g."
+        "nota": "Si maggiora uno solo dei due: patate 450 g (pane resta 80 g) OPPURE pane 110 g (patate restano 350 g)."
       },
       "ridotto": {
         "id": "P3rid", "kcal": 750, "cho": 85, "modifiche": "patate 250 g, pane 40 g",

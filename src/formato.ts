@@ -12,12 +12,29 @@ const dataLunga = new Intl.DateTimeFormat('it-IT', {
 
 /** "2026-10-01" → "giovedì 1 ottobre" */
 export function formatData(data: string): string {
-  const [anno, mese, giorno] = data.split('-').map(Number)
-  return dataLunga.format(new Date(anno, mese - 1, giorno))
+  return dataLunga.format(comeDate(data))
 }
 
 /** 15 → "+15 g CHO", -15 → "−15 g CHO" (segno meno tipografico). */
 export function formatDifferenzaCho(differenza: number): string {
   const segno = differenza > 0 ? '+' : '−'
   return `${segno}${formatNumero(Math.abs(differenza))} g CHO`
+}
+
+const dataBreve = new Intl.DateTimeFormat('it-IT', { weekday: 'short', day: 'numeric' })
+const giornoMese = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short' })
+
+function comeDate(data: string): Date {
+  const [anno, mese, giorno] = data.split('-').map(Number)
+  return new Date(anno, mese - 1, giorno)
+}
+
+/** "2026-09-28" → "lun 28" */
+export function formatDataBreve(data: string): string {
+  return dataBreve.format(comeDate(data))
+}
+
+/** "2026-09-28" → "28 set" */
+export function formatGiornoMese(data: string): string {
+  return giornoMese.format(comeDate(data))
 }

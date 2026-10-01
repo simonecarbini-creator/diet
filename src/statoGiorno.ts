@@ -12,16 +12,22 @@ export type StatoGiorno = {
 
 const statoVuoto: StatoGiorno = { scelte: {}, consumati: [] }
 
+export async function leggiStatoGiorno(data: string): Promise<StatoGiorno> {
+  try {
+    return (await leggi<StatoGiorno>(`giorno:${data}`)) ?? statoVuoto
+  } catch {
+    return statoVuoto
+  }
+}
+
 export function useStatoGiorno(data: string) {
   const [caricato, setCaricato] = useState<{ data: string; stato: StatoGiorno } | null>(null)
 
   useEffect(() => {
     let annullato = false
-    leggi<StatoGiorno>(`giorno:${data}`)
-      .catch(() => undefined)
-      .then((salvato) => {
-        if (!annullato) setCaricato({ data, stato: salvato ?? statoVuoto })
-      })
+    void leggiStatoGiorno(data).then((stato) => {
+      if (!annullato) setCaricato({ data, stato })
+    })
     return () => {
       annullato = true
     }

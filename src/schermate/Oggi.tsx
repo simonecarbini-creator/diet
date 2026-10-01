@@ -1,4 +1,5 @@
-// Schermata Oggi (SPEC.md §3.1), in sola lettura: cosa mangio adesso.
+// Schermata Oggi (SPEC.md §3.1): cosa mangio adesso. Serve anche per il dettaglio di un
+// giorno dalla Settimana, in sola lettura per i giorni passati.
 import { useEffect, useRef } from 'react'
 import { CardPasto } from '../componenti/CardPasto'
 import { formatData, formatNumero } from '../formato'
@@ -10,9 +11,11 @@ type Props = {
   data: string
   /** Ora corrente (HH:MM), solo se `data` è oggi: serve a evidenziare il pasto corrente. */
   ora: string | null
+  /** Giorni passati: si consultano ma non si cambiano. */
+  solaLettura?: boolean
 }
 
-export function Oggi({ data, ora }: Props) {
+export function Oggi({ data, ora, solaLettura = false }: Props) {
   const trovato = cercaGiorno(data)
   const { stato, scegli, segnaConsumato } = useStatoGiorno(data)
   const voci = trovato ? vociDelGiorno(trovato.giorno, stato.scelte) : []
@@ -125,6 +128,7 @@ export function Oggi({ data, ora }: Props) {
             corrente={i === corrente}
             consumato={stato.consumati.includes(voce.categoria)}
             tipoGiorno={giorno.tipo}
+            solaLettura={solaLettura}
             onConsumato={(consumato) => segnaConsumato(voce.categoria, consumato)}
             onScegli={(id) => {
               if (isCategoriaConId(voce.categoria)) scegli(voce.categoria, id, voce.idPiano)

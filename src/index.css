@@ -8,6 +8,7 @@
   --superficie: #ffffff;
   --bordo: #dde5ee;
   --cho: #c1662a;
+  --ok: #2e8b57;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,6 +18,7 @@
     --superficie: #142231;
     --bordo: #23364a;
     --cho: #e8894a;
+    --ok: #4fbf80;
   }
 }
 
@@ -26,6 +28,7 @@
   --color-superficie: var(--superficie);
   --color-bordo: var(--bordo);
   --color-cho: var(--cho);
+  --color-ok: var(--ok);
 }
 
 body {
