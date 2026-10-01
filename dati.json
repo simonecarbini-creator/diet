@@ -292,7 +292,11 @@
           "note": "I fiocchi di latte hanno ottime proteine ma zero carboidrati: ogni volta che sostituiscono i legumi, alzare la pasta di 40 g e togliere il pane."
         }
       ],
-      "ridotto": { "id": "P1rid", "kcal": 790, "cho": 104, "modifiche": "pasta 80 g, niente pane" },
+      "ridotto": {
+        "id": "P1rid", "kcal": 790, "cho": 104, "modifiche": "pasta 80 g, niente pane",
+        "modificheGrammi": [{ "nome": "Pasta", "grammi": 80 }],
+        "rimozioni": ["Pane"]
+      },
       "note": "Indice glicemico contenuto e ottimo profilo aminoacidico. La passata di pomodoro si puo' aggiungere liberamente (200 g = 60 kcal, 12 g CHO) e aiuta l'assorbimento del ferro."
     },
     {
@@ -308,7 +312,11 @@
         { "nome": "Olio EVO", "grammi": 20 },
         { "nome": "Pane", "grammi": 60 }
       ],
-      "ridotto": { "id": "P2rid", "kcal": 750, "cho": 100, "modifiche": "cereale 100 g, niente pane" },
+      "ridotto": {
+        "id": "P2rid", "kcal": 750, "cho": 100, "modifiche": "cereale 100 g, niente pane",
+        "modificheGrammi": [{ "nome": "Riso o farro", "grammi": 100 }],
+        "rimozioni": ["Pane"]
+      },
       "note": "La piu' comoda in ufficio: si mangia bene anche fredda.",
       "tags": ["ufficio", "freddo"]
     },
@@ -325,8 +333,15 @@
         { "nome": "Olio EVO", "grammi": 20 },
         { "nome": "Pane", "grammi": 80 }
       ],
-      "maggiorato": { "id": "P3+", "kcal": 1130, "cho": 133, "modifiche": "patate 450 g oppure pane 110 g" },
-      "ridotto": { "id": "P3rid", "kcal": 750, "cho": 85, "modifiche": "patate 250 g, pane 40 g" },
+      "maggiorato": {
+        "id": "P3+", "kcal": 1130, "cho": 133, "modifiche": "patate 450 g oppure pane 110 g",
+        "modificheGrammi": [{ "nome": "Patate", "grammi": 450 }],
+        "nota": "In alternativa: patate 350 g e pane 110 g."
+      },
+      "ridotto": {
+        "id": "P3rid", "kcal": 750, "cho": 85, "modifiche": "patate 250 g, pane 40 g",
+        "modificheGrammi": [{ "nome": "Patate", "grammi": 250 }, { "nome": "Pane", "grammi": 40 }]
+      },
       "note": "Ha meno CHO delle altre due opzioni: nei giorni ROSSO usare la versione maggiorata."
     }
   ],
@@ -345,7 +360,10 @@
         { "nome": "Olio EVO", "grammi": 15 },
         { "nome": "Pane", "grammi": 60 }
       ],
-      "ridotto": { "id": "C1rid", "kcal": 640, "cho": 64, "modifiche": "patate 200 g, pane 40 g" }
+      "ridotto": {
+        "id": "C1rid", "kcal": 640, "cho": 64, "modifiche": "patate 200 g, pane 40 g",
+        "modificheGrammi": [{ "nome": "Patate", "grammi": 200 }, { "nome": "Pane", "grammi": 40 }]
+      }
     },
     {
       "id": "C2",
@@ -361,7 +379,10 @@
         { "nome": "Olio EVO", "grammi": 10 },
         { "nome": "Pane", "grammi": 50 }
       ],
-      "ridotto": { "id": "C2rid", "kcal": 620, "cho": 50, "modifiche": "patate 170 g, pane 30 g" },
+      "ridotto": {
+        "id": "C2rid", "kcal": 620, "cho": 50, "modifiche": "patate 170 g, pane 30 g",
+        "modificheGrammi": [{ "nome": "Patate", "grammi": 170 }, { "nome": "Pane", "grammi": 30 }]
+      },
       "note": "Omega-3 per il recupero. Preferire il vasetto in vetro alla latta, filetti interi e non pezzi."
     },
     {

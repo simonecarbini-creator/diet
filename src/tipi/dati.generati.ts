@@ -105,10 +105,10 @@ export type Spuntini = {
     kcal:     number;
     cho:      number;
     proteine: number;
-    alimenti: SpuntiniAlimenti[];
+    alimenti: ModificheGrammiElement[];
 }
 
-export type SpuntiniAlimenti = {
+export type ModificheGrammiElement = {
     nome:   string;
     grammi: number;
 }
@@ -119,14 +119,14 @@ export type BlocchiSpuntinoSerale = {
     kcal:     number;
     cho:      number;
     proteine: number;
-    alimenti: SpuntiniAlimenti[];
+    alimenti: ModificheGrammiElement[];
     varianti: SpuntinoSeraleVarianti[];
     note:     string;
 }
 
 export type SpuntinoSeraleVarianti = {
     nome:     string;
-    alimenti: SpuntiniAlimenti[];
+    alimenti: ModificheGrammiElement[];
 }
 
 export type Cene = {
@@ -136,7 +136,7 @@ export type Cene = {
     cho:                 number;
     proteine:            number;
     alimenti:            CeneAlimenti[];
-    ridotto?:            Ridotto;
+    ridotto?:            CeneRidotto;
     minimoSettimanale?:  number;
     note?:               string;
     massimoSettimanale?: number;
@@ -152,11 +152,12 @@ export type CeneAlimenti = {
     sostituibileCon?: string[];
 }
 
-export type Ridotto = {
-    id:        string;
-    kcal:      number;
-    cho:       number;
-    modifiche: string;
+export type CeneRidotto = {
+    id:              string;
+    kcal:            number;
+    cho:             number;
+    modifiche:       string;
+    modificheGrammi: ModificheGrammiElement[];
 }
 
 export type Controlli = {
@@ -216,10 +217,10 @@ export type Pranzi = {
     proteine:     number;
     alimenti:     PranziAlimenti[];
     varianti?:    PranziVarianti[];
-    ridotto:      Ridotto;
+    ridotto:      PranziRidotto;
     note:         string;
     tags?:        string[];
-    maggiorato?:  Ridotto;
+    maggiorato?:  Maggiorato;
 }
 
 export type PranziAlimenti = {
@@ -229,13 +230,31 @@ export type PranziAlimenti = {
     sostituibileCon?: string[];
 }
 
+export type Maggiorato = {
+    id:              string;
+    kcal:            number;
+    cho:             number;
+    modifiche:       string;
+    modificheGrammi: ModificheGrammiElement[];
+    nota:            string;
+}
+
+export type PranziRidotto = {
+    id:              string;
+    kcal:            number;
+    cho:             number;
+    modifiche:       string;
+    modificheGrammi: ModificheGrammiElement[];
+    rimozioni?:      string[];
+}
+
 export type PranziVarianti = {
     id:       string;
     nome:     string;
     kcal:     number;
     cho:      number;
     proteine: number;
-    alimenti: SpuntiniAlimenti[];
+    alimenti: ModificheGrammiElement[];
     note:     string;
 }
 

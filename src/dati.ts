@@ -24,8 +24,12 @@ export type Alimento = {
   pezzi?: number
   note?: string
   sostituibileCon?: string[]
-  /** Aggiunto alla colazione base (es. nella MAGG). */
+  /** Aggiunto al pasto base (es. nella colazione MAGG). */
   aggiunto?: boolean
+  /** Tolto rispetto al pasto base (es. il pane nel P1rid): si mostra barrato. */
+  rimosso?: boolean
+  /** Grammi del pasto base, quando la versione ridotta o maggiorata li cambia. */
+  grammiBase?: number | null
 }
 
 /** Un pasto come riferito dal calendario (es. "P1", "P3+", "C1rid", "Mrid"). */
@@ -39,8 +43,8 @@ export type PastoRisolto = {
   /** Vuoto per le merende, che hanno solo `composizione`. */
   alimenti: Alimento[]
   composizione?: string
-  /** Per versioni ridotte e maggiorate: le modifiche rispetto al pasto base. */
-  modifiche?: string
+  /** Per versioni ridotte e maggiorate: indicazione aggiuntiva (es. P3+ "in alternativa…"). */
+  notaVersione?: string
   /** Id del pasto da cui deriva la versione ridotta, maggiorata o variante. */
   base?: string
   /** Indicazione testuale di quando consumarlo (es. colazione "al rientro…"). */
@@ -57,6 +61,30 @@ export function isTipoGiornata(tipo: string): tipo is TipoGiornata {
   return Object.hasOwn(dati.tipiGiornata, tipo)
 }
 
+type Versione = {
+  id: string
+  kcal: number
+  cho: number
+  modificheGrammi: { nome: string; grammi: number }[]
+  rimozioni?: string[]
+  nota?: string
+}
+
+/** Applica a una lista base le modifiche di grammi, le rimozioni e le aggiunte. */
+function applicaModifiche(
+  base: Alimento[],
+  modifiche: { modificheGrammi?: { nome: string; grammi: number }[]; rimozioni?: string[]; aggiunte?: Alimento[] },
+): Alimento[] {
+  return [
+    ...base.map((alimento) => {
+      if (modifiche.rimozioni?.includes(alimento.nome)) return { ...alimento, rimosso: true }
+      const nuovo = modifiche.modificheGrammi?.find((m) => m.nome === alimento.nome)
+      return nuovo ? { ...alimento, grammi: nuovo.grammi, grammiBase: alimento.grammi } : alimento
+    }),
+    ...(modifiche.aggiunte ?? []).map((a) => ({ ...a, aggiunto: true })),
+  ]
+}
+
 type ConVersioni = {
   id: string
   nome: string
@@ -66,8 +94,8 @@ type ConVersioni = {
   alimenti: Alimento[]
   note?: string
   soloTipiGiornata?: string[]
-  ridotto?: { id: string; kcal: number; cho: number; modifiche: string }
-  maggiorato?: { id: string; kcal: number; cho: number; modifiche: string }
+  ridotto?: Versione
+  maggiorato?: Versione
   varianti?: {
     id: string
     nome: string
@@ -96,8 +124,8 @@ function cercaConVersioni(elenco: ConVersioni[], id: string): PastoRisolto | nul
           kcal: versione.kcal,
           cho: versione.cho,
           proteine: null,
-          alimenti: pasto.alimenti,
-          modifiche: versione.modifiche,
+          alimenti: applicaModifiche(pasto.alimenti, versione),
+          notaVersione: versione.nota,
           base: pasto.id,
           note: pasto.note,
         }
@@ -117,11 +145,7 @@ function trovaColazione(id: string): PastoRisolto | null {
   const base = colazione.base
     ? dati.blocchi.colazioni.find((c) => c.id === colazione.base)
     : undefined
-  const rimozioni = colazione.rimozioni ?? []
-  const alimenti: Alimento[] = [
-    ...(colazione.alimenti ?? base?.alimenti ?? []).filter((a) => !rimozioni.includes(a.nome)),
-    ...(colazione.aggiunte ?? []).map((a) => ({ ...a, aggiunto: true })),
-  ]
+  const alimenti = applicaModifiche(colazione.alimenti ?? base?.alimenti ?? [], colazione)
   return {
     id,
     nome: colazione.nome,

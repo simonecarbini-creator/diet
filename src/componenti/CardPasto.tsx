@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { isCategoriaConId, type Alimento, type CategoriaPasto } from '../dati'
+import { isCategoriaConId, type CategoriaPasto } from '../dati'
 import type { VocePasto } from '../giornata'
 import { formatDifferenzaCho, formatNumero } from '../formato'
-import { SceltaPasto } from './SceltaPasto'
+import { ElencoAlimenti } from './Alimenti'
+import { PannelloScelta } from './PannelloScelta'
 
 const etichetteCategoria: Record<CategoriaPasto, string> = {
   preCorsa: 'Pre-corsa',
@@ -12,34 +13,6 @@ const etichetteCategoria: Record<CategoriaPasto, string> = {
   merenda: 'Merenda',
   cena: 'Cena',
   spuntinoSerale: 'Spuntino serale',
-}
-
-function quantita(alimento: Alimento): string {
-  if (alimento.grammi != null) return `${formatNumero(alimento.grammi)} g`
-  if (alimento.pezzi != null) return `${alimento.pezzi} pz`
-  return ''
-}
-
-function ElencoAlimenti({ alimenti }: { alimenti: Alimento[] }) {
-  return (
-    <ul className="divide-y divide-bordo">
-      {alimenti.map((alimento) => (
-        <li key={alimento.nome} className="py-1.5">
-          <div className="flex justify-between gap-3">
-            <span>
-              {alimento.aggiunto && <span className="font-semibold text-cho">+ </span>}
-              {alimento.nome}
-            </span>
-            <span className="shrink-0 font-medium tabular-nums">{quantita(alimento)}</span>
-          </div>
-          {alimento.note && <div className="text-sm opacity-70">{alimento.note}</div>}
-          {alimento.sostituibileCon && (
-            <div className="text-sm opacity-70">oppure: {alimento.sostituibileCon.join(' · ')}</div>
-          )}
-        </li>
-      ))}
-    </ul>
-  )
 }
 
 type Props = {
@@ -53,7 +26,8 @@ type Props = {
 
 export function CardPasto({ voce, corrente, consumato, tipoGiorno, onConsumato, onScegli }: Props) {
   const [aperto, setAperto] = useState(false)
-  const { pasto, categoria } = voce
+  const [pannello, setPannello] = useState(false)
+  const { pasto, categoria, delPiano } = voce
   const etichetta = etichetteCategoria[categoria]
   const sceglibile = isCategoriaConId(categoria)
   // Codici del piano (STD, P1, C2, Mrid…) solo dove il calendario li assegna.
@@ -62,7 +36,7 @@ export function CardPasto({ voce, corrente, consumato, tipoGiorno, onConsumato, 
   const titolo =
     pasto?.composizione ??
     (pasto?.nome === etichetta ? pasto.alimenti.map((a) => a.nome).join(' · ') : pasto?.nome)
-  const sostituito = voce.delPiano !== undefined
+  const sostituito = delPiano !== undefined
 
   return (
     <article
@@ -91,8 +65,9 @@ export function CardPasto({ voce, corrente, consumato, tipoGiorno, onConsumato, 
 
         <button
           type="button"
-          onClick={() => setAperto(!aperto)}
-          aria-expanded={aperto}
+          // Senza pasto (merenda da scegliere) non c'è niente da aprire: si va dritti alla scelta.
+          onClick={() => (pasto ? setAperto(!aperto) : setPannello(true))}
+          aria-expanded={pasto ? aperto : undefined}
           className={`flex min-w-0 flex-1 items-start gap-3 py-4 pl-2 pr-4 text-left ${
             consumato ? 'opacity-60' : ''
           }`}
@@ -120,17 +95,19 @@ export function CardPasto({ voce, corrente, consumato, tipoGiorno, onConsumato, 
                 </div>
                 {sostituito && (
                   <div className="text-sm font-semibold text-cho">
-                    {voce.delPiano
-                      ? `al posto di ${voce.delPiano.id}` +
-                        (pasto.cho !== voce.delPiano.cho
-                          ? ` · ${formatDifferenzaCho(pasto.cho - voce.delPiano.cho)}`
+                    {delPiano
+                      ? `al posto di ${delPiano.id}` +
+                        (pasto.cho !== delPiano.cho
+                          ? ` · ${formatDifferenzaCho(pasto.cho - delPiano.cho)}`
                           : '')
                       : 'scelta per oggi'}
                   </div>
                 )}
               </>
             ) : (
-              <div className="font-semibold">Da scegliere</div>
+              <div className="font-semibold">
+                Da scegliere <span className="text-cho">›</span>
+              </div>
             )}
           </div>
           <div className="shrink-0 text-right text-cho">
@@ -142,25 +119,20 @@ export function CardPasto({ voce, corrente, consumato, tipoGiorno, onConsumato, 
         </button>
       </div>
 
-      {aperto && (
+      {aperto && pasto && (
         <div className="space-y-3 border-t border-bordo px-4 pb-4 pt-3">
-          {pasto?.modifiche && (
-            <p className="rounded-lg border border-cho p-2 text-sm">
-              <span className="font-semibold">Rispetto a {pasto.base}:</span> {pasto.modifiche}
+          {delPiano && (
+            <p className="text-sm">
+              Nel piano: <span className="font-semibold">{delPiano.id}</span>{' '}
+              {delPiano.composizione ?? delPiano.nome} · {formatNumero(delPiano.cho)} g CHO
             </p>
           )}
-          {pasto?.quando && <p className="text-sm">Quando: {pasto.quando}</p>}
-          {pasto && pasto.alimenti.length > 0 && (
-            <div>
-              {pasto.modifiche && (
-                <div className="text-xs font-semibold uppercase opacity-70">
-                  Alimenti di {pasto.base}, da modificare come sopra
-                </div>
-              )}
-              <ElencoAlimenti alimenti={pasto.alimenti} />
-            </div>
+          {pasto.notaVersione && (
+            <p className="rounded-lg border border-cho p-2 text-sm">{pasto.notaVersione}</p>
           )}
-          {pasto?.varianti?.map((variante) => (
+          {pasto.quando && <p className="text-sm">Quando: {pasto.quando}</p>}
+          {pasto.alimenti.length > 0 && <ElencoAlimenti alimenti={pasto.alimenti} />}
+          {pasto.varianti?.map((variante) => (
             <div key={variante.nome}>
               <div className="text-xs font-semibold uppercase opacity-70">
                 Variante: {variante.nome}
@@ -168,21 +140,45 @@ export function CardPasto({ voce, corrente, consumato, tipoGiorno, onConsumato, 
               <ElencoAlimenti alimenti={variante.alimenti} />
             </div>
           ))}
-          {pasto?.note && <p className="text-sm opacity-70">{pasto.note}</p>}
+          {pasto.note && <p className="text-sm opacity-70">{pasto.note}</p>}
+
           {sceglibile && (
-            <div className="border-t border-bordo pt-3">
-              <SceltaPasto
-                categoria={categoria}
-                voce={voce}
-                tipoGiorno={tipoGiorno}
-                onScegli={(id) => {
-                  onScegli(id)
-                  if (id !== null) setAperto(false)
-                }}
-              />
+            <div className="flex gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setPannello(true)}
+                className="flex-1 rounded-xl border border-cho p-3 font-semibold text-cho"
+              >
+                Cambia {etichetta.toLowerCase()}
+              </button>
+              {sostituito && (
+                <button
+                  type="button"
+                  onClick={() => onScegli(null)}
+                  className="flex-1 rounded-xl border border-bordo p-3 font-medium"
+                >
+                  {voce.idPiano === null ? 'Annulla scelta' : `Torna a ${voce.idPiano}`}
+                </button>
+              )}
             </div>
           )}
         </div>
+      )}
+
+      {pannello && sceglibile && (
+        <PannelloScelta
+          categoria={categoria}
+          nomeCategoria={etichetta.toLowerCase()}
+          voce={voce}
+          tipoGiorno={tipoGiorno}
+          onChiudi={() => setPannello(false)}
+          onScegli={(id) => {
+            onScegli(id)
+            setPannello(false)
+            // Dopo la scelta si vedono subito alimenti e grammi del nuovo pasto.
+            setAperto(id !== null || voce.idPiano !== null)
+          }}
+        />
       )}
     </article>
   )

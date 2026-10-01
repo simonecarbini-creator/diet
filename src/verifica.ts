@@ -29,6 +29,29 @@ export function verificaDati(dati: Dati): string[] {
     }
   }
 
+  // Le modifiche delle versioni ridotte/maggiorate e delle colazioni devono
+  // riferirsi ad alimenti che esistono nel pasto base.
+  const controllaNomi = (dove: string, base: { nome: string }[], nomi: string[]) => {
+    for (const nome of nomi) {
+      if (!base.some((a) => a.nome === nome)) {
+        errori.push(`${dove}: "${nome}" non e' tra gli alimenti del pasto base`)
+      }
+    }
+  }
+  for (const pasto of [...dati.pranzi, ...dati.cene]) {
+    for (const versione of [pasto.ridotto, 'maggiorato' in pasto ? pasto.maggiorato : undefined]) {
+      if (!versione) continue
+      controllaNomi(versione.id, pasto.alimenti, [
+        ...versione.modificheGrammi.map((m) => m.nome),
+        ...((versione as { rimozioni?: string[] }).rimozioni ?? []),
+      ])
+    }
+  }
+  for (const colazione of dati.blocchi.colazioni) {
+    const base = dati.blocchi.colazioni.find((c) => c.id === colazione.base)
+    if (base?.alimenti) controllaNomi(colazione.id, base.alimenti, colazione.rimozioni ?? [])
+  }
+
   for (const settimana of dati.settimane) {
     for (const giorno of settimana.giorni) {
       const dove = `Settimana ${settimana.numero}, ${giorno.data}`
