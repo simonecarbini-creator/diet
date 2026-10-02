@@ -1,14 +1,17 @@
 // Schermata Oggi (SPEC.md §3.1): cosa mangio adesso. Serve anche per il dettaglio di un
 // giorno dalla Settimana, in sola lettura per i giorni passati.
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CardPasto } from '../componenti/CardPasto'
+import { CardPastoLibero } from '../componenti/CardPastoLibero'
+import { Conferma } from '../componenti/Conferma'
+import { etichettePasti } from '../etichette'
 import { formatData, formatNumero } from '../formato'
 import { cercaGiorno, giornoDopo, indicePastoCorrente, totaliPasti, vociDelGiorno } from '../giornata'
 import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
 import { settimane } from '../piano'
 import { conteggiCene, vincoliSeraPrima } from '../vincoli'
 import type { ContestoSettimana } from '../componenti/CardPasto'
-import { dati, isCategoriaConId, isTipoGiornata } from '../dati'
+import { dati, isCategoriaConId, isTipoGiornata, type CategoriaPasto } from '../dati'
 
 type Props = {
   data: string
@@ -20,10 +23,13 @@ type Props = {
 
 export function Oggi({ data, ora, solaLettura = false }: Props) {
   const trovato = cercaGiorno(data)
-  const { stato, scegli, segnaConsumato, annota } = useStatoGiorno(data)
+  const { stato, scegli, segnaConsumato, annota, impostaSgarro, confermaPasto, pastoLibero, ripristinaPasto } =
+    useStatoGiorno(data)
+  const [daTogliere, setDaTogliere] = useState<CategoriaPasto | null>(null)
+  const [chiudiLibera, setChiudiLibera] = useState(false)
   const giorniSettimana = trovato?.settimana.giorni ?? []
   const statiAltri = useStatiGiorni(giorniSettimana.map((g) => g.data).filter((d) => d !== data))
-  const voci = trovato ? vociDelGiorno(trovato.giorno, stato.scelte) : []
+  const voci = trovato ? vociDelGiorno(trovato.giorno, stato.scelte, stato.liberi) : []
   const corrente = ora !== null && voci.length > 0 ? indicePastoCorrente(voci, ora) : null
   const categoriaCorrente = corrente !== null ? voci[corrente].categoria : null
 
@@ -111,6 +117,11 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
           {somma.pastiMancanti.includes('merenda') && (
             <div className="mt-1 text-xs font-semibold">merenda da scegliere</div>
           )}
+          {somma.pastiLiberi.length > 0 && (
+            <div className="mt-1 text-xs font-semibold text-ko">
+              + {somma.pastiLiberi.length} {somma.pastiLiberi.length === 1 ? 'pasto libero' : 'pasti liberi'} (CHO ND)
+            </div>
+          )}
           {somma.senzaProteine.length > 0 && (
             <div className="mt-1 text-xs opacity-70">
               * senza {somma.senzaProteine.join(', ')}: proteine non presenti nel piano
@@ -118,6 +129,29 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
           )}
         </div>
       </section>
+
+      {solaLettura ? (
+        stato.sgarro && <p className="mt-3 text-sm font-semibold text-ko">Giornata libera</p>
+      ) : (
+        <label className={`mt-3 flex items-start gap-3 rounded-xl border bg-superficie p-3 ${stato.sgarro ? 'border-2 border-dashed border-cho' : 'border-bordo'}`}>
+          <input
+            type="checkbox"
+            checked={!!stato.sgarro}
+            onChange={(e) => {
+              if (e.target.checked) impostaSgarro(true)
+              else if (Object.keys(stato.liberi ?? {}).length > 0) setChiudiLibera(true)
+              else impostaSgarro(false)
+            }}
+            className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--cho)]"
+          />
+          <span>
+            <span className="block font-semibold">Giornata libera</span>
+            <span className="block text-xs opacity-70">
+              Decidi pasto per pasto: ✓ lo tieni come da piano, ✕ lo togli e scrivi cosa hai mangiato.
+            </span>
+          </span>
+        </label>
+      )}
 
       {(giorno.gelCho > 0 || giorno.spuntinoSerale) && (
         <section className="mt-3 space-y-1 rounded-xl border border-bordo bg-superficie p-3 text-sm">
@@ -146,7 +180,18 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
       {giorno.note && <p className="mt-3 text-sm opacity-80">{giorno.note}</p>}
 
       <section className="mt-5 space-y-3">
-        {voci.map((voce, i) => (
+        {voci.map((voce, i) =>
+          voce.libero !== undefined ? (
+            <CardPastoLibero
+              key={voce.categoria}
+              voce={voce}
+              etichetta={etichettePasti[voce.categoria]}
+              consumato={stato.consumati.includes(voce.categoria)}
+              onConsumato={(consumato) => segnaConsumato(voce.categoria, consumato)}
+              onSalva={(testo) => pastoLibero(voce.categoria, testo)}
+              onRipristina={ripristinaPasto}
+            />
+          ) : (
           <CardPasto
             key={voce.categoria}
             voce={voce}
@@ -161,9 +206,44 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
             onScegli={(id) => {
               if (isCategoriaConId(voce.categoria)) scegli(voce.categoria, id, voce.idPiano)
             }}
+            sgarro={
+              stato.sgarro && !solaLettura && !(stato.confermati ?? []).includes(voce.categoria)
+                ? { onConferma: () => confermaPasto(voce.categoria), onElimina: () => setDaTogliere(voce.categoria) }
+                : undefined
+            }
           />
-        ))}
+          ),
+        )}
       </section>
+
+      {daTogliere && (
+        <Conferma
+          titolo={`Togli ${etichettePasti[daTogliere].toLowerCase()}`}
+          etichettaConferma="Togli"
+          distruttiva
+          onAnnulla={() => setDaTogliere(null)}
+          onConferma={() => {
+            pastoLibero(daTogliere, '')
+            setDaTogliere(null)
+          }}
+        >
+          Al posto del pasto del piano scriverai cosa hai mangiato. I suoi CHO non saranno conteggiati (ND).
+        </Conferma>
+      )}
+      {chiudiLibera && (
+        <Conferma
+          titolo="Giornata normale"
+          etichettaConferma="Conferma"
+          distruttiva
+          onAnnulla={() => setChiudiLibera(false)}
+          onConferma={() => {
+            impostaSgarro(false)
+            setChiudiLibera(false)
+          }}
+        >
+          Togliendo la giornata libera tornano i pasti del piano e si cancellano i pasti liberi che hai scritto.
+        </Conferma>
+      )}
     </>
   )
 }

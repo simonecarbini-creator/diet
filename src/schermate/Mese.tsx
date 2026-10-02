@@ -49,8 +49,8 @@ function CellaGiorno({
     >
       <span className={`text-sm leading-none ${eOggi ? 'font-bold text-cho' : 'font-medium'}`}>{numero}</span>
       <span className="mb-1 flex flex-1 items-center">
-        {data < oggi && <BadgeEsito esito={esito} misura="mini" />}
-        {eOggi && (
+        {(data < oggi || (eOggi && stato?.sgarro)) && <BadgeEsito esito={esito} misura="mini" />}
+        {eOggi && !stato?.sgarro && (
           <span className="text-[10px] font-bold tabular-nums">
             {fatti}/{totali}
           </span>

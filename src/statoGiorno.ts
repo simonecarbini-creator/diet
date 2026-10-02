@@ -10,6 +10,12 @@ export type StatoGiorno = {
   consumati: CategoriaPasto[]
   /** Diario: cosa è stato mangiato davvero, se diverso dal piano (facoltativo). */
   note?: Partial<Record<CategoriaPasto, string>>
+  /** Giornata libera (di sgarro): si decide pasto per pasto se tenerlo o sostituirlo. */
+  sgarro?: boolean
+  /** Giornata libera: pasti del piano confermati così come sono. */
+  confermati?: CategoriaPasto[]
+  /** Giornata libera: pasti sostituiti da ciò che si è mangiato ('' = ancora da scrivere). */
+  liberi?: Partial<Record<CategoriaPasto, string>>
 }
 
 const statoVuoto: StatoGiorno = { scelte: {}, consumati: [] }
@@ -50,6 +56,23 @@ export function useStatoGiorno(data: string) {
       if (id === null || id === idPiano) delete scelte[categoria]
       else scelte[categoria] = id
       aggiorna({ ...stato, scelte })
+    },
+    /** Spegnendo la giornata libera si perdono conferme e pasti liberi. */
+    impostaSgarro(attivo: boolean) {
+      aggiorna(attivo ? { ...stato, sgarro: true } : { ...stato, sgarro: false, confermati: [], liberi: {} })
+    },
+    confermaPasto(categoria: CategoriaPasto) {
+      const confermati = [...(stato.confermati ?? []).filter((c) => c !== categoria), categoria]
+      aggiorna({ ...stato, confermati })
+    },
+    /** testo '' = pasto tolto, in attesa di scrivere cosa si è mangiato. */
+    pastoLibero(categoria: CategoriaPasto, testo: string) {
+      aggiorna({ ...stato, liberi: { ...stato.liberi, [categoria]: testo } })
+    },
+    ripristinaPasto(categoria: CategoriaPasto) {
+      const liberi = { ...stato.liberi }
+      delete liberi[categoria]
+      aggiorna({ ...stato, liberi, confermati: (stato.confermati ?? []).filter((c) => c !== categoria) })
     },
     annota(categoria: CategoriaPasto, testo: string) {
       const note = { ...stato.note }

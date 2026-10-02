@@ -7,20 +7,12 @@ import { csv, condividiFile } from '../esporta'
 import { formatData, formatDataBreve } from '../formato'
 import { aggiungiGiorni, cercaGiorno } from '../giornata'
 import { link } from '../navigazione'
+import { etichettePasti } from '../etichette'
 import type { Pesata } from '../peso'
 import type { StatoGiorno } from '../statoGiorno'
 
 const kg = new Intl.NumberFormat('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 
-const nomiPasti: Record<CategoriaPasto, string> = {
-  preCorsa: 'Pre-corsa',
-  colazione: 'Colazione',
-  spuntino: 'Spuntino',
-  pranzo: 'Pranzo',
-  merenda: 'Merenda',
-  cena: 'Cena',
-  spuntinoSerale: 'Spuntino serale',
-}
 
 /** Media delle pesate degli ultimi 7 giorni (data compresa). */
 function mediaMobile(pesate: Pesata[], data: string): number {
@@ -148,12 +140,16 @@ function vociDiario(stati: [string, unknown][]): VoceDiario[] {
         if (!isCategoriaConId(categoria as CategoriaPasto) || !id) continue
         const delPiano = giorno?.[categoria as 'pranzo']
         righe.push({
-          pasto: nomiPasti[categoria as CategoriaPasto],
+          pasto: etichettePasti[categoria as CategoriaPasto],
           testo: delPiano ? `${id} al posto di ${delPiano}` : `${id} scelta`,
         })
       }
+      for (const [categoria, testo] of Object.entries(stato.liberi ?? {})) {
+        if (testo) righe.push({ pasto: etichettePasti[categoria as CategoriaPasto], testo: `pasto libero: «${testo}»` })
+      }
+      if (stato.sgarro && righe.length === 0) righe.push({ pasto: 'Giornata', testo: 'libera' })
       for (const [categoria, testo] of Object.entries(stato.note ?? {})) {
-        if (testo) righe.push({ pasto: nomiPasti[categoria as CategoriaPasto], testo: `«${testo}»` })
+        if (testo) righe.push({ pasto: etichettePasti[categoria as CategoriaPasto], testo: `«${testo}»` })
       }
       return { data, righe }
     })

@@ -22,11 +22,14 @@ export type VocePasto = {
   delPiano?: PastoRisolto | null
   /** Id previsto dal piano (null se il piano lo lascia da scegliere). */
   idPiano: string | null
+  /** Giornata libera: cosa si è mangiato al posto del pasto ('' = ancora da scrivere). */
+  libero?: string
 }
 
 export function vociDelGiorno(
   giorno: Giorno,
   scelte: Partial<Record<CategoriaConId, string>> = {},
+  liberi: Partial<Record<CategoriaPasto, string>> = {},
 ): VocePasto[] {
   const orari = dati.orariPasti
   const voci: VocePasto[] = []
@@ -60,6 +63,10 @@ export function vociDelGiorno(
     })
   }
 
+  for (const voce of voci) {
+    const libero = liberi[voce.categoria]
+    if (libero !== undefined) voce.libero = libero
+  }
   return voci.sort((a, b) => a.orario.localeCompare(b.orario))
 }
 
@@ -72,12 +79,18 @@ export type TotaliPasti = {
   senzaProteine: string[]
   /** Pasti senza valori (da scegliere): la somma è parziale. */
   pastiMancanti: CategoriaPasto[]
+  /** Pasti liberi della giornata di sgarro: CHO non dichiarati, esclusi dalla somma. */
+  pastiLiberi: CategoriaPasto[]
 }
 
 /** Somma dei pasti assegnati. Il gel in corsa non è un pasto e non entra mai qui. */
 export function totaliPasti(voci: VocePasto[]): TotaliPasti {
-  const totali: TotaliPasti = { kcal: 0, cho: 0, proteine: 0, senzaProteine: [], pastiMancanti: [] }
-  for (const { categoria, pasto } of voci) {
+  const totali: TotaliPasti = { kcal: 0, cho: 0, proteine: 0, senzaProteine: [], pastiMancanti: [], pastiLiberi: [] }
+  for (const { categoria, pasto, libero } of voci) {
+    if (libero !== undefined) {
+      totali.pastiLiberi.push(categoria)
+      continue
+    }
     if (!pasto) {
       totali.pastiMancanti.push(categoria)
       continue
@@ -126,11 +139,14 @@ export type Esito = 'rispettato' | 'nonRispettato' | 'nonDichiarato'
  */
 export function esitoGiorno(
   giorno: Giorno,
-  stato: { scelte: Partial<Record<CategoriaConId, string>>; consumati: CategoriaPasto[] },
+  stato: { scelte: Partial<Record<CategoriaConId, string>>; consumati: CategoriaPasto[]; sgarro?: boolean },
 ): { esito: Esito; fatti: number; totali: number } {
   const voci = vociDelGiorno(giorno, stato.scelte)
   const fatti = voci.filter((v) => v.pasto && stato.consumati.includes(v.categoria)).length
-  const esito = fatti === 0 ? 'nonDichiarato' : fatti === voci.length ? 'rispettato' : 'nonRispettato'
+  // La giornata libera è sempre "non rispettato".
+  const esito = stato.sgarro
+    ? 'nonRispettato'
+    : fatti === 0 ? 'nonDichiarato' : fatti === voci.length ? 'rispettato' : 'nonRispettato'
   return { esito, fatti, totali: voci.length }
 }
 

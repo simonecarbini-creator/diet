@@ -18,13 +18,13 @@ void Promise.all([caricaPiano(), caricaObiettivi()]).finally(() => {
   chiudiAvvio()
 })
 
-/** La schermata di avvio (index.html) resta per un giro della GIF, poi sfuma. */
+/** La schermata di avvio (index.html) resta un giro e mezzo della GIF, poi sfuma. */
 function chiudiAvvio() {
-  const DURATA_GIRO_MS = 2400
+  const DURATA_AVVIO_MS = 3600
   const avvio = document.getElementById('avvio')
   if (!avvio) return
   setTimeout(() => {
     avvio.classList.add('via')
     setTimeout(() => avvio.remove(), 400)
-  }, Math.max(0, DURATA_GIRO_MS - performance.now()))
+  }, Math.max(0, DURATA_AVVIO_MS - performance.now()))
 }

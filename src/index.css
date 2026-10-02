@@ -12,6 +12,8 @@
   --contorno: #92cdb9;
   /* Rosa scuro del logo: più leggibile del rosa glassa sui numeri dei CHO. */
   --cho: #e0549a;
+  /* Sfondo pastello del pulsante del peso (icona bianca). */
+  --cho-pastello: #f4a3c8;
   --ok: #2e8b57;
   --ko: #dc2626;
 }
@@ -24,6 +26,7 @@
     --bordo: #24473f;
     --contorno: #3b6b60;
     --cho: #f77fb8;
+    --cho-pastello: #b8547f;
     --ok: #4fbf80;
     --ko: #f87171;
   }
@@ -57,4 +60,20 @@ body {
   background-color: var(--sfondo);
   color: var(--testo);
   -webkit-text-size-adjust: 100%;
+}
+
+/* Giornata libera: le card dei pasti vibrano come le app dell'iPhone in modifica. */
+@keyframes vibra {
+  0%, 100% { transform: rotate(-0.6deg); }
+  50% { transform: rotate(0.6deg); }
+}
+.vibra {
+  animation: vibra 0.28s ease-in-out infinite;
+}
+.vibra:nth-child(even) {
+  animation-duration: 0.31s;
+  animation-delay: -0.15s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .vibra { animation: none; }
 }

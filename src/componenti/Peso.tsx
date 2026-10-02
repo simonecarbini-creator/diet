@@ -20,11 +20,11 @@ export function PulsantePeso({ promemoria, onApri }: PropsPulsante) {
       type="button"
       onClick={onApri}
       aria-label={promemoria ? 'Peso: è il momento di pesarti' : 'Peso'}
-      className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border-2 border-cho bg-superficie text-cho shadow-lg"
+      className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border-2 border-white bg-[var(--cho-pastello)] text-white shadow-lg"
     >
-      <IconaBilancia className="h-7 w-7" />
+      <IconaBilancia className="h-7 w-7" spessore={2} />
       {promemoria && (
-        <span className="absolute right-0.5 top-0.5 h-3.5 w-3.5 rounded-full border-2 border-superficie bg-cho" />
+        <span className="absolute right-0.5 top-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-cho" />
       )}
     </button>
   )

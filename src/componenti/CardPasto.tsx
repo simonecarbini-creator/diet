@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { dati, isCategoriaConId, type CategoriaPasto, type Vincolo } from '../dati'
+import { dati, isCategoriaConId, type Vincolo } from '../dati'
 import type { VocePasto } from '../giornata'
 import { formatDifferenzaCho, formatNumero } from '../formato'
 import { ElencoAlimenti } from './Alimenti'
+import { etichettePasti } from '../etichette'
 import { DifferenzaKcal } from './DifferenzaKcal'
 import { PannelloScelta } from './PannelloScelta'
 import { ContatoreSettimana, PromemoriaSera } from './Vincoli'
@@ -18,15 +19,6 @@ export type ContestoSettimana = {
   tipoDomani?: string
 }
 
-const etichetteCategoria: Record<CategoriaPasto, string> = {
-  preCorsa: 'Pre-corsa',
-  colazione: 'Colazione',
-  spuntino: 'Spuntino',
-  pranzo: 'Pranzo',
-  merenda: 'Merenda',
-  cena: 'Cena',
-  spuntinoSerale: 'Spuntino serale',
-}
 
 type Props = {
   voce: VocePasto
@@ -40,6 +32,8 @@ type Props = {
   /** Diario: nota su cosa è stato mangiato davvero. */
   nota?: string
   onAnnota: (testo: string) => void
+  /** Giornata libera, pasto ancora da decidere: si conferma (✓) o si toglie (✕). */
+  sgarro?: { onConferma: () => void; onElimina: () => void }
 }
 
 export function CardPasto({
@@ -51,6 +45,7 @@ export function CardPasto({
   settimana,
   nota,
   onAnnota,
+  sgarro,
   onConsumato,
   onScegli,
 }: Props) {
@@ -58,7 +53,7 @@ export function CardPasto({
   const [pannello, setPannello] = useState(false)
   const [bozzaNota, setBozzaNota] = useState<string | null>(null)
   const { pasto, categoria, delPiano } = voce
-  const etichetta = etichetteCategoria[categoria]
+  const etichetta = etichettePasti[categoria]
   const sceglibile = !solaLettura && isCategoriaConId(categoria)
   // Codici del piano (STD, P1, C2, Mrid…) solo dove il calendario li assegna.
   const mostraCodice = isCategoriaConId(categoria) && categoria !== 'spuntino'
@@ -76,27 +71,53 @@ export function CardPasto({
   return (
     <article
       id={`pasto-${categoria}`}
-      className={`scroll-mt-20 rounded-xl border bg-superficie ${
-        corrente ? 'border-2 border-cho' : 'border-bordo'
+      className={`scroll-mt-20 rounded-xl bg-superficie ${
+        sgarro
+          ? 'vibra border-2 border-dashed border-cho'
+          : corrente
+            ? 'border-2 border-cho'
+            : 'border border-bordo'
       }`}
     >
       <div className="flex items-start">
-        <button
-          type="button"
-          onClick={() => onConsumato(!consumato)}
-          disabled={!pasto || solaLettura}
-          aria-pressed={consumato}
-          aria-label={consumato ? `${etichetta}: consumato` : `Segna ${etichetta} come consumato`}
-          className={`flex shrink-0 self-stretch py-4 pl-4 pr-1 ${pasto ? '' : 'opacity-30'}`}
-        >
-          <span
-            className={`flex h-7 w-7 items-center justify-center rounded-full border-2 text-sm font-bold ${
-              consumato ? 'border-cho bg-cho text-white' : 'border-bordo'
-            }`}
+        <div className="flex shrink-0 flex-col items-center gap-2 self-stretch py-4 pl-4 pr-1">
+          <button
+            type="button"
+            onClick={() => onConsumato(!consumato)}
+            disabled={!pasto || solaLettura}
+            aria-pressed={consumato}
+            aria-label={consumato ? `${etichetta}: consumato` : `Segna ${etichetta} come consumato`}
+            className={pasto ? '' : 'opacity-30'}
           >
-            {consumato && '✓'}
-          </span>
-        </button>
+            <span
+              className={`flex h-7 w-7 items-center justify-center rounded-full border-2 text-sm font-bold ${
+                consumato ? 'border-cho bg-cho text-white' : 'border-bordo'
+              }`}
+            >
+              {consumato && '✓'}
+            </span>
+          </button>
+          {sgarro && (
+            <>
+              <button
+                type="button"
+                onClick={sgarro.onConferma}
+                aria-label={`Conferma ${etichetta} come da piano`}
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-ok text-sm font-bold text-white shadow"
+              >
+                ✓
+              </button>
+              <button
+                type="button"
+                onClick={sgarro.onElimina}
+                aria-label={`Togli ${etichetta} e scrivi cosa hai mangiato`}
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-ko text-sm font-bold text-white shadow"
+              >
+                ✕
+              </button>
+            </>
+          )}
+        </div>
 
         <button
           type="button"

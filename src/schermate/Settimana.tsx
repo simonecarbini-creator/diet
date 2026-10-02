@@ -35,7 +35,8 @@ function Codice({ id, cambiato }: { id: string; cambiato?: boolean }) {
 function Riepilogo({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGiorno; oggi: string }) {
   if (giorno.data > oggi) return null
   const { esito, fatti, totali } = esitoGiorno(giorno, stato ?? { scelte: {}, consumati: [] })
-  if (giorno.data === oggi) {
+  // La giornata libera ha subito il pollice verso, anche se è oggi.
+  if (giorno.data === oggi && !stato?.sgarro) {
     return (
       <span className="rounded-full bg-bordo px-2 py-0.5 text-xs font-bold tabular-nums text-testo" title="pasti spuntati oggi">
         {fatti}/{totali}
