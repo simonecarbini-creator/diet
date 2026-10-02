@@ -20,7 +20,7 @@ type Props = {
 
 export function Oggi({ data, ora, solaLettura = false }: Props) {
   const trovato = cercaGiorno(data)
-  const { stato, scegli, segnaConsumato } = useStatoGiorno(data)
+  const { stato, scegli, segnaConsumato, annota } = useStatoGiorno(data)
   const giorniSettimana = trovato?.settimana.giorni ?? []
   const statiAltri = useStatiGiorni(giorniSettimana.map((g) => g.data).filter((d) => d !== data))
   const voci = trovato ? vociDelGiorno(trovato.giorno, stato.scelte) : []
@@ -155,6 +155,8 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
             tipoGiorno={giorno.tipo}
             solaLettura={solaLettura}
             settimana={voce.categoria === 'cena' ? contesto : undefined}
+            nota={stato.note?.[voce.categoria]}
+            onAnnota={(testo) => annota(voce.categoria, testo)}
             onConsumato={(consumato) => segnaConsumato(voce.categoria, consumato)}
             onScegli={(id) => {
               if (isCategoriaConId(voce.categoria)) scegli(voce.categoria, id, voce.idPiano)

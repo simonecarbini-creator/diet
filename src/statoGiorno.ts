@@ -8,6 +8,8 @@ export type StatoGiorno = {
   /** Pasti scelti al posto di quelli del piano (o la merenda, se il piano non la indica). */
   scelte: Partial<Record<CategoriaConId, string>>
   consumati: CategoriaPasto[]
+  /** Diario: cosa è stato mangiato davvero, se diverso dal piano (facoltativo). */
+  note?: Partial<Record<CategoriaPasto, string>>
 }
 
 const statoVuoto: StatoGiorno = { scelte: {}, consumati: [] }
@@ -48,6 +50,12 @@ export function useStatoGiorno(data: string) {
       if (id === null || id === idPiano) delete scelte[categoria]
       else scelte[categoria] = id
       aggiorna({ ...stato, scelte })
+    },
+    annota(categoria: CategoriaPasto, testo: string) {
+      const note = { ...stato.note }
+      if (testo.trim()) note[categoria] = testo.trim()
+      else delete note[categoria]
+      aggiorna({ ...stato, note })
     },
     segnaConsumato(categoria: CategoriaPasto, consumato: boolean) {
       const consumati = stato.consumati.filter((c) => c !== categoria)

@@ -37,6 +37,9 @@ type Props = {
   settimana?: ContestoSettimana
   onConsumato: (consumato: boolean) => void
   onScegli: (id: string | null) => void
+  /** Diario: nota su cosa è stato mangiato davvero. */
+  nota?: string
+  onAnnota: (testo: string) => void
 }
 
 export function CardPasto({
@@ -46,11 +49,14 @@ export function CardPasto({
   tipoGiorno,
   solaLettura,
   settimana,
+  nota,
+  onAnnota,
   onConsumato,
   onScegli,
 }: Props) {
   const [aperto, setAperto] = useState(false)
   const [pannello, setPannello] = useState(false)
+  const [bozzaNota, setBozzaNota] = useState<string | null>(null)
   const { pasto, categoria, delPiano } = voce
   const etichetta = etichetteCategoria[categoria]
   const sceglibile = !solaLettura && isCategoriaConId(categoria)
@@ -107,6 +113,7 @@ export function CardPasto({
               {etichetta}
               {corrente && <span className="text-cho"> · adesso</span>}
               {consumato && ' · consumato'}
+              {nota && <span className="text-cho"> · nota</span>}
             </div>
             {pasto ? (
               <>
@@ -183,6 +190,31 @@ export function CardPasto({
             </div>
           ))}
           {pasto.note && <p className="text-sm opacity-70">{pasto.note}</p>}
+
+          <div className="border-t border-bordo pt-3">
+            <label className="block">
+              <span className="text-xs font-semibold uppercase opacity-70">Diario: cosa ho mangiato davvero</span>
+              <textarea
+                rows={2}
+                value={bozzaNota ?? nota ?? ''}
+                onChange={(e) => setBozzaNota(e.target.value)}
+                placeholder="Facoltativo, solo se diverso dal piano"
+                className="mt-1 w-full resize-none rounded-lg border border-bordo bg-sfondo px-2.5 py-2 text-sm outline-none focus:border-cho"
+              />
+            </label>
+            {bozzaNota !== null && bozzaNota.trim() !== (nota ?? '') && (
+              <button
+                type="button"
+                onClick={() => {
+                  onAnnota(bozzaNota)
+                  setBozzaNota(null)
+                }}
+                className="mt-1 rounded-lg bg-cho px-3 py-1.5 text-sm font-semibold text-white"
+              >
+                Salva nota
+              </button>
+            )}
+          </div>
 
           {sceglibile && (
             <div className="flex gap-2 pt-1">
