@@ -355,21 +355,6 @@
             { "nome": "Olio EVO", "grammi": 20 }
           ],
           "note": "I fiocchi di latte hanno ottime proteine ma zero carboidrati: ogni volta che sostituiscono i legumi, alzare la pasta di 40 g e togliere il pane."
-        },
-        {
-          "id": "P1-basmati",
-          "nome": "Riso basmati, ceci al curry e fiocchi di latte",
-          "kcal": 1090,
-          "cho": 150,
-          "proteine": 43,
-          "alimenti": [
-            { "nome": "Riso basmati", "grammi": 140 },
-            { "nome": "Ceci (zuppa pronta)", "grammi": 500 },
-            { "nome": "Curry", "grammi": null, "note": "q.b." },
-            { "nome": "Fiocchi di latte", "grammi": null, "note": "quantita' da definire" },
-            { "nome": "Verdure", "grammi": 200 }
-          ],
-          "note": "Aggiunto il 2026-10-02 su indicazione dell'utente."
         }
       ],
       "ridotto": {
