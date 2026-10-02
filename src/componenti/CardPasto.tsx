@@ -6,7 +6,7 @@ import { ElencoAlimenti } from './Alimenti'
 import { DifferenzaKcal } from './DifferenzaKcal'
 import { PannelloScelta } from './PannelloScelta'
 import { ContatoreSettimana, PromemoriaSera } from './Vincoli'
-import { idBase, type ConteggioPasto } from '../vincoli'
+import { frazioneLimite, idBase, type ConteggioPasto } from '../vincoli'
 
 /** Contesto della settimana, solo per la cena: contatori e promemoria della sera. */
 export type ContestoSettimana = {
@@ -62,13 +62,15 @@ export function CardPasto({
     (pasto?.nome === etichetta ? pasto.alimenti.map((a) => a.nome).join(' · ') : pasto?.nome)
   const sostituito = delPiano !== undefined
   const base = pasto && categoria === 'cena' ? idBase('cena', pasto.id) : null
-  const conteggio = base ? settimana?.conteggi[base] : undefined
+  // Solo le cene con un limite settimanale (C2 minimo, C4 massimo) hanno il contatore.
+  const conteggioCena = base ? settimana?.conteggi[base] : undefined
+  const conteggio = conteggioCena && frazioneLimite(conteggioCena) ? conteggioCena : undefined
   const nomeBase = dati.cene.find((c) => c.id === base)?.nome ?? ''
 
   return (
     <article
       id={`pasto-${categoria}`}
-      className={`scroll-mt-4 rounded-xl border bg-superficie ${
+      className={`scroll-mt-20 rounded-xl border bg-superficie ${
         corrente ? 'border-2 border-cho' : 'border-bordo'
       }`}
     >

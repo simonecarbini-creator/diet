@@ -7,6 +7,8 @@ import { Oggi } from './schermate/Oggi'
 import { Settimana } from './schermate/Settimana'
 import { verificaDati } from './verifica'
 import { compilaDatiDiProva } from './prova'
+import { Intestazione } from './componenti/Intestazione'
+import { PiePagina } from './componenti/PiePagina'
 
 function App() {
   const errori = verificaDati(dati)
@@ -38,7 +40,8 @@ function App() {
 
   return (
     <>
-      <div className="mx-auto max-w-xl px-4 pb-28 pt-[max(1rem,env(safe-area-inset-top))]">
+      <Intestazione oggi={oggi} />
+      <div className="mx-auto max-w-xl px-4 pb-28 pt-4">
         {errori.length > 0 && (
           <ul className="mb-4 rounded-xl border-2 border-red-600 p-3 text-sm text-red-600">
             {errori.map((errore) => (
@@ -64,7 +67,7 @@ function App() {
           </>
         )}
 
-        <footer className="mt-8 border-t border-bordo pt-3 text-xs opacity-70">{dati.disclaimer}</footer>
+        <PiePagina />
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-bordo bg-superficie pb-[env(safe-area-inset-bottom)]">
