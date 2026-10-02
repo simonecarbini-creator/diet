@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 
 export type Rotta =
   | { schermata: 'oggi' }
-  | { schermata: 'prova' }
   | { schermata: 'nuova' }
   | { schermata: 'calcoli' }
   | { schermata: 'piano' }
@@ -17,7 +16,6 @@ export type Rotta =
 function leggiRotta(hash: string): Rotta {
   const parti = hash.replace(/^#\/?/, '').split('/')
   if (parti[0] === 'oggi') return { schermata: 'oggi' }
-  if (parti[0] === 'prova') return { schermata: 'prova' }
   if (parti[0] === 'nuova') return { schermata: 'nuova' }
   if (parti[0] === 'calcoli') return { schermata: 'calcoli' }
   if (parti[0] === 'piano') return { schermata: 'piano' }

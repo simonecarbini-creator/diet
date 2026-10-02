@@ -138,7 +138,8 @@ Due cose da segnare, due tab:
 
 **Diario pasti** — cosa è stato mangiato davvero, se diverso dal piano. Deve restare facoltativo e velocissimo, altrimenti non viene compilato.
 
-**Export**: *da decidere al punto 8* — un CSV/PDF con il peso dell'ultimo mese, oppure niente.
+**Export** *(fatto 2026-10-02)*: CSV del peso (con media a 7 giorni) e CSV del diario, dal Registro;
+sull'iPhone si condividono con il foglio di condivisione.
 
 ### 3.5 Riferimento
 
@@ -250,6 +251,9 @@ Testo grande sui numeri che contano (CHO, kcal), tocco comodo sulle card, niente
 5. **Motore delle regole** + schermata Nuova settimana
 6. **Registro** (peso → diario)
 7. PWA, offline, tema scuro
-8. Export (da decidere: solo peso, oppure niente)
+8. Export (CSV di peso e diario)
+
+*Stato 2026-10-02: punti 1-8 fatti. In più: vista Mese, peso con promemoria, Cambia piano, menu, Calcoli,
+backup e ripristino JSON, service worker per l'offline (vite-plugin-pwa).*
 
 I punti 1-3 danno già qualcosa di più comodo del PDF. Da lì in poi è tutto guadagno.

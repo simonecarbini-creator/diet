@@ -9,9 +9,9 @@ import { NuovaSettimana } from './schermate/NuovaSettimana'
 import { Calcoli } from './schermate/Calcoli'
 import { CambiaPiano } from './schermate/CambiaPiano'
 import { Registro } from './schermate/Registro'
+import { Backup } from './schermate/Backup'
 import { Menu } from './componenti/Menu'
 import { verificaDati } from './verifica'
-import { compilaDatiDiProva } from './prova'
 import { Intestazione } from './componenti/Intestazione'
 import { PiePagina } from './componenti/PiePagina'
 import { FinestraPeso, PulsantePeso } from './componenti/Peso'
@@ -35,13 +35,6 @@ function App() {
   const [finestraPeso, setFinestraPeso] = useState(false)
   const [menuAperto, setMenuAperto] = useState(false)
   const promemoria = promemoriaPesata(oggi, oraLocale(adesso), pesate)
-
-  // TEMPORANEO: vedi prova.ts.
-  useEffect(() => {
-    if (rotta.schermata === 'prova') {
-      void compilaDatiDiProva(oggi).then(() => window.location.replace(link.settimana()))
-    }
-  }, [rotta.schermata, oggi])
 
   // Nel dettaglio di un giorno resta attiva la scheda da cui si è arrivati.
   const schedaAttiva = rotta.schermata === 'giorno' ? provenienza.schermata : rotta.schermata
@@ -83,6 +76,7 @@ function App() {
         {rotta.schermata === 'nuova' && <NuovaSettimana />}
         {rotta.schermata === 'calcoli' && <Calcoli />}
         {rotta.schermata === 'piano' && <CambiaPiano oggi={oggi} />}
+        {rotta.schermata === 'backup' && <Backup oggi={oggi} />}
         {rotta.schermata === 'registro' && <Registro pesate={pesate} onApriPeso={() => setFinestraPeso(true)} />}
         {rotta.schermata === 'settimana' && <Settimana numero={rotta.numero} oggi={oggi} />}
         {rotta.schermata === 'giorno' && (

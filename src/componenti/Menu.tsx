@@ -14,6 +14,7 @@ const voci = [
   { href: link.nuova, titolo: 'Nuova settimana', descrizione: 'Inserisci la scheda e prepara il piano' },
   { href: link.calcoli, titolo: 'Calcoli', descrizione: "Come l'app sceglie pasti, gel e giornate" },
   { href: link.piano, titolo: 'Cambia piano', descrizione: 'Obiettivo attivo, nuova gara o mantenimento' },
+  { href: link.backup, titolo: 'Backup e installazione', descrizione: 'Salva i dati, installa sulla Home, offline' },
 ]
 
 /** Le tre linee che diventano una X. */

@@ -14,6 +14,7 @@ npm run dev        # anteprima locale su http://localhost:5173
 npm run build      # rigenera i tipi, verifica dati.json, compila in dist/
 ```
 
+`npm run prova-motore` confronta il motore delle regole con la settimana 4.
 `npm run tipi` rigenera `src/tipi/dati.generati.ts` da `dati.json`;
 `npm run verifica` controlla che il calendario si riferisca a pasti e tipi esistenti.
 Entrambi girano in automatico dentro `npm run build`.
