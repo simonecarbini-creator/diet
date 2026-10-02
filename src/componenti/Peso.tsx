@@ -100,8 +100,8 @@ export function FinestraPeso({ pesate, oggi, promemoria, onAggiungi, onElimina, 
           salva()
         }}
       >
-        <div className="flex gap-2">
-          <label className="flex-1">
+        <div className="grid grid-cols-2 gap-2">
+          <label className="min-w-0">
             <span className="text-xs font-semibold uppercase opacity-70">Peso</span>
             <div className="mt-1 flex items-center rounded-xl border border-bordo bg-sfondo px-3 focus-within:border-cho">
               <input
@@ -116,14 +116,14 @@ export function FinestraPeso({ pesate, oggi, promemoria, onAggiungi, onElimina, 
               <span className="font-medium opacity-70">kg</span>
             </div>
           </label>
-          <label className="w-40">
+          <label className="min-w-0">
             <span className="text-xs font-semibold uppercase opacity-70">Data</span>
             <input
               type="date"
               value={data}
               max={oggi}
               onChange={(e) => setData(e.target.value || oggi)}
-              className="mt-1 w-full rounded-xl border border-bordo bg-sfondo px-3 py-[0.95rem] outline-none focus:border-cho"
+              className="mt-1 block h-[3.6rem] w-full min-w-0 max-w-full appearance-none rounded-xl border border-bordo bg-sfondo px-3 text-left outline-none focus:border-cho"
             />
           </label>
         </div>

@@ -7,6 +7,7 @@ import { Oggi } from './schermate/Oggi'
 import { Settimana } from './schermate/Settimana'
 import { NuovaSettimana } from './schermate/NuovaSettimana'
 import { Calcoli } from './schermate/Calcoli'
+import { CambiaPiano } from './schermate/CambiaPiano'
 import { Menu } from './componenti/Menu'
 import { verificaDati } from './verifica'
 import { compilaDatiDiProva } from './prova'
@@ -80,6 +81,7 @@ function App() {
         {rotta.schermata === 'mese' && <Mese mese={rotta.mese} oggi={oggi} />}
         {rotta.schermata === 'nuova' && <NuovaSettimana />}
         {rotta.schermata === 'calcoli' && <Calcoli />}
+        {rotta.schermata === 'piano' && <CambiaPiano oggi={oggi} />}
         {rotta.schermata === 'settimana' && <Settimana numero={rotta.numero} oggi={oggi} />}
         {rotta.schermata === 'giorno' && (
           <>
