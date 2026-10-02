@@ -6,6 +6,8 @@ import { Conferma } from '../componenti/Conferma'
 import { dati, idAlternative, trovaPasto, type CategoriaConId, type PastoRisolto } from '../dati'
 import { condividiFile } from '../esporta'
 import { formatNumero } from '../formato'
+import { Evidenzia } from '../componenti/Evidenzia'
+import { contiene } from '../ricerca'
 import { aggiungiPastoUtente, eliminaPastoUtente, usePastiUtente, type PastoUtente } from '../pastiUtente'
 
 const categorie: { id: CategoriaConId; titolo: string }[] = [
@@ -23,17 +25,49 @@ function pastiBase(categoria: CategoriaConId): { id: string; nome: string }[] {
   return []
 }
 
-function RigaPasto({ pasto, onElimina }: { pasto: PastoRisolto; onElimina?: () => void }) {
+function RigaPasto({
+  pasto,
+  onElimina,
+  cerca,
+  categoria,
+}: {
+  pasto: PastoRisolto
+  onElimina?: () => void
+  /** Testo cercato: si evidenzia in codice, nome e alimenti. */
+  cerca?: string
+  /** Nei risultati della ricerca, la categoria del pasto. */
+  categoria?: string
+}) {
+  // Alimenti (e loro alternative "oppure") che contengono il testo cercato.
+  const alimentiTrovati = cerca
+    ? pasto.alimenti.flatMap((a) => [a.nome, ...(a.sostituibileCon ?? [])]).filter((nome) => contiene(nome, cerca))
+    : []
   const [aperto, setAperto] = useState(false)
   return (
     <li className="rounded-xl border border-bordo bg-superficie">
       <button type="button" onClick={() => setAperto(!aperto)} aria-expanded={aperto} className="flex w-full items-start gap-3 p-3 text-left">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="rounded bg-bordo px-1.5 py-0.5 text-xs font-semibold">{pasto.id}</span>
+            <span className="rounded bg-bordo px-1.5 py-0.5 text-xs font-semibold">
+              <Evidenzia testo={pasto.id} cerca={cerca} />
+            </span>
+            {categoria && <span className="text-xs font-semibold uppercase opacity-60">{categoria}</span>}
             {pasto.utente && <span className="text-xs font-semibold uppercase text-cho">tua</span>}
           </div>
-          <div className="mt-1 font-semibold leading-snug">{pasto.composizione ?? pasto.nome}</div>
+          <div className="mt-1 font-semibold leading-snug">
+            <Evidenzia testo={pasto.composizione ?? pasto.nome} cerca={cerca} />
+          </div>
+          {alimentiTrovati.length > 0 && (
+            <div className="text-sm">
+              contiene:{' '}
+              {alimentiTrovati.map((nome, i) => (
+                <span key={nome}>
+                  {i > 0 && ', '}
+                  <Evidenzia testo={nome} cerca={cerca} />
+                </span>
+              ))}
+            </div>
+          )}
           <div className="text-sm opacity-70">
             {formatNumero(pasto.kcal)} kcal
             {pasto.proteine !== null && ` · ${formatNumero(pasto.proteine)} g proteine`}
@@ -190,6 +224,23 @@ export function Pasti() {
   const [categoria, setCategoria] = useState<CategoriaConId>('pranzo')
   const [nuova, setNuova] = useState(false)
   const [daEliminare, setDaEliminare] = useState<PastoUtente | null>(null)
+  const [cerca, setCerca] = useState('')
+  const inRicerca = cerca.trim().length >= 3
+  // Da 3 lettere: cerca in tutte le categorie, per codice, nome e alimenti.
+  const risultati = inRicerca
+    ? categorie.flatMap((c) =>
+        idAlternative(c.id)
+          .map((id) => trovaPasto(c.id, id))
+          .filter((p): p is PastoRisolto => p !== null)
+          .filter(
+            (p) =>
+              contiene(p.id, cerca) ||
+              contiene(p.composizione ?? p.nome, cerca) ||
+              p.alimenti.some((a) => [a.nome, ...(a.sostituibileCon ?? [])].some((nome) => contiene(nome, cerca))),
+          )
+          .map((p) => ({ pasto: p, categoria: c.titolo })),
+      )
+    : []
 
   const pasti = idAlternative(categoria)
     .map((id) => trovaPasto(categoria, id))
@@ -209,6 +260,43 @@ export function Pasti() {
         si aggiorna, finiscono nel backup e compaiono tra le scelte di ogni giorno.
       </p>
 
+      <label className="relative mt-3 block">
+        <span className="sr-only">Cerca un pasto o un alimento</span>
+        <input
+          type="search"
+          value={cerca}
+          onChange={(e) => setCerca(e.target.value)}
+          placeholder="Cerca un pasto o un alimento…"
+          className="block w-full rounded-xl border border-bordo bg-superficie py-3 pl-10 pr-3 outline-none focus:border-cho"
+        />
+        <svg viewBox="0 0 24 24" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 opacity-50" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+      </label>
+      {cerca.trim().length > 0 && !inRicerca && (
+        <p className="mt-1 text-xs opacity-70">Scrivi almeno 3 lettere.</p>
+      )}
+
+      {inRicerca ? (
+        <section className="mt-4">
+          <h2 className="mb-2 text-sm font-semibold opacity-70">
+            {risultati.length === 0 ? 'Nessun pasto trovato.' : `${risultati.length} ${risultati.length === 1 ? 'risultato' : 'risultati'}`}
+          </h2>
+          <ul className="space-y-2">
+            {risultati.map(({ pasto, categoria: titolo }) => (
+              <RigaPasto
+                key={`${titolo}-${pasto.id}`}
+                pasto={pasto}
+                cerca={cerca}
+                categoria={titolo}
+                onElimina={pasto.utente ? () => setDaEliminare(tue.find((t) => t.id === pasto.id) ?? null) : undefined}
+              />
+            ))}
+          </ul>
+        </section>
+      ) : (
+      <>
       <div className="mt-3 flex flex-wrap gap-2">
         {categorie.map((c) => (
           <button
@@ -254,6 +342,8 @@ export function Pasti() {
           </section>
         ))}
       </div>
+      </>
+      )}
 
       {tue.length > 0 && (
         <button
