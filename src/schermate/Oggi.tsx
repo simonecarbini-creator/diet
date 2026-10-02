@@ -5,6 +5,7 @@ import { CardPasto } from '../componenti/CardPasto'
 import { formatData, formatNumero } from '../formato'
 import { cercaGiorno, giornoDopo, indicePastoCorrente, totaliPasti, vociDelGiorno } from '../giornata'
 import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
+import { settimane } from '../piano'
 import { conteggiCene, vincoliSeraPrima } from '../vincoli'
 import type { ContestoSettimana } from '../componenti/CardPasto'
 import { dati, isCategoriaConId, isTipoGiornata } from '../dati'
@@ -36,7 +37,7 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
   }, [categoriaCorrente])
 
   if (!trovato) {
-    const tutti = dati.settimane.flatMap((s) => s.giorni.map((g) => g.data)).sort()
+    const tutti = settimane().flatMap((s) => s.giorni.map((g) => g.data)).sort()
     return (
       <section className="rounded-xl border border-bordo bg-superficie p-4">
         <h1 className="text-xl font-bold first-letter:uppercase">{formatData(data)}</h1>

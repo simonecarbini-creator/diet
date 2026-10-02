@@ -1,13 +1,13 @@
 // TEMPORANEO: #/prova riempie i giorni passati della settimana corrente con dati di
 // esempio, per vedere i riepiloghi 👍 / 👎 / ND. Da togliere quando l'app è in uso.
 import { scrivi } from './archivio'
-import { dati } from './dati'
+import { settimane } from './piano'
 import { vociDelGiorno } from './giornata'
 import type { StatoGiorno } from './statoGiorno'
 
 export async function compilaDatiDiProva(oggi: string): Promise<void> {
   const settimana =
-    dati.settimane.find((s) => s.dal <= oggi && oggi <= s.al) ?? dati.settimane[0]
+    settimane().find((s) => s.dal <= oggi && oggi <= s.al) ?? settimane()[0]
   const [tutti, alcuni, nessuno] = settimana.giorni.filter((g) => g.data < oggi)
 
   if (tutti) {

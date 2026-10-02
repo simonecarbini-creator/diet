@@ -1,6 +1,7 @@
 import { dati } from '../dati'
 import { link } from '../navigazione'
 import { Logo } from './Logo'
+import { PulsanteMenu } from './Menu'
 
 function giorniMancanti(da: string, a: string): number {
   const [a1, m1, g1] = da.split('-').map(Number)
@@ -9,12 +10,20 @@ function giorniMancanti(da: string, a: string): number {
 }
 
 /** Barra fissa in alto: logo, nome dell'app e giorni alla gara. */
-export function Intestazione({ oggi }: { oggi: string }) {
+type Props = {
+  oggi: string
+  menuAperto: boolean
+  onApriMenu: () => void
+  onChiudiMenu: () => void
+}
+
+export function Intestazione({ oggi, menuAperto, onApriMenu, onChiudiMenu }: Props) {
   const { gara } = dati.atleta
   const mancano = giorniMancanti(oggi, gara.data)
 
   return (
-    <header className="sticky top-0 z-30 border-b border-bordo bg-superficie/95 pt-[env(safe-area-inset-top)] backdrop-blur">
+    // Con il menu aperto l'header resta sopra il velo, così la X per chiudere è visibile.
+    <header className={`sticky top-0 ${menuAperto ? 'z-[60]' : 'z-30'} border-b border-bordo bg-superficie/95 pt-[env(safe-area-inset-top)] backdrop-blur`}>
       <div className="mx-auto flex max-w-xl items-center gap-3 px-4 py-2.5">
         <a href={link.settimana()} aria-label="DIET, vai alla settimana">
           <Logo />
@@ -27,6 +36,7 @@ export function Intestazione({ oggi }: { oggi: string }) {
             </div>
           </div>
         )}
+        <PulsanteMenu aperto={menuAperto} onApri={onApriMenu} onChiudi={onChiudiMenu} />
       </div>
     </header>
   )

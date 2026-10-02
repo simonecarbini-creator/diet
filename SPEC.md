@@ -112,6 +112,19 @@ Pranzi e cene vengono assegnati automaticamente rispettando i vincoli settimanal
 
 Un campo per incollare un JSON di settimana già pronto è utile come scorciatoia, ma non è la via principale.
 
+*Decisioni 2026-10-02 (approvate dall'utente), scritte in `dati.json` → `regole` con il campo `quando`
+leggibile dall'app e spiegate nella pagina **Calcoli** (menu):*
+- *si inseriscono anche i minuti sopra il ritmo medio (facoltativi) e il lungo domenicale (automatico la
+  domenica da 18 km);*
+- *la "x" da sola non è qualità (6x100 di allunghi resta VERDE); progressiva lunga da 18 km;*
+- *ROSSO pesante = ROSSO con lungo ≥ 20 km o ≥ 50 minuti sopra il ritmo medio;*
+- *spuntino intero da 15 km come da regola; gel = g/ora × durata arrotondato al gel da 30 g;*
+- *pranzo P1, cene C2 ×3 e C4 ×2 non consecutive, il resto a rotazione C1/C3; giorni GRIGIO ridotti,
+  sabato di ricarica con pranzo pieno;*
+- *totale del piano = somma dei pasti + media delle merende se la merenda non è scelta;*
+- *le settimane create nell'app si salvano sul telefono e prevalgono su `dati.json` per le stesse date.*
+- *Menu ad hamburger con animazione di apertura (richiesta esplicita, disattivata con "Riduci movimento").*
+
 ### 3.4 Registro
 
 *Decisione 2026-10-01: niente glicemie. L'app si ferma ai carboidrati; il Registro ha

@@ -186,6 +186,12 @@ export type MerendaRidotta = {
     proteine:     number;
     composizione: string;
     usoSe:        string;
+    quando:       MerendaRidottaQuando;
+}
+
+export type MerendaRidottaQuando = {
+    var:  string;
+    "==": string;
 }
 
 export type Merende = {
@@ -265,16 +271,46 @@ export type PromemoriaGlicemico = {
 }
 
 export type Regole = {
-    _nota:                   string;
-    classificazioneGiornata: ClassificazioneGiornata[];
-    classificazioneNota:     string;
-    sceltaColazione:         SceltaColazione[];
-    sceltaSpuntino:          SceltaSpuntino[];
-    spuntinoSerale:          SpuntinoSeraleElement[];
-    gelInCorsa:              GelInCorsa[];
-    sabatoRicarica:          SabatoRicarica;
-    regolaSabato:            string;
-    vincoliSettimanali:      VincoliSettimanali[];
+    _nota:                     string;
+    riconoscimentoTesto:       RiconoscimentoTesto;
+    lungoDomenicaleAutomatico: LungoDomenicaleAutomatico;
+    rossoPesante:              RossoPesante;
+    classificazioneGiornata:   ClassificazioneGiornata[];
+    classificazioneNota:       string;
+    sceltaColazione:           SceltaColazione[];
+    sceltaSpuntino:            SceltaSpuntino[];
+    spuntinoSerale:            SpuntinoSeraleElement[];
+    gelInCorsa:                GelInCorsa[];
+    gelGrammiPerUnita:         number;
+    gelNota:                   string;
+    sabatoRicarica:            SabatoRicarica;
+    regolaSabato:              string;
+    assegnazionePasti:         AssegnazionePasti;
+    vincoliSettimanali:        VincoliSettimanali[];
+}
+
+export type AssegnazionePasti = {
+    _nota:                string;
+    pranzo:               string;
+    maggioratoNeiGiorni:  string[];
+    ceneDistribuite:      CeneDistribuite[];
+    ceneARotazione:       string[];
+    giornoGrigio:         GiornoGrigio;
+    ricarica:             GiornoGrigio;
+    cenaRidottaDiRiserva: string;
+    totalePianoNota:      string;
+}
+
+export type CeneDistribuite = {
+    cena:           string;
+    volte:          number;
+    preferenzaTipi: string[];
+    nonConsecutive: boolean;
+}
+
+export type GiornoGrigio = {
+    pranzo: string;
+    cena:   string;
 }
 
 export type ClassificazioneGiornata = {
@@ -282,29 +318,121 @@ export type ClassificazioneGiornata = {
     se:       string;
     tipo:     string;
     priorita: number;
+    quando:   ClassificazioneGiornataQuando;
+}
+
+export type ClassificazioneGiornataQuando = {
+    var?:    string;
+    "=="?:   boolean;
+    ">="?:   number;
+    oppure?: PurpleOppure[];
+    sempre?: boolean;
+}
+
+export type PurpleOppure = {
+    var:   string;
+    "=="?: boolean;
+    ">="?: number;
 }
 
 export type GelInCorsa = {
-    grammiCho?:       number;
-    se:               string;
-    grammiChoPerOra?: number;
-    nota?:            string;
+    grammiChoPerOra: number;
+    se:              string;
+    nota?:           string;
+    quando:          GelInCorsaQuando;
+}
+
+export type GelInCorsaQuando = {
+    var?:    string;
+    "=="?:   boolean;
+    ">"?:    number;
+    ">="?:   number;
+    sempre?: boolean;
+}
+
+export type LungoDomenicaleAutomatico = {
+    _nota:           string;
+    giornoSettimana: number;
+    distanzaKmMin:   number;
+}
+
+export type RiconoscimentoTesto = {
+    _nota:                 string;
+    paroleRiposo:          string[];
+    paroleQualita:         string[];
+    paroleProgressiva:     string[];
+    progressivaLungaKmMin: number;
+    nota:                  string;
+}
+
+export type RossoPesante = {
+    se:     string;
+    quando: RossoPesanteQuando;
+}
+
+export type RossoPesanteQuando = {
+    e: PurpleE[];
+}
+
+export type PurpleE = {
+    var?:    string;
+    "=="?:   string;
+    oppure?: EOppure[];
+}
+
+export type EOppure = {
+    var:  string;
+    ">=": number;
 }
 
 export type SabatoRicarica = {
     condizione: string;
     effetto:    string;
     motivo:     string;
+    quando:     SabatoRicaricaQuando;
+}
+
+export type SabatoRicaricaQuando = {
+    e: FluffyE[];
+}
+
+export type FluffyE = {
+    var:  string;
+    "==": boolean | string;
 }
 
 export type SceltaColazione = {
     colazione: string;
     se:        string;
+    quando:    SceltaColazioneQuando;
+}
+
+export type SceltaColazioneQuando = {
+    oppure?: PurpleOppure[];
+    e?:      TentacledE[];
+    sempre?: boolean;
+}
+
+export type TentacledE = {
+    var:  string;
+    "==": boolean | string;
 }
 
 export type SceltaSpuntino = {
     spuntino: string;
     se:       string;
+    quando:   SceltaSpuntinoQuando;
+}
+
+export type SceltaSpuntinoQuando = {
+    oppure?: FluffyOppure[];
+    sempre?: boolean;
+}
+
+export type FluffyOppure = {
+    var:   string;
+    "=="?: string;
+    ">="?: number;
 }
 
 export type SpuntinoSeraleElement = {
@@ -312,6 +440,14 @@ export type SpuntinoSeraleElement = {
     se:            string;
     obbligatorio?: boolean;
     motivo?:       string;
+    quando:        SpuntinoSeraleQuando;
+}
+
+export type SpuntinoSeraleQuando = {
+    var?:    string;
+    ">="?:   number;
+    "=="?:   string;
+    sempre?: boolean;
 }
 
 export type VincoliSettimanali = {

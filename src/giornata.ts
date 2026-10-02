@@ -1,5 +1,6 @@
 // Composizione della giornata a partire da un giorno del calendario.
 import { valutaCondizione } from './condizioni'
+import { settimane } from './piano'
 import {
   dati,
   preCorsa,
@@ -99,7 +100,7 @@ export function indicePastoCorrente(voci: VocePasto[], ora: string): number {
 }
 
 export function cercaGiorno(data: string): { settimana: Settimana; giorno: Giorno } | null {
-  for (const settimana of dati.settimane) {
+  for (const settimana of settimane()) {
     const giorno = settimana.giorni.find((g) => g.data === data)
     if (giorno) return { settimana, giorno }
   }
@@ -137,4 +138,32 @@ export function esitoGiorno(
 export function giornoDopo(data: string): string {
   const [anno, mese, giorno] = data.split('-').map(Number)
   return dataLocale(new Date(anno, mese - 1, giorno + 1))
+}
+
+/** Media delle merende M1-M12: la stima usata nel totale del piano quando la merenda non è scelta. */
+export function merendaMedia(): { kcal: number; cho: number } {
+  const n = dati.merende.length
+  return {
+    kcal: Math.round(dati.merende.reduce((s, m) => s + m.kcal, 0) / n),
+    cho: Math.round(dati.merende.reduce((s, m) => s + m.cho, 0) / n),
+  }
+}
+
+/** Totale del piano per un giorno creato nell'app: somma dei pasti, più la merenda media se non è assegnata. */
+export function totaleDelPiano(giorno: Omit<Giorno, 'kcal' | 'cho'>): { kcal: number; cho: number } {
+  const totali = totaliPasti(vociDelGiorno({ ...giorno, kcal: 0, cho: 0 }))
+  const stima = giorno.merenda === null ? merendaMedia() : { kcal: 0, cho: 0 }
+  return { kcal: totali.kcal + stima.kcal, cho: totali.cho + stima.cho }
+}
+
+/** "2026-10-05" + 2 → "2026-10-07" */
+export function aggiungiGiorni(data: string, giorni: number): string {
+  const [anno, mese, giorno] = data.split('-').map(Number)
+  return dataLocale(new Date(anno, mese - 1, giorno + giorni))
+}
+
+/** 1 = lunedì … 7 = domenica */
+export function giornoDellaSettimana(data: string): number {
+  const [anno, mese, giorno] = data.split('-').map(Number)
+  return new Date(anno, mese - 1, giorno).getDay() || 7
 }

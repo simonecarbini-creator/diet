@@ -5,6 +5,7 @@ import { dati, isTipoGiornata, type Giorno } from '../dati'
 import { formatMese } from '../formato'
 import { esitoGiorno, type Esito } from '../giornata'
 import { link } from '../navigazione'
+import { settimane } from '../piano'
 import { useStatiGiorni, type StatoGiorno } from '../statoGiorno'
 
 const intestazioni = ['L', 'M', 'M', 'G', 'V', 'S', 'D']
@@ -66,7 +67,7 @@ type Props = {
 }
 
 export function Mese({ mese, oggi }: Props) {
-  const giorniPiano = dati.settimane.flatMap((s) => s.giorni)
+  const giorniPiano = settimane().flatMap((s) => s.giorni)
   const perData = new Map(giorniPiano.map((g) => [g.data, g]))
   const corrente = mese ?? oggi.slice(0, 7)
 

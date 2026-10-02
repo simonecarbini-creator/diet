@@ -5,16 +5,21 @@ import { link, useRotta } from './navigazione'
 import { Mese } from './schermate/Mese'
 import { Oggi } from './schermate/Oggi'
 import { Settimana } from './schermate/Settimana'
+import { NuovaSettimana } from './schermate/NuovaSettimana'
+import { Calcoli } from './schermate/Calcoli'
+import { Menu } from './componenti/Menu'
 import { verificaDati } from './verifica'
 import { compilaDatiDiProva } from './prova'
 import { Intestazione } from './componenti/Intestazione'
 import { PiePagina } from './componenti/PiePagina'
 import { FinestraPeso, PulsantePeso } from './componenti/Peso'
 import { promemoriaPesata, usePesi } from './peso'
+import { usePiano } from './piano'
 
 function App() {
   const errori = verificaDati(dati)
   const { rotta, provenienza } = useRotta()
+  usePiano()
   const [adesso, setAdesso] = useState(() => new Date())
 
   // Aggiorna l'ora ogni minuto: il pasto corrente cambia anche ad app aperta.
@@ -26,6 +31,7 @@ function App() {
   const oggi = dataLocale(adesso)
   const { pesate, aggiungi, elimina } = usePesi()
   const [finestraPeso, setFinestraPeso] = useState(false)
+  const [menuAperto, setMenuAperto] = useState(false)
   const promemoria = promemoriaPesata(oggi, oraLocale(adesso), pesate)
 
   // TEMPORANEO: vedi prova.ts.
@@ -45,7 +51,13 @@ function App() {
 
   return (
     <>
-      <Intestazione oggi={oggi} />
+      <Intestazione
+        oggi={oggi}
+        menuAperto={menuAperto}
+        onApriMenu={() => setMenuAperto(true)}
+        onChiudiMenu={() => setMenuAperto(false)}
+      />
+      <Menu aperto={menuAperto} onApri={() => setMenuAperto(true)} onChiudi={() => setMenuAperto(false)} />
       {promemoria && (
         <button
           type="button"
@@ -66,6 +78,8 @@ function App() {
 
         {rotta.schermata === 'oggi' && <Oggi key={oggi} data={oggi} ora={oraLocale(adesso)} />}
         {rotta.schermata === 'mese' && <Mese mese={rotta.mese} oggi={oggi} />}
+        {rotta.schermata === 'nuova' && <NuovaSettimana />}
+        {rotta.schermata === 'calcoli' && <Calcoli />}
         {rotta.schermata === 'settimana' && <Settimana numero={rotta.numero} oggi={oggi} />}
         {rotta.schermata === 'giorno' && (
           <>

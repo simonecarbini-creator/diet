@@ -73,32 +73,59 @@
   },
 
   "regole": {
-    "_nota": "Queste regole sono il motore dell'app: dall'allenamento inserito si deriva automaticamente tipo giornata, colazione, spuntino, gel e spuntino serale.",
+    "_nota": "Queste regole sono il motore dell'app: dall'allenamento inserito si deriva automaticamente tipo giornata, colazione, spuntino, gel e spuntino serale. Il testo 'se' e' per le persone; il campo 'quando' e' la stessa condizione in forma leggibile dall'app. Si applica la prima regola dell'elenco che corrisponde.",
+
+    "riconoscimentoTesto": {
+      "_nota": "Come l'app legge il testo libero dell'allenamento. Decisioni del 2026-10-02.",
+      "paroleRiposo": ["riposo"],
+      "paroleQualita": ["ripetute", "salite", "frazionato", "medio"],
+      "paroleProgressiva": ["progressiva", "progressione"],
+      "progressivaLungaKmMin": 18,
+      "nota": "La 'x' da sola non rende il giorno di qualita' (es. 15 km + 6x100 di allunghi resta VERDE): serve la parola 'ripetute' oppure almeno 20 minuti sopra il ritmo medio."
+    },
+
+    "lungoDomenicaleAutomatico": {
+      "_nota": "La domenica con almeno questi km e' proposta come lungo domenicale; si puo' cambiare a mano.",
+      "giornoSettimana": 7,
+      "distanzaKmMin": 18
+    },
+
+    "rossoPesante": {
+      "se": "giorno ROSSO con lungo >= 20 km oppure almeno 50 minuti sopra il ritmo medio",
+      "quando": { "e": [
+        { "var": "tipo", "==": "ROSSO" },
+        { "oppure": [ { "var": "distanzaKm", ">=": 20 }, { "var": "minutiSopraRitmoMedio", ">=": 50 } ] }
+      ] }
+    },
 
     "classificazioneGiornata": [
       {
         "id": "riposo",
         "se": "allenamento assente o 'riposo'",
         "tipo": "GRIGIO",
-        "priorita": 1
+        "priorita": 1,
+        "quando": { "var": "riposo", "==": true }
       },
       {
         "id": "lungo",
         "se": "distanzaTotaleKm >= 18",
         "tipo": "ROSSO",
-        "priorita": 2
+        "priorita": 2,
+        "quando": { "var": "distanzaKm", ">=": 18 }
       },
       {
         "id": "qualita",
         "se": "contiene ripetute, salite, frazionato, medio, progressiva lunga, o minutiSopraRitmoMedio >= 20",
         "tipo": "ROSSO",
-        "priorita": 3
+        "priorita": 3,
+        "quando": { "oppure": [ { "var": "qualitaNelTesto", "==": true }, { "var": "minutiSopraRitmoMedio", ">=": 20 } ] }
       },
       {
         "id": "lento",
         "se": "altrimenti",
         "tipo": "VERDE",
-        "priorita": 4
+        "priorita": 4,
+        "quando": { "sempre": true }
       }
     ],
     "classificazioneNota": "Una progressiva breve (14-15 km che chiude veloce negli ultimi km) resta VERDE: chiude veloce ma dura poco. Una seduta di qualita' lunga come 10x1000 (~18 km, oltre un'ora sopra il ritmo medio) e' ROSSO e va trattata come un lungo.",
@@ -106,43 +133,71 @@
     "sceltaColazione": [
       {
         "colazione": "MAGG",
-        "se": "distanzaTotaleKm >= 20 OPPURE minutiSopraRitmoMedio >= 50 OPPURE e' il lungo domenicale"
+        "se": "distanzaTotaleKm >= 20 OPPURE minutiSopraRitmoMedio >= 50 OPPURE e' il lungo domenicale",
+        "quando": { "oppure": [
+          { "var": "distanzaKm", ">=": 20 },
+          { "var": "minutiSopraRitmoMedio", ">=": 50 },
+          { "var": "lungoDomenicale", "==": true }
+        ] }
       },
       {
         "colazione": "RID",
-        "se": "tipo == GRIGIO E il giorno successivo NON e' ROSSO pesante"
+        "se": "tipo == GRIGIO E il giorno successivo NON e' ROSSO pesante",
+        "quando": { "e": [ { "var": "tipo", "==": "GRIGIO" }, { "var": "domaniRossoPesante", "==": false } ] }
       },
       {
         "colazione": "STD",
-        "se": "altrimenti"
+        "se": "altrimenti",
+        "quando": { "sempre": true }
       }
     ],
 
     "sceltaSpuntino": [
-      { "spuntino": "intero", "se": "tipo == ROSSO OPPURE distanzaTotaleKm >= 15" },
-      { "spuntino": "soloFrutto", "se": "altrimenti" }
+      { "spuntino": "intero", "se": "tipo == ROSSO OPPURE distanzaTotaleKm >= 15",
+        "quando": { "oppure": [ { "var": "tipo", "==": "ROSSO" }, { "var": "distanzaKm", ">=": 15 } ] } },
+      { "spuntino": "soloFrutto", "se": "altrimenti", "quando": { "sempre": true } }
     ],
 
     "spuntinoSerale": [
-      { "valore": true, "se": "tipo == ROSSO" },
-      { "valore": true, "se": "distanzaTotaleKm >= 20", "obbligatorio": true, "motivo": "anti-ipoglicemia notturna post-lungo" },
-      { "valore": false, "se": "altrimenti" }
+      { "valore": true, "se": "distanzaTotaleKm >= 20", "obbligatorio": true, "motivo": "anti-ipoglicemia notturna post-lungo",
+        "quando": { "var": "distanzaKm", ">=": 20 } },
+      { "valore": true, "se": "tipo == ROSSO", "quando": { "var": "tipo", "==": "ROSSO" } },
+      { "valore": false, "se": "altrimenti", "quando": { "sempre": true } }
     ],
 
     "gelInCorsa": [
-      { "grammiCho": 0, "se": "durataMinuti < 75" },
-      { "grammiChoPerOra": 30, "se": "durataMinuti tra 75 e 100" },
-      { "grammiChoPerOra": 60, "se": "durataMinuti > 100" },
-      { "grammiChoPerOra": 70, "se": "e' il lungo domenicale", "nota": "protocollo gara: stesso gel, stessi intervalli, glicemia annotata prima/durante/dopo" }
+      { "grammiChoPerOra": 70, "se": "e' il lungo domenicale", "nota": "protocollo gara: stesso gel, stessi intervalli, glicemia annotata prima/durante/dopo",
+        "quando": { "var": "lungoDomenicale", "==": true } },
+      { "grammiChoPerOra": 60, "se": "durataMinuti > 100", "quando": { "var": "durataMinuti", ">": 100 } },
+      { "grammiChoPerOra": 30, "se": "durataMinuti tra 75 e 100", "quando": { "var": "durataMinuti", ">=": 75 } },
+      { "grammiChoPerOra": 0, "se": "durataMinuti < 75", "quando": { "sempre": true } }
     ],
+    "gelGrammiPerUnita": 30,
+    "gelNota": "I grammi si calcolano come g/ora x durata e si arrotondano per eccesso al gel intero da 30 g. Senza la durata il gel non si calcola.",
 
     "sabatoRicarica": {
       "condizione": "la domenica successiva e' ROSSO pesante (lungo >= 20 km o qualita' estesa)",
       "effetto": "colazione STD invece di RID e pranzo pieno invece di ridotto; si tagliano solo merenda e cena",
-      "motivo": "non e' un riposo qualsiasi, e' la ricarica prima della seduta pesante"
+      "motivo": "non e' un riposo qualsiasi, e' la ricarica prima della seduta pesante",
+      "quando": { "e": [ { "var": "tipo", "==": "GRIGIO" }, { "var": "domaniRossoPesante", "==": true } ] }
     },
 
     "regolaSabato": "Si tagliano SOLO i cereali. Proteine (130 g) e grassi (90 g) restano identici agli altri giorni. Nessun pre-corsa, nessuno spuntino serale.",
+
+    "assegnazionePasti": {
+      "_nota": "Proposta automatica di pranzi e cene per una nuova settimana; tutto resta modificabile a mano prima di salvare.",
+      "pranzo": "P1",
+      "maggioratoNeiGiorni": ["ROSSO"],
+      "ceneDistribuite": [
+        { "cena": "C2", "volte": 3, "preferenzaTipi": ["ROSSO", "VERDE", "GRIGIO"], "nonConsecutive": true },
+        { "cena": "C4", "volte": 2, "preferenzaTipi": ["VERDE", "GRIGIO"], "nonConsecutive": true }
+      ],
+      "ceneARotazione": ["C1", "C3"],
+      "giornoGrigio": { "pranzo": "ridotto", "cena": "ridotto" },
+      "ricarica": { "pranzo": "pieno", "cena": "ridotto" },
+      "cenaRidottaDiRiserva": "C1rid",
+      "totalePianoNota": "Se la merenda non e' assegnata, il totale del piano include la media delle merende M1-M12."
+    },
 
     "vincoliSettimanali": [
       { "id": "omega3", "regola": "cena C2 almeno 3 volte a settimana", "motivo": "omega-3 per il recupero", "pasti": ["C2"] },
@@ -441,7 +496,8 @@
     "cho": 18,
     "proteine": 12,
     "composizione": "1 frutto + parmigiano 20 g, oppure yogurt greco + frutta secca",
-    "usoSe": "tipo == GRIGIO"
+    "usoSe": "tipo == GRIGIO",
+    "quando": { "var": "tipo", "==": "GRIGIO" }
   },
   "merendaNote": [
     "Le merende con tag pocheProteine (M4, M7, M11) vanno usate nei giorni con cena C1, C2 o C4.",

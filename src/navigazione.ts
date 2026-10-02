@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react'
 export type Rotta =
   | { schermata: 'oggi' }
   | { schermata: 'prova' }
+  | { schermata: 'nuova' }
+  | { schermata: 'calcoli' }
   | { schermata: 'mese'; mese: string | null }
   | { schermata: 'settimana'; numero: number | null }
   | { schermata: 'giorno'; data: string }
@@ -13,6 +15,8 @@ function leggiRotta(hash: string): Rotta {
   const parti = hash.replace(/^#\/?/, '').split('/')
   if (parti[0] === 'oggi') return { schermata: 'oggi' }
   if (parti[0] === 'prova') return { schermata: 'prova' }
+  if (parti[0] === 'nuova') return { schermata: 'nuova' }
+  if (parti[0] === 'calcoli') return { schermata: 'calcoli' }
   if (parti[0] === 'mese') {
     return { schermata: 'mese', mese: /^\d{4}-\d{2}$/.test(parti[1] ?? '') ? parti[1] : null }
   }
@@ -29,6 +33,8 @@ function leggiRotta(hash: string): Rotta {
 
 export const link = {
   oggi: '#/oggi',
+  nuova: '#/nuova',
+  calcoli: '#/calcoli',
   mese: (mese?: string) => (mese === undefined ? '#/mese' : `#/mese/${mese}`),
   settimana: (numero?: number) => (numero === undefined ? '#/settimana' : `#/settimana/${numero}`),
   giorno: (data: string) => `#/giorno/${data}`,

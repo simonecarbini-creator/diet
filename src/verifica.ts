@@ -1,7 +1,7 @@
 // Controllo di coerenza del calendario: ogni giorno deve riferirsi a tipi e pasti
 // che esistono in dati.json. Usato dall'app e da `npm run verifica` prima del build.
 // Non importa dati.json direttamente, così gira anche con Node fuori da Vite.
-import { valutaCondizione } from './condizioni.ts'
+import { validaQuando, valutaCondizione } from './condizioni.ts'
 import type { Dati } from './tipi/dati.generati'
 
 export function verificaDati(dati: Dati): string[] {
@@ -50,6 +50,33 @@ export function verificaDati(dati: Dati): string[] {
   for (const colazione of dati.blocchi.colazioni) {
     const base = dati.blocchi.colazioni.find((c) => c.id === colazione.base)
     if (base?.alimenti) controllaNomi(colazione.id, base.alimenti, colazione.rimozioni ?? [])
+  }
+
+  // Le condizioni delle regole devono essere leggibili dall'app.
+  const { regole } = dati
+  errori.push(
+    ...validaQuando(regole.rossoPesante.quando, 'regole.rossoPesante'),
+    ...validaQuando(regole.sabatoRicarica.quando, 'regole.sabatoRicarica'),
+    ...validaQuando(dati.merendaRidotta.quando, 'merendaRidotta'),
+    ...regole.classificazioneGiornata.flatMap((r) => validaQuando(r.quando, `classificazioneGiornata.${r.id}`)),
+    ...regole.sceltaColazione.flatMap((r) => validaQuando(r.quando, `sceltaColazione.${r.colazione}`)),
+    ...regole.sceltaSpuntino.flatMap((r) => validaQuando(r.quando, `sceltaSpuntino.${r.spuntino}`)),
+    ...regole.spuntinoSerale.flatMap((r, i) => validaQuando(r.quando, `spuntinoSerale[${i}]`)),
+    ...regole.gelInCorsa.flatMap((r, i) => validaQuando(r.quando, `gelInCorsa[${i}]`)),
+  )
+  for (const r of regole.classificazioneGiornata) {
+    if (!Object.hasOwn(dati.tipiGiornata, r.tipo)) errori.push(`classificazioneGiornata.${r.id}: tipo "${r.tipo}" sconosciuto`)
+  }
+  for (const r of regole.sceltaColazione) {
+    if (!idColazioni.has(r.colazione)) errori.push(`sceltaColazione: colazione "${r.colazione}" non trovata`)
+  }
+  for (const r of regole.sceltaSpuntino) {
+    if (!idSpuntini.has(r.spuntino)) errori.push(`sceltaSpuntino: spuntino "${r.spuntino}" non trovato`)
+  }
+  const assegnazione = regole.assegnazionePasti
+  if (!idPranzi.has(assegnazione.pranzo)) errori.push(`assegnazionePasti.pranzo: "${assegnazione.pranzo}" non trovato`)
+  for (const id of [...assegnazione.ceneDistribuite.map((c) => c.cena), ...assegnazione.ceneARotazione, assegnazione.cenaRidottaDiRiserva]) {
+    if (!idCene.has(id)) errori.push(`assegnazionePasti: cena "${id}" non trovata`)
   }
 
   for (const settimana of dati.settimane) {

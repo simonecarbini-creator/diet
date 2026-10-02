@@ -2,6 +2,7 @@
 import { dati, isTipoGiornata, type Giorno, type Settimana as TipoSettimana } from '../dati'
 import { formatDataBreve, formatGiornoMese, formatNumero } from '../formato'
 import { link } from '../navigazione'
+import { settimane } from '../piano'
 import { esitoGiorno } from '../giornata'
 import { BadgeEsito } from '../componenti/BadgeEsito'
 import { useStatiGiorni, type StatoGiorno } from '../statoGiorno'
@@ -10,9 +11,9 @@ import { controllaVincoli } from '../vincoli'
 /** La settimana richiesta, altrimenti quella che contiene oggi, altrimenti l'ultima. */
 function scegliSettimana(numero: number | null, oggi: string): TipoSettimana | undefined {
   return (
-    dati.settimane.find((s) => s.numero === numero) ??
-    dati.settimane.find((s) => s.dal <= oggi && oggi <= s.al) ??
-    dati.settimane[dati.settimane.length - 1]
+    settimane().find((s) => s.numero === numero) ??
+    settimane().find((s) => s.dal <= oggi && oggi <= s.al) ??
+    settimane()[settimane().length - 1]
   )
 }
 
@@ -115,9 +116,10 @@ export function Settimana({ numero, oggi }: Props) {
     return <p>Nessuna settimana nel piano.</p>
   }
 
-  const indice = dati.settimane.indexOf(settimana)
-  const precedente = dati.settimane[indice - 1]
-  const successiva = dati.settimane[indice + 1]
+  const elenco = settimane()
+  const indice = elenco.indexOf(settimana)
+  const precedente = elenco[indice - 1]
+  const successiva = elenco[indice + 1]
   const pastiEffettivi = Object.fromEntries(
     giorni.map((g) => [
       g.data,
@@ -162,6 +164,15 @@ export function Settimana({ numero, oggi }: Props) {
         e kcal sono quelli del piano.{cambiamenti && ' * = cambiato per quel giorno.'} Pollice
         su: tutti i pasti spuntati · pollice giù: solo alcuni · ND: nessuno.
       </p>
+
+      {!successiva && (
+        <a
+          href={link.nuova}
+          className="mt-4 block rounded-xl border-2 border-dashed border-cho p-3 text-center font-semibold text-cho"
+        >
+          + Prepara la settimana successiva
+        </a>
+      )}
 
       <section className="mt-6">
         <h2 className="text-lg font-bold">Vincoli della settimana</h2>
