@@ -271,8 +271,8 @@ export function CardPasto({
           onScegli={(id) => {
             onScegli(id)
             setPannello(false)
-            // Dopo la scelta si vedono subito alimenti e grammi del nuovo pasto.
-            setAperto(id !== null || voce.idPiano !== null)
+            // Scelta fatta: la card si richiude e mostra il pasto scelto come le altre.
+            setAperto(false)
           }}
         />
       )}
