@@ -32,8 +32,8 @@ Struttura (vedi il file per il dettaglio):
 | `tipiGiornata` | VERDE / ROSSO / GRIGIO con kcal e CHO target |
 | `regole` | **Il motore dell'app** — vedi sezione 4 |
 | `blocchi` | Pre-corsa, 3 colazioni, 2 spuntini, spuntino serale |
-| `pranzi` | P1, P2, P3 con varianti, ridotti e maggiorati |
-| `cene` | C1, C2, C3, C4 con vincoli di utilizzo |
+| `pranzi` | P1-P13 con varianti, ridotti e maggiorati |
+| `cene` | C1-C14 con vincoli di utilizzo (C5-C14 e P4-P13 aggiunti il 2026-10-02 dal file del nutrizionista) |
 | `merende` | M1–M12 con tag (ufficio, salata, senzaYogurt, pocheProteine…) |
 | `sostituzioni` | Equivalenze proteiche e dei cereali |
 | `verdure` | Elenco con CHO per 200 g e note di cottura |

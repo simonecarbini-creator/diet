@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import type { Vincolo } from '../dati'
 import { formatDataBreve } from '../formato'
-import { frazioneLimite, oltreMassimo, vincoliDelPasto, type ConteggioPasto } from '../vincoli'
+import { frazioneLimite, nomeVincolo, oltreMassimo, type ConteggioVincolo } from '../vincoli'
 import { Popup } from './Popup'
 
-function coloreStato(conteggio: ConteggioPasto): string {
+function coloreStato(conteggio: ConteggioVincolo): string {
   if (oltreMassimo(conteggio)) return 'text-ko'
   if (conteggio.minimo !== undefined && conteggio.volte >= conteggio.minimo) return 'text-ok'
   return ''
@@ -25,17 +25,12 @@ function ElencoRegole({ vincoli }: { vincoli: Vincolo[] }) {
   )
 }
 
-type PropsContatore = {
-  id: string
-  nome: string
-  conteggio: ConteggioPasto
-}
-
-/** Riga "C4 questa settimana: 2/3 max ⓘ" che apre il dettaglio della regola. */
-export function ContatoreSettimana({ id, nome, conteggio }: PropsContatore) {
+/** Riga "Pesce grasso (omega-3) questa settimana: 2/3 min ⓘ" che apre il dettaglio della regola. */
+export function ContatoreSettimana({ conteggio }: { conteggio: ConteggioVincolo }) {
   const [aperto, setAperto] = useState(false)
   const frazione = frazioneLimite(conteggio)
   if (!frazione) return null
+  const nome = nomeVincolo(conteggio.vincolo)
   const limite = conteggio.massimo ?? conteggio.minimo
 
   return (
@@ -46,7 +41,7 @@ export function ContatoreSettimana({ id, nome, conteggio }: PropsContatore) {
         className="flex w-full items-center justify-between gap-2 rounded-lg bg-sfondo px-3 py-2 text-left text-sm"
       >
         <span>
-          {id} questa settimana:{' '}
+          {nome} questa settimana:{' '}
           <span className={`font-bold ${coloreStato(conteggio)}`}>{frazione}</span>
         </span>
         <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current text-xs font-bold opacity-70">
@@ -54,7 +49,7 @@ export function ContatoreSettimana({ id, nome, conteggio }: PropsContatore) {
         </span>
       </button>
       {aperto && (
-        <Popup titolo={`${id} · ${nome}`} onChiudi={() => setAperto(false)}>
+        <Popup titolo={nome} onChiudi={() => setAperto(false)}>
           <p>
             Questa settimana:{' '}
             <span className={`font-bold ${coloreStato(conteggio)}`}>
@@ -63,11 +58,9 @@ export function ContatoreSettimana({ id, nome, conteggio }: PropsContatore) {
             ({conteggio.massimo !== undefined ? 'massimo' : 'minimo'} {limite})
           </p>
           {conteggio.giorni.length > 0 && (
-            <p className="text-sm opacity-70">
-              Giorni: {conteggio.giorni.map(formatDataBreve).join(', ')}
-            </p>
+            <p className="text-sm opacity-70">Giorni: {conteggio.giorni.map(formatDataBreve).join(', ')}</p>
           )}
-          <ElencoRegole vincoli={vincoliDelPasto(id)} />
+          <ElencoRegole vincoli={[conteggio.vincolo]} />
         </Popup>
       )}
     </>

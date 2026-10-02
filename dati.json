@@ -205,9 +205,14 @@
     },
 
     "vincoliSettimanali": [
-      { "id": "omega3", "regola": "cena C2 almeno 3 volte a settimana", "motivo": "omega-3 per il recupero", "pasti": ["C2"] },
-      { "id": "formaggio", "regola": "cena C4 massimo 2-3 volte, solo nei giorni VERDE o GRIGIO", "motivo": "pochi CHO e molti grassi: rallenta lo svuotamento gastrico quando serve ricostituire glicogeno", "pasti": ["C4"] },
+      { "id": "omega3", "nome": "Pesce grasso (omega-3)", "regola": "pesce grasso almeno 3 volte a settimana: C2 a cena o P9 a pranzo", "motivo": "omega-3 per il recupero; il pesce bianco (C1, C7, C8, C9, C11) non conta", "pasti": ["C2", "P9"], "minimo": 3 },
+      { "id": "formaggio", "nome": "Formaggio (C4)", "regola": "cena C4 massimo 2-3 volte, solo nei giorni VERDE o GRIGIO", "motivo": "pochi CHO e molti grassi: rallenta lo svuotamento gastrico quando serve ricostituire glicogeno", "pasti": ["C4"], "massimo": 3 },
+      { "id": "carne", "nome": "Carne", "regola": "carne al massimo una volta a settimana in totale, tra P13 e C13", "motivo": "carne limitata per scelta", "pasti": ["P13", "C13"], "massimo": 1 },
+      { "id": "grassiAlti", "regola": "pasti con piu' di 30 g di grassi (C4, P4, P12, C10) solo nei giorni VERDE o GRIGIO, mai prima o dopo una seduta di qualita'", "motivo": "rallentano lo svuotamento gastrico e spostano la curva in avanti di 3-5 ore", "pasti": ["C4", "P4", "P12", "C10"] },
       { "id": "noC4conC2", "regola": "mai C4 nello stesso giorno di C2", "pasti": ["C4", "C2"] },
+      { "id": "cenaPreGara", "regola": "la sera prima di un lungo o di una seduta di qualita' preferire C9", "motivo": "114 g di CHO con soli 15 g di grassi: il rapporto migliore della lista", "pasti": ["C9"], "seraPrimaDiTipo": "ROSSO" },
+      { "id": "proteineBasse", "regola": "C12 ha 33 g di proteine: compensare negli altri pasti o con 30 g di parmigiano sulle patate", "pasti": ["C12"] },
+      { "id": "fibra", "regola": "P8 e C5 superano i 20 g di fibra: ottimi sulla curva glicemica, ma non la sera prima di un allenamento", "pasti": ["P8", "C5"] },
       { "id": "barbabietola", "regola": "barbabietola 2-3 volte a settimana", "motivo": "i nitrati migliorano l'efficienza a ritmo submassimale", "verdure": ["Barbabietola"] },
       { "id": "crucifere", "regola": "niente crucifere (broccoli, cavolfiore, cavoli, verze) la sera prima di un giorno ROSSO", "motivo": "fermentano: problemi intestinali alle 5:30", "categoriaVerdure": "crucifera", "seraPrimaDiTipo": "ROSSO" }
     ]
@@ -418,6 +423,449 @@
         "modificheGrammi": [{ "nome": "Patate", "grammi": 250 }, { "nome": "Pane", "grammi": 40 }]
       },
       "note": "Ha meno CHO delle altre due opzioni: nei giorni ROSSO usare la versione maggiorata."
+    },
+    {
+      "id": "P4",
+      "nome": "Pasta in bianco, formaggio fresco e verdure",
+      "categoria": "formaggio",
+      "kcal": 1030,
+      "cho": 125,
+      "proteine": 46,
+      "grassi": 36,
+      "soloTipiGiornata": [
+        "VERDE",
+        "GRIGIO"
+      ],
+      "alimenti": [
+        {
+          "nome": "Pasta",
+          "grammi": 120
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 10
+        },
+        {
+          "nome": "Parmigiano",
+          "grammi": 15
+        },
+        {
+          "nome": "Primo sale o mozzarella",
+          "grammi": 100,
+          "sostituibileCon": [
+            "Ricotta vaccina 180 g",
+            "Feta 80 g"
+          ]
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 60
+        }
+      ],
+      "note": "Stessa logica di C4: 36 g di grassi rallentano lo svuotamento gastrico e spostano la curva in avanti. Da usare nei giorni VERDE o GRIGIO, non prima o dopo una seduta di qualita'.",
+      "tags": [
+        "veloce",
+        "formaggio"
+      ]
+    },
+    {
+      "id": "P5",
+      "nome": "Pasta in bianco con pesce bianco e verdure",
+      "categoria": "pesceBianco",
+      "kcal": 1031,
+      "cho": 140,
+      "proteine": 57,
+      "grassi": 24,
+      "alimenti": [
+        {
+          "nome": "Pasta",
+          "grammi": 150
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 15
+        },
+        {
+          "nome": "Parmigiano",
+          "grammi": 15
+        },
+        {
+          "nome": "Pesce bianco (merluzzo, platessa, orata)",
+          "grammi": 150
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 50
+        }
+      ],
+      "note": "Il parmigiano sul pesce non e' ortodosso ma funziona: tienilo a 15 g o mettilo solo sulla pasta.",
+      "tags": [
+        "pesce"
+      ]
+    },
+    {
+      "id": "P6",
+      "nome": "Pasta al tonno al naturale e verdure",
+      "categoria": "pesceBianco",
+      "kcal": 1044,
+      "cho": 156,
+      "proteine": 55,
+      "grassi": 20,
+      "alimenti": [
+        {
+          "nome": "Pasta",
+          "grammi": 150
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 15
+        },
+        {
+          "nome": "Tonno al naturale sgocciolato",
+          "grammi": 110
+        },
+        {
+          "nome": "Pomodorini",
+          "grammi": 150
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 70
+        }
+      ],
+      "note": "Il profilo piu' vicino a P1 su carboidrati, con meno grassi. Ottima nei giorni ROSSO. Con tonno sott'olio sgocciolato scendere a 90 g e togliere 5 g di olio.",
+      "tags": [
+        "veloce",
+        "pesce",
+        "dispensa"
+      ]
+    },
+    {
+      "id": "P7",
+      "nome": "Pasta aglio e olio con gamberi e verdure",
+      "categoria": "pesceBianco",
+      "kcal": 1026,
+      "cho": 146,
+      "proteine": 53,
+      "grassi": 23,
+      "alimenti": [
+        {
+          "nome": "Pasta",
+          "grammi": 150
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 18
+        },
+        {
+          "nome": "Aglio e peperoncino",
+          "grammi": null
+        },
+        {
+          "nome": "Gamberi o mazzancolle",
+          "grammi": 150
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 60
+        }
+      ],
+      "note": "I gamberi surgelati vanno benissimo e costano la meta': scongelali in frigo la sera prima.",
+      "tags": [
+        "pesce"
+      ]
+    },
+    {
+      "id": "P8",
+      "nome": "Riso basmati al curry con ceci e verdure",
+      "categoria": "legumi",
+      "kcal": 1014,
+      "cho": 180,
+      "proteine": 37,
+      "grassi": 17,
+      "alimenti": [
+        {
+          "nome": "Riso basmati",
+          "grammi": 155
+        },
+        {
+          "nome": "Ceci lessati",
+          "grammi": 280,
+          "note": "oppure una lattina intera di zuppa di ceci pronta da 500 g, che contiene gia' l'olio"
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 8,
+          "note": "da omettere se usi la zuppa pronta"
+        },
+        {
+          "nome": "Curry",
+          "grammi": null
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        }
+      ],
+      "varianti": [
+        {
+          "id": "P8-fiocchi",
+          "nome": "Con fiocchi di latte",
+          "kcal": 1090,
+          "cho": 150,
+          "proteine": 43,
+          "alimenti": [
+            {
+              "nome": "Riso basmati",
+              "grammi": 140
+            },
+            {
+              "nome": "Ceci lessati",
+              "grammi": 280,
+              "note": "oppure una lattina intera di zuppa di ceci pronta da 500 g, che contiene gia' l'olio"
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 8,
+              "note": "da omettere se usi la zuppa pronta"
+            },
+            {
+              "nome": "Curry",
+              "grammi": null
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Fiocchi di latte",
+              "grammi": 100,
+              "note": "a fine pasto, non dentro la zuppa calda: si separano"
+            }
+          ],
+          "note": "Dal nutrizionista: riso a 140 g, aggiungere 100 g di fiocchi di latte a fine pasto (non dentro la zuppa calda: si separano)."
+        }
+      ],
+      "note": "Il basmati ha l'indice glicemico piu' basso tra i risi (50-58). Con i ceci si arriva a ~21 g di fibra: curva molto gentile ma pesante sull'intestino — non la sera prima di una seduta.",
+      "tags": [
+        "legumi",
+        "fibraAlta"
+      ]
+    },
+    {
+      "id": "P9",
+      "nome": "Farro freddo con salmone e verdure",
+      "categoria": "pesceGrasso",
+      "kcal": 983,
+      "cho": 134,
+      "proteine": 47,
+      "grassi": 27,
+      "contaComeOmega3": true,
+      "alimenti": [
+        {
+          "nome": "Farro perlato",
+          "grammi": 150
+        },
+        {
+          "nome": "Salmone (fresco cotto o affumicato)",
+          "grammi": 110
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 10,
+          "note": "da omettere con il salmone affumicato"
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 50
+        }
+      ],
+      "note": "Si mangia freddo, si prepara la sera prima: e' il pranzo da ufficio migliore della lista. Essendo pesce grasso, conta nel conteggio settimanale degli omega-3.",
+      "tags": [
+        "ufficio",
+        "freddo",
+        "preparareSeraPrima",
+        "pesce"
+      ]
+    },
+    {
+      "id": "P10",
+      "nome": "Pasta al pesto con fiocchi di latte",
+      "categoria": "formaggio",
+      "kcal": 1007,
+      "cho": 153,
+      "proteine": 46,
+      "grassi": 21,
+      "alimenti": [
+        {
+          "nome": "Pasta",
+          "grammi": 150
+        },
+        {
+          "nome": "Pesto",
+          "grammi": 30,
+          "note": "sostituisce l'olio: non aggiungerne altro"
+        },
+        {
+          "nome": "Fiocchi di latte",
+          "grammi": 150
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 60
+        }
+      ],
+      "note": "I fiocchi di latte danno 18 g di proteine con pochi grassi, quindi a differenza di P4 questo resta un pranzo leggero utilizzabile anche nei giorni ROSSO. Metti i fiocchi a crudo sulla pasta gia' impiattata.",
+      "tags": [
+        "veloce",
+        "formaggio"
+      ]
+    },
+    {
+      "id": "P11",
+      "nome": "Cous cous con ceci, feta e verdure",
+      "categoria": "legumi",
+      "kcal": 1023,
+      "cho": 146,
+      "proteine": 44,
+      "grassi": 29,
+      "alimenti": [
+        {
+          "nome": "Cous cous",
+          "grammi": 140
+        },
+        {
+          "nome": "Ceci lessati",
+          "grammi": 200
+        },
+        {
+          "nome": "Feta",
+          "grammi": 55,
+          "sostituibileCon": [
+            "Primo sale 60 g",
+            "Ricotta salata 50 g"
+          ]
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 10
+        },
+        {
+          "nome": "Verdure (pomodorini, cetrioli, peperoni)",
+          "grammi": 200
+        }
+      ],
+      "note": "Si prepara in 5 minuti e si mangia freddo. La feta e' molto salata: con i tuoi volumi non e' un problema, ma non aggiungere altro sale.",
+      "tags": [
+        "ufficio",
+        "freddo",
+        "veloce",
+        "legumi"
+      ]
+    },
+    {
+      "id": "P12",
+      "nome": "Pasta al pomodoro con ricotta e verdure",
+      "categoria": "formaggio",
+      "kcal": 1027,
+      "cho": 143,
+      "proteine": 39,
+      "grassi": 32,
+      "alimenti": [
+        {
+          "nome": "Pasta",
+          "grammi": 130
+        },
+        {
+          "nome": "Passata di pomodoro",
+          "grammi": 200
+        },
+        {
+          "nome": "Ricotta vaccina",
+          "grammi": 150
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 12
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 50
+        }
+      ],
+      "note": "Manteca la ricotta a fuoco spento, altrimenti diventa granulosa. Con ricotta di pecora scendere a 120 g.",
+      "tags": [
+        "veloce",
+        "formaggio"
+      ],
+      "soloTipiGiornata": [
+        "VERDE",
+        "GRIGIO"
+      ]
+    },
+    {
+      "id": "P13",
+      "nome": "Riso con pollo o tacchino e verdure",
+      "categoria": "carne",
+      "kcal": 1010,
+      "cho": 149,
+      "proteine": 53,
+      "grassi": 19,
+      "frequenzaMassimaSettimanale": 1,
+      "alimenti": [
+        {
+          "nome": "Riso basmati",
+          "grammi": 150
+        },
+        {
+          "nome": "Petto di pollo o tacchino",
+          "grammi": 150
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 15
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 50
+        }
+      ],
+      "note": "Alternativa a P3 quando vuoi il riso invece delle patate. Carne limitata per scelta: massimo una volta a settimana tra pranzo e cena.",
+      "tags": [
+        "carne"
+      ]
     }
   ],
 
@@ -446,7 +894,7 @@
       "kcal": 790,
       "cho": 75,
       "proteine": 42,
-      "minimoSettimanale": 3,
+      "contaComeOmega3": true,
       "alimenti": [
         { "nome": "Salmone, sgombro, sardine o alici", "grammi": 180, "note": "a crudo o al naturale; 130-140 g se sott'olio sgocciolato" },
         { "nome": "Patate", "grammi": 250 },
@@ -482,7 +930,6 @@
       "kcal": 820,
       "cho": 85,
       "proteine": 35,
-      "massimoSettimanale": 3,
       "soloTipiGiornata": ["VERDE", "GRIGIO"],
       "incompatibileCon": ["C2"],
       "alimenti": [
@@ -493,6 +940,408 @@
         { "nome": "Pane", "grammi": 70 }
       ],
       "note": "Il pasto grasso sposta la curva glicemica in avanti di 3-5 ore. La mozzarella la accentua piu' della ricotta: le prime volte guardare il Libre a 4-5 ore da cena."
+    },
+    {
+      "id": "C5",
+      "nome": "Zuppa di legumi con pane e parmigiano",
+      "categoria": "legumi",
+      "kcal": 812,
+      "cho": 102,
+      "proteine": 40,
+      "grassi": 26,
+      "alimenti": [
+        {
+          "nome": "Legumi lessati (lenticchie, ceci, fagioli, misto)",
+          "grammi": 300
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 12,
+          "note": "a crudo"
+        },
+        {
+          "nome": "Parmigiano",
+          "grammi": 20
+        },
+        {
+          "nome": "Verdure nella zuppa",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 80
+        }
+      ],
+      "note": "Con la zuppa pronta in lattina (500 g) togliere l'olio, che e' gia' dentro. Abbina sempre pomodoro o un filo di limone: la vitamina C sblocca il ferro dei legumi.",
+      "tags": [
+        "legumi",
+        "caldo",
+        "veloce",
+        "fibraAlta"
+      ]
+    },
+    {
+      "id": "C6",
+      "nome": "Insalata di ceci e tonno con pane",
+      "categoria": "legumi",
+      "kcal": 772,
+      "cho": 93,
+      "proteine": 52,
+      "grassi": 20,
+      "alimenti": [
+        {
+          "nome": "Ceci lessati",
+          "grammi": 220
+        },
+        {
+          "nome": "Tonno al naturale sgocciolato",
+          "grammi": 100
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 12
+        },
+        {
+          "nome": "Pomodorini",
+          "grammi": 150
+        },
+        {
+          "nome": "Verdure (cipolla rossa, sedano, insalata)",
+          "grammi": 150
+        },
+        {
+          "nome": "Pane",
+          "grammi": 80
+        }
+      ],
+      "note": "Zero cottura, si fa in tre minuti. Ceci e tonno insieme danno un ottimo profilo di ferro, e i pomodorini ne migliorano l'assorbimento.",
+      "tags": [
+        "senzaCottura",
+        "veloce",
+        "legumi",
+        "pesce",
+        "dispensa"
+      ]
+    },
+    {
+      "id": "C7",
+      "nome": "Calamari o seppie in umido con patate",
+      "categoria": "pesceBianco",
+      "kcal": 764,
+      "cho": 94,
+      "proteine": 47,
+      "grassi": 19,
+      "alimenti": [
+        {
+          "nome": "Calamari o seppie (anche surgelati)",
+          "grammi": 200
+        },
+        {
+          "nome": "Patate",
+          "grammi": 280
+        },
+        {
+          "nome": "Passata di pomodoro",
+          "grammi": 150
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 15
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 150
+        },
+        {
+          "nome": "Pane",
+          "grammi": 60
+        }
+      ],
+      "note": "Le patate cuociono nel sugo e assorbono sapore. Pesce bianco: NON conta nel minimo settimanale di omega-3, che resta coperto da C2.",
+      "tags": [
+        "pesce",
+        "caldo"
+      ]
+    },
+    {
+      "id": "C8",
+      "nome": "Polpo e patate con verdure",
+      "categoria": "pesceBianco",
+      "kcal": 775,
+      "cho": 93,
+      "proteine": 47,
+      "grassi": 18,
+      "alimenti": [
+        {
+          "nome": "Polpo (anche surgelato gia' lessato)",
+          "grammi": 200
+        },
+        {
+          "nome": "Patate",
+          "grammi": 330,
+          "note": "lessate intere con la buccia"
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 15
+        },
+        {
+          "nome": "Prezzemolo e limone",
+          "grammi": null
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 60
+        }
+      ],
+      "note": "Si mangia anche tiepido o freddo, e si prepara in anticipo. Le patate lessate e fatte raffreddare formano amido resistente: curva piu' piatta.",
+      "tags": [
+        "pesce",
+        "preparareInAnticipo",
+        "freddo"
+      ]
+    },
+    {
+      "id": "C9",
+      "nome": "Gamberi saltati con riso basmati",
+      "categoria": "pesceBianco",
+      "kcal": 804,
+      "cho": 114,
+      "proteine": 47,
+      "grassi": 15,
+      "alimenti": [
+        {
+          "nome": "Gamberi",
+          "grammi": 180
+        },
+        {
+          "nome": "Riso basmati",
+          "grammi": 110
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 12
+        },
+        {
+          "nome": "Verdure (zucchine, piselli, peperoni)",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 40
+        }
+      ],
+      "note": "La cena con piu' carboidrati e meno grassi della lista: e' quella da scegliere la sera prima di un lungo o di una seduta di qualita'.",
+      "tags": [
+        "pesce",
+        "preGara",
+        "choAlti"
+      ]
+    },
+    {
+      "id": "C10",
+      "nome": "Frittata di zucchine con scamorza",
+      "categoria": "uova",
+      "kcal": 779,
+      "cho": 70,
+      "proteine": 40,
+      "grassi": 34,
+      "soloTipiGiornata": [
+        "VERDE",
+        "GRIGIO"
+      ],
+      "alimenti": [
+        {
+          "nome": "Uova",
+          "pezzi": 3
+        },
+        {
+          "nome": "Scamorza",
+          "grammi": 30,
+          "sostituibileCon": [
+            "Parmigiano 25 g",
+            "Primo sale 40 g"
+          ]
+        },
+        {
+          "nome": "Zucchine o altre verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 8
+        },
+        {
+          "nome": "Pane",
+          "grammi": 120
+        }
+      ],
+      "note": "34 g di grassi: come C4 e P4, sposta la curva in avanti di 3-5 ore. Da usare nei giorni VERDE o GRIGIO. Ha i carboidrati piu' bassi della lista, quindi nei giorni ROSSO servirebbero 40 g di pane in piu'.",
+      "tags": [
+        "veloce",
+        "uova",
+        "formaggio"
+      ]
+    },
+    {
+      "id": "C11",
+      "nome": "Merluzzo con ceci e verdure",
+      "categoria": "pesceBianco",
+      "kcal": 798,
+      "cho": 91,
+      "proteine": 57,
+      "grassi": 21,
+      "alimenti": [
+        {
+          "nome": "Merluzzo o baccala' ammollato",
+          "grammi": 160
+        },
+        {
+          "nome": "Ceci lessati",
+          "grammi": 230
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 12
+        },
+        {
+          "nome": "Rosmarino, aglio, limone",
+          "grammi": null
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 80
+        }
+      ],
+      "note": "Il piatto con il miglior profilo di ferro di tutta la lista: ceci piu' pesce, con il limone che ne migliora l'assorbimento. Da tenere d'occhio nei periodi in cui la ferritina e' bassa.",
+      "tags": [
+        "pesce",
+        "legumi",
+        "ferro"
+      ]
+    },
+    {
+      "id": "C12",
+      "nome": "Burger di legumi con patate al forno",
+      "categoria": "legumi",
+      "kcal": 829,
+      "cho": 121,
+      "proteine": 33,
+      "grassi": 23,
+      "alimenti": [
+        {
+          "nome": "Legumi lessati (per i burger)",
+          "grammi": 260
+        },
+        {
+          "nome": "Patate",
+          "grammi": 280
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 15
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 40
+        }
+      ],
+      "note": "Le proteine sono le piu' basse della lista (33 g): usala nei giorni in cui pranzo e merenda ne hanno portate parecchie, oppure aggiungi 30 g di parmigiano sulle patate. Vanno bene anche i burger di legumi pronti, controllando che i legumi siano il primo ingrediente.",
+      "tags": [
+        "legumi",
+        "vegetariana",
+        "pocheProteine"
+      ]
+    },
+    {
+      "id": "C13",
+      "nome": "Petto di pollo o tacchino con patate",
+      "categoria": "carne",
+      "kcal": 787,
+      "cho": 93,
+      "proteine": 53,
+      "grassi": 18,
+      "frequenzaMassimaSettimanale": 1,
+      "alimenti": [
+        {
+          "nome": "Petto di pollo o tacchino",
+          "grammi": 160
+        },
+        {
+          "nome": "Patate",
+          "grammi": 330
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 15
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 60
+        }
+      ],
+      "note": "Carne limitata per scelta: massimo una volta a settimana contando anche P13.",
+      "tags": [
+        "carne"
+      ]
+    },
+    {
+      "id": "C14",
+      "nome": "Uova e fagioli con pane e verdure",
+      "categoria": "uova",
+      "kcal": 818,
+      "cho": 94,
+      "proteine": 42,
+      "grassi": 28,
+      "alimenti": [
+        {
+          "nome": "Uova",
+          "pezzi": 2
+        },
+        {
+          "nome": "Fagioli lessati (cannellini o borlotti)",
+          "grammi": 250
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 12
+        },
+        {
+          "nome": "Pomodoro, salvia, cipolla",
+          "grammi": null
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Pane",
+          "grammi": 85
+        }
+      ],
+      "note": "La cena da dispensa quando non c'e' nulla in frigo: tutto si conserva a lungo. Uova in camicia o all'occhio di bue sui fagioli all'uccelletto.",
+      "tags": [
+        "veloce",
+        "dispensa",
+        "legumi",
+        "uova"
+      ]
     }
   ],
 
@@ -510,6 +1359,16 @@
     { "id": "M11", "kcal": 400, "cho": 48, "proteine": 8, "composizione": "Banana 150 g + mandorle o noci 30 g + 3 fette biscottate integrali", "tags": ["ufficio", "senzaYogurt", "senzaCucchiaio", "pocheProteine"] },
     { "id": "M12", "kcal": 390, "cho": 55, "proteine": 12, "composizione": "Bruschetta: pane 70 g + pomodorini + parmigiano 20 g + olio EVO 5 g + 1 frutto", "tags": ["salata", "senzaYogurt", "senzaCucchiaio"] }
   ],
+  "notePasti": [
+    "Tutti i pesi sono a crudo, tranne i legumi che sono gia' lessati e sgocciolati. Pesce e carne perdono il 20-28% in cottura, quindi se li compri gia' cotti in gastronomia prendine circa un quarto in meno.",
+    "Le cene C7, C8, C9 e C11 sono pesce BIANCO: non contano nel minimo settimanale di 3 pasti con pesce grasso, che resta coperto da C2 e, a pranzo, da P9.",
+    "P4, P12 e C10 hanno piu' di 30 g di grassi: stessa regola di C4, solo nei giorni VERDE o GRIGIO e mai prima o dopo una seduta di qualita'.",
+    "Carne (P13 e C13): massimo una volta a settimana in totale, non una per pasto.",
+    "C9 e' la cena con il rapporto carboidrati/grassi migliore: e' quella da preferire la sera prima di un lungo o di una seduta di qualita'.",
+    "C12 ha proteine basse (33 g): va compensata negli altri pasti della giornata o con 30 g di parmigiano.",
+    "P8 e C5 superano i 20 g di fibra: ottime sulla curva glicemica, ma non la sera prima di un allenamento."
+  ],
+
   "merendaRidotta": {
     "id": "Mrid",
     "kcal": 160,

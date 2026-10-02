@@ -260,6 +260,19 @@ export function Pasti() {
         si aggiorna, finiscono nel backup e compaiono tra le scelte di ogni giorno.
       </p>
 
+      {/* Note del nutrizionista (dati.json → notePasti): la prima, sui pesi, sempre in vista. */}
+      <p className="mt-3 rounded-xl bg-superficie p-3 text-sm">{dati.notePasti[0]}</p>
+      {dati.notePasti.length > 1 && (
+        <details className="mt-2 rounded-xl bg-superficie p-3 text-sm">
+          <summary className="font-semibold">Da sapere sui pasti</summary>
+          <ul className="mt-2 list-disc space-y-1 pl-5">
+            {dati.notePasti.slice(1).map((nota) => (
+              <li key={nota}>{nota}</li>
+            ))}
+          </ul>
+        </details>
+      )}
+
       <label className="relative mt-3 block">
         <span className="sr-only">Cerca un pasto o un alimento</span>
         <input

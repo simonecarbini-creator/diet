@@ -124,7 +124,10 @@ export function Settimana({ numero, oggi }: Props) {
   const pastiEffettivi = Object.fromEntries(
     giorni.map((g) => [
       g.data,
-      { pranzo: stati[g.data]?.scelte.pranzo ?? g.pranzo, cena: stati[g.data]?.scelte.cena ?? g.cena },
+      {
+        pranzo: stati[g.data]?.liberi?.pranzo !== undefined ? null : (stati[g.data]?.scelte.pranzo ?? g.pranzo),
+        cena: stati[g.data]?.liberi?.cena !== undefined ? null : (stati[g.data]?.scelte.cena ?? g.cena),
+      },
     ]),
   )
   const esiti = controllaVincoli(giorni, pastiEffettivi)

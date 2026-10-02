@@ -6,7 +6,7 @@ import { formatDifferenzaCho, formatNumero } from '../formato'
 import type { VocePasto } from '../giornata'
 import { RiassuntoAlimenti } from './Alimenti'
 import { DifferenzaKcal } from './DifferenzaKcal'
-import { frazioneLimite, oltreMassimo, type ConteggioPasto } from '../vincoli'
+import { conteggiDelPasto, frazioneLimite, nomeVincolo, oltreMassimo, type ConteggioVincolo } from '../vincoli'
 
 /** "senzaYogurt" → "senza yogurt" */
 function etichettaTag(tag: string): string {
@@ -19,8 +19,8 @@ type Props = {
   nomeCategoria: string
   voce: VocePasto
   tipoGiorno: string
-  /** Solo per la cena: quante volte ogni cena compare negli altri giorni della settimana. */
-  conteggiAltri?: Record<string, ConteggioPasto>
+  /** Pranzi e cene: i vincoli settimanali contati negli altri giorni della settimana. */
+  conteggiAltri?: Record<string, ConteggioVincolo>
   onScegli: (id: string | null) => void
   onChiudi: () => void
 }
@@ -120,9 +120,7 @@ export function PannelloScelta({
             const attivo = opzione.id === selezionato
             const ammesso = !opzione.soloTipiGiornata || opzione.soloTipiGiornata.includes(tipoGiorno)
             const diff = differenza(opzione)
-            const conteggio = conteggiAltri?.[opzione.base ?? opzione.id]
-            const conQuesta = conteggio ? conteggio.volte + 1 : 0
-            const frazione = conteggio ? frazioneLimite(conteggio, conQuesta) : null
+            const conteggi = conteggiAltri ? conteggiDelPasto(conteggiAltri, opzione.base ?? opzione.id) : []
             return (
               <li key={opzione.id}>
                 <button
@@ -168,16 +166,20 @@ export function PannelloScelta({
                     </div>
                   )}
                   {opzione.notaVersione && <p className="mt-1 text-sm">{opzione.notaVersione}</p>}
-                  {conteggio && frazione && (
-                    <p
-                      className={`mt-1 text-sm font-semibold ${
-                        oltreMassimo(conteggio, conQuesta) ? 'text-ko' : ''
-                      }`}
-                    >
-                      Con questa, {opzione.base ?? opzione.id} questa settimana: {frazione}
-                      {oltreMassimo(conteggio, conQuesta) && ' · supereresti il massimo'}
-                    </p>
-                  )}
+                  {conteggi.map((conteggio) => {
+                    const conQuesta = conteggio.volte + 1
+                    const frazione = frazioneLimite(conteggio, conQuesta)
+                    if (!frazione) return null
+                    return (
+                      <p
+                        key={conteggio.vincolo.id}
+                        className={`mt-1 text-sm font-semibold ${oltreMassimo(conteggio, conQuesta) ? 'text-ko' : ''}`}
+                      >
+                        Con questa, {nomeVincolo(conteggio.vincolo)} questa settimana: {frazione}
+                        {oltreMassimo(conteggio, conQuesta) && ' · supereresti il massimo'}
+                      </p>
+                    )
+                  })}
                   <p className="mt-1 text-sm">
                     <span className="opacity-70">{formatNumero(opzione.kcal)} kcal</span>
                     {riferimento && <DifferenzaKcal differenza={opzione.kcal - riferimento.kcal} />}

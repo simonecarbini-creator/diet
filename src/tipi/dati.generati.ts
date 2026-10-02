@@ -12,6 +12,7 @@ export type Dati = {
     pranzi:                Pranzi[];
     cene:                  Cene[];
     merende:               Merende[];
+    notePasti:             string[];
     merendaRidotta:        MerendaRidotta;
     merendaNote:           string[];
     sostituzioni:          Sostituzioni;
@@ -130,23 +131,26 @@ export type SpuntinoSeraleVarianti = {
 }
 
 export type Cene = {
-    id:                  string;
-    nome:                string;
-    kcal:                number;
-    cho:                 number;
-    proteine:            number;
-    alimenti:            CeneAlimenti[];
-    ridotto?:            CeneRidotto;
-    minimoSettimanale?:  number;
-    note?:               string;
-    massimoSettimanale?: number;
-    soloTipiGiornata?:   string[];
-    incompatibileCon?:   string[];
+    id:                           string;
+    nome:                         string;
+    kcal:                         number;
+    cho:                          number;
+    proteine:                     number;
+    alimenti:                     CeneAlimenti[];
+    ridotto?:                     CeneRidotto;
+    contaComeOmega3?:             boolean;
+    note?:                        string;
+    soloTipiGiornata?:            string[];
+    incompatibileCon?:            string[];
+    categoria?:                   string;
+    grassi?:                      number;
+    tags?:                        string[];
+    frequenzaMassimaSettimanale?: number;
 }
 
 export type CeneAlimenti = {
     nome:             string;
-    grammi?:          number;
+    grammi?:          number | null;
     note?:            string;
     pezzi?:           number;
     sostituibileCon?: string[];
@@ -215,23 +219,28 @@ export type OrariPasti = {
 }
 
 export type Pranzi = {
-    id:           string;
-    nome:         string;
-    primaScelta?: boolean;
-    kcal:         number;
-    cho:          number;
-    proteine:     number;
-    alimenti:     PranziAlimenti[];
-    varianti?:    PranziVarianti[];
-    ridotto:      PranziRidotto;
-    note:         string;
-    tags?:        string[];
-    maggiorato?:  Maggiorato;
+    id:                           string;
+    nome:                         string;
+    primaScelta?:                 boolean;
+    kcal:                         number;
+    cho:                          number;
+    proteine:                     number;
+    alimenti:                     PranziAlimenti[];
+    varianti?:                    PranziVarianti[];
+    ridotto?:                     PranziRidotto;
+    note:                         string;
+    tags?:                        string[];
+    maggiorato?:                  Maggiorato;
+    categoria?:                   string;
+    grassi?:                      number;
+    soloTipiGiornata?:            string[];
+    contaComeOmega3?:             boolean;
+    frequenzaMassimaSettimanale?: number;
 }
 
 export type PranziAlimenti = {
     nome:             string;
-    grammi:           number;
+    grammi:           number | null;
     note?:            string;
     sostituibileCon?: string[];
 }
@@ -458,12 +467,15 @@ export type SpuntinoSeraleQuando = {
 
 export type VincoliSettimanali = {
     id:                string;
+    nome?:             string;
     regola:            string;
     motivo?:           string;
     pasti?:            string[];
+    minimo?:           number;
+    massimo?:          number;
+    seraPrimaDiTipo?:  string;
     verdure?:          string[];
     categoriaVerdure?: string;
-    seraPrimaDiTipo?:  string;
 }
 
 export type Settimane = {

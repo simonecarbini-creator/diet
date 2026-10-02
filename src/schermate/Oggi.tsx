@@ -9,7 +9,7 @@ import { formatData, formatNumero } from '../formato'
 import { cercaGiorno, giornataEquivalente, giornoDopo, indicePastoCorrente, totaliPasti, vociDelGiorno } from '../giornata'
 import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
 import { settimane } from '../piano'
-import { conteggiCene, vincoliSeraPrima } from '../vincoli'
+import { conteggiVincoli, vincoliSeraPrima, type PastiDelGiorno } from '../vincoli'
 import type { ContestoSettimana } from '../componenti/CardPasto'
 import { dati, isCategoriaConId, isTipoGiornata, type CategoriaPasto } from '../dati'
 
@@ -62,15 +62,21 @@ export function Oggi({ data, ora, passato = false }: Props) {
   // Solo i pasti spuntati: cresce in tempo reale man mano che si mangia.
   const consumati = totaliPasti(voci.filter((v) => stato.consumati.includes(v.categoria)))
 
-  // Cene della settimana (con le sostituzioni salvate) per i contatori C2/C4.
-  const cenaEffettiva = (g: typeof giorno) =>
-    (g.data === data ? stato.scelte.cena : statiAltri[g.data]?.scelte.cena) ?? g.cena
+  // Pranzi e cene della settimana (con sostituzioni salvate, senza i pasti liberi)
+  // per i contatori dei vincoli settimanali (pesce grasso, formaggio, carne).
+  const pastiEffettivi = (g: typeof giorno): PastiDelGiorno => {
+    const s = g.data === data ? stato : statiAltri[g.data]
+    return {
+      pranzo: s?.liberi?.pranzo !== undefined ? null : (s?.scelte.pranzo ?? g.pranzo),
+      cena: s?.liberi?.cena !== undefined ? null : (s?.scelte.cena ?? g.cena),
+    }
+  }
   const tipoDomani = cercaGiorno(giornoDopo(data))?.giorno.tipo
   const contesto: ContestoSettimana = {
-    conteggi: conteggiCene(giorniSettimana, cenaEffettiva),
-    conteggiAltri: conteggiCene(
+    conteggi: conteggiVincoli(giorniSettimana, pastiEffettivi),
+    conteggiAltri: conteggiVincoli(
       giorniSettimana.filter((g) => g.data !== data),
-      cenaEffettiva,
+      pastiEffettivi,
     ),
     promemoriaSera: vincoliSeraPrima(tipoDomani),
     tipoDomani,
@@ -197,7 +203,13 @@ export function Oggi({ data, ora, passato = false }: Props) {
             corrente={i === corrente}
             consumato={stato.consumati.includes(voce.categoria)}
             tipoGiorno={giorno.tipo}
-            settimana={voce.categoria === 'cena' ? contesto : undefined}
+            settimana={
+              voce.categoria === 'cena'
+                ? contesto
+                : voce.categoria === 'pranzo'
+                  ? { ...contesto, promemoriaSera: [] }
+                  : undefined
+            }
             nota={stato.note?.[voce.categoria]}
             onAnnota={(testo) => annota(voce.categoria, testo)}
             onConsumato={(consumato) => segnaConsumato(voce.categoria, consumato)}

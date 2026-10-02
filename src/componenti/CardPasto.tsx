@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { dati, isCategoriaConId, type Vincolo } from '../dati'
+import { isCategoriaConId, type Vincolo } from '../dati'
 import type { VocePasto } from '../giornata'
 import { formatDifferenzaCho, formatNumero } from '../formato'
 import { ElencoAlimenti } from './Alimenti'
@@ -7,14 +7,14 @@ import { etichettePasti } from '../etichette'
 import { DifferenzaKcal } from './DifferenzaKcal'
 import { PannelloScelta } from './PannelloScelta'
 import { ContatoreSettimana, PromemoriaSera } from './Vincoli'
-import { frazioneLimite, idBase, type ConteggioPasto } from '../vincoli'
+import { conteggiDelPasto, frazioneLimite, idBase, type ConteggioVincolo } from '../vincoli'
 
 /** Contesto della settimana, solo per la cena: contatori e promemoria della sera. */
 export type ContestoSettimana = {
-  /** Conteggi della settimana, oggi compreso. */
-  conteggi: Record<string, ConteggioPasto>
+  /** Conteggi dei vincoli settimanali, oggi compreso. */
+  conteggi: Record<string, ConteggioVincolo>
   /** Conteggi degli altri giorni: per dire "con questa arrivi a…" nel pannello. */
-  conteggiAltri: Record<string, ConteggioPasto>
+  conteggiAltri: Record<string, ConteggioVincolo>
   promemoriaSera: Vincolo[]
   tipoDomani?: string
 }
@@ -60,11 +60,9 @@ export function CardPasto({
     pasto?.composizione ??
     (pasto?.nome === etichetta ? pasto.alimenti.map((a) => a.nome).join(' · ') : pasto?.nome)
   const sostituito = delPiano !== undefined
-  const base = pasto && categoria === 'cena' ? idBase('cena', pasto.id) : null
-  // Solo le cene con un limite settimanale (C2 minimo, C4 massimo) hanno il contatore.
-  const conteggioCena = base ? settimana?.conteggi[base] : undefined
-  const conteggio = conteggioCena && frazioneLimite(conteggioCena) ? conteggioCena : undefined
-  const nomeBase = dati.cene.find((c) => c.id === base)?.nome ?? ''
+  // Vincoli con un limite settimanale che riguardano questo pasto (es. C2 → pesce grasso).
+  const base = pasto && (categoria === 'pranzo' || categoria === 'cena') ? idBase(categoria, pasto.id) : null
+  const contatori = base && settimana ? conteggiDelPasto(settimana.conteggi, base).filter((c) => frazioneLimite(c)) : []
 
   return (
     <article
@@ -180,9 +178,11 @@ export function CardPasto({
         </div>
       )}
 
-      {pasto && (conteggio || (settimana && settimana.promemoriaSera.length > 0)) && (
+      {pasto && (contatori.length > 0 || (settimana && settimana.promemoriaSera.length > 0)) && (
         <div className="space-y-2 px-4 pb-3">
-          {base && conteggio && <ContatoreSettimana id={base} nome={nomeBase} conteggio={conteggio} />}
+          {contatori.map((c) => (
+            <ContatoreSettimana key={c.vincolo.id} conteggio={c} />
+          ))}
           {settimana?.tipoDomani && (
             <PromemoriaSera vincoli={settimana.promemoriaSera} tipoDomani={settimana.tipoDomani} />
           )}

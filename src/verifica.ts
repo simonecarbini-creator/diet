@@ -13,7 +13,7 @@ export function verificaDati(dati: Dati, idExtra: string[] = []): string[] {
   const idPranzi = new Set(
     dati.pranzi.flatMap((p) => [
       p.id,
-      p.ridotto.id,
+      ...(p.ridotto ? [p.ridotto.id] : []),
       ...(p.maggiorato ? [p.maggiorato.id] : []),
       ...(p.varianti ?? []).map((v) => v.id),
     ]).concat(idExtra),
@@ -78,6 +78,14 @@ export function verificaDati(dati: Dati, idExtra: string[] = []): string[] {
   if (!idPranzi.has(assegnazione.pranzo)) errori.push(`assegnazionePasti.pranzo: "${assegnazione.pranzo}" non trovato`)
   for (const id of [...assegnazione.ceneDistribuite.map((c) => c.cena), ...assegnazione.ceneARotazione, assegnazione.cenaRidottaDiRiserva]) {
     if (!idCene.has(id)) errori.push(`assegnazionePasti: cena "${id}" non trovata`)
+  }
+
+  // I pasti nominati nei vincoli settimanali devono esistere (pranzi o cene di base).
+  const idBasePasti = new Set([...dati.pranzi.map((p) => p.id), ...dati.cene.map((c) => c.id)])
+  for (const v of regole.vincoliSettimanali) {
+    for (const id of v.pasti ?? []) {
+      if (!idBasePasti.has(id)) errori.push(`vincoliSettimanali.${v.id}: pasto "${id}" non trovato`)
+    }
   }
 
   for (const settimana of dati.settimane) {
