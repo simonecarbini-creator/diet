@@ -16,9 +16,8 @@ export function Intestazione({ oggi }: { oggi: string }) {
   return (
     <header className="sticky top-0 z-30 border-b border-bordo bg-superficie/95 pt-[env(safe-area-inset-top)] backdrop-blur">
       <div className="mx-auto flex max-w-xl items-center gap-3 px-4 py-2.5">
-        <a href={link.settimana()} className="flex items-center gap-2.5" aria-label="Diet, vai alla settimana">
+        <a href={link.settimana()} aria-label="DIET, vai alla settimana">
           <Logo />
-          <span className="text-lg font-bold tracking-tight">Diet</span>
         </a>
         {mancano >= 0 && (
           <div className="ml-auto text-right leading-tight">

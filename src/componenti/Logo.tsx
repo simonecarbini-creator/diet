@@ -1,11 +1,4 @@
-// SEGNAPOSTO: da sostituire con il logo definitivo quando arrivano i file.
-export function Logo({ className = 'h-8 w-8' }: { className?: string }) {
-  return (
-    <span
-      className={`flex shrink-0 items-center justify-center rounded-lg bg-cho text-base font-bold text-white ${className}`}
-      aria-hidden="true"
-    >
-      D
-    </span>
-  )
+/** Logo orizzontale (ciambella + DIET) dal kit diet-brand, in public/logo. */
+export function Logo({ className = 'h-9' }: { className?: string }) {
+  return <img src={`${import.meta.env.BASE_URL}logo/logo-horizontal.svg`} alt="DIET" className={`w-auto ${className}`} />
 }

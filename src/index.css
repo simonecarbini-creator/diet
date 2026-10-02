@@ -1,24 +1,26 @@
 @import "tailwindcss";
 
-/* Palette da SPEC.md §6. I colori dei tipi giornata arrivano da dati.json. */
+/* Palette dal logo (diet-brand): rosa glassa per l'accento, crema per lo sfondo,
+   marrone del contorno per il testo. I colori dei tipi giornata arrivano da dati.json. */
 :root {
   color-scheme: light dark;
-  --testo: #0f2b46;
-  --sfondo: #f6f9fc;
+  --testo: #2a1a14;
+  --sfondo: #fff4e6;
   --superficie: #ffffff;
-  --bordo: #dde5ee;
-  --cho: #f25c05;
+  --bordo: #f0dfc8;
+  /* Rosa scuro del logo: più leggibile del rosa glassa sui numeri dei CHO. */
+  --cho: #e0549a;
   --ok: #2e8b57;
   --ko: #dc2626;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --testo: #e4ebf2;
-    --sfondo: #0b1520;
-    --superficie: #142231;
-    --bordo: #23364a;
-    --cho: #ff7a29;
+    --testo: #f6ebe0;
+    --sfondo: #1c1411;
+    --superficie: #2a1f1b;
+    --bordo: #3d2e28;
+    --cho: #f77fb8;
     --ok: #4fbf80;
     --ko: #f87171;
   }

@@ -210,7 +210,7 @@ Palette di partenza:
 | VERDE | `#2e8b57` |
 | ROSSO | `#d13b2e` |
 | GRIGIO | `#9aa7b4` |
-| CHO (accento) | `#f25c05` (scuro: `#ff7a29`) — *2026-10-01: più vivace del `#c1662a` iniziale* |
+| CHO (accento) | `#e0549a` (scuro: `#f77fb8`) — *2026-10-02: rosa del logo; sfondo `#fff4e6`, testo `#2a1a14`* |
 | Sfondo chiaro | `#f6f9fc` |
 
 Supporto al tema scuro: serve davvero, visto che l'app si apre alle 5 del mattino.
