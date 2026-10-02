@@ -29,13 +29,12 @@ export function IconaPolliceGiu({ className = 'h-5 w-5', spessore = 2 }: Props) 
   )
 }
 
-/** Bilancia pesapersone stilizzata. */
+/** Peso con maniglia (icona "weight" di Lucide). */
 export function IconaBilancia({ className = 'h-6 w-6', spessore = 1.75 }: Props) {
   return (
     <svg {...base} strokeWidth={spessore} className={className}>
-      <rect x="3" y="3" width="18" height="18" rx="4" />
-      <path d="M7.5 9.5a4.5 4.5 0 0 1 9 0" />
-      <path d="m12 9.5 1.8-2.4" />
+      <circle cx="12" cy="5" r="3" />
+      <path d="M6.5 8a2 2 0 0 0-1.905 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.925-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z" />
     </svg>
   )
 }
