@@ -12,8 +12,8 @@ type Props = {
 const voci = [
   { href: link.registro, titolo: 'Registro', descrizione: 'Peso, diario dei pasti ed export' },
   { href: link.nuova, titolo: 'Nuova settimana', descrizione: 'Inserisci la scheda e prepara il piano' },
-  { href: link.calcoli, titolo: 'Calcoli', descrizione: "Come l'app sceglie pasti, gel e giornate" },
   { href: link.piano, titolo: 'Cambia piano', descrizione: 'Obiettivo attivo, nuova gara o mantenimento' },
+  { href: link.calcoli, titolo: 'Calcoli', descrizione: "Come l'app sceglie pasti, gel e giornate" },
   { href: link.backup, titolo: 'Backup e installazione', descrizione: 'Salva i dati, installa sulla Home, offline' },
 ]
 

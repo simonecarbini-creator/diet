@@ -260,7 +260,7 @@ export type PranziVarianti = {
     kcal:     number;
     cho:      number;
     proteine: number;
-    alimenti: ModificheGrammiElement[];
+    alimenti: PreCorsaAlimenti[];
     note:     string;
 }
 

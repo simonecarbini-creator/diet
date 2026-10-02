@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { dati, idAlternative, isTipoGiornata, type Giorno, type Settimana } from '../dati'
 import { formatDataBreve, formatGiornoMese, formatNumero } from '../formato'
 import { aggiungiGiorni, giornoDellaSettimana, totaleDelPiano } from '../giornata'
-import { proponiSettimana, type GiornoInserito, type GiornoProposto, type Proposta } from '../motore'
+import { effettiLungoDomenicale, proponiSettimana, type GiornoInserito, type GiornoProposto, type Proposta } from '../motore'
 import { link } from '../navigazione'
 import { salvaSettimana, settimane, settimaneSovrapposte } from '../piano'
 import { verificaDati } from '../verifica'
@@ -58,6 +58,7 @@ function Inserimento({
   onImporta: (giorni: GiornoProposto[]) => void
 }) {
   const [json, setJson] = useState('')
+  const effetti = effettiLungoDomenicale(dati)
   const [erroreJson, setErroreJson] = useState<string | null>(null)
 
   function importa() {
@@ -105,15 +106,24 @@ function Inserimento({
                   <input inputMode="numeric" value={riga.sopra} onChange={(e) => onRiga(i, { ...riga, sopra: e.target.value })} className={`${campo} mt-1`} />
                 </Etichetta>
               </div>
-              <label className="mt-2 flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={lungo}
-                  onChange={(e) => onRiga(i, { ...riga, lungo: e.target.checked })}
-                  className="h-5 w-5 accent-[var(--cho)]"
-                />
-                Lungo domenicale
-              </label>
+              {/* Solo la domenica (o se già segnato): è il lungo della settimana, con le sue regole. */}
+              {(giornoDellaSettimana(data) === dati.regole.lungoDomenicaleAutomatico.giornoSettimana || lungo) && (
+                <div className="mt-2 rounded-lg bg-sfondo p-2">
+                  <label className="flex items-center gap-2 text-sm font-semibold">
+                    <input
+                      type="checkbox"
+                      checked={lungo}
+                      onChange={(e) => onRiga(i, { ...riga, lungo: e.target.checked })}
+                      className="h-5 w-5 accent-[var(--cho)]"
+                    />
+                    Lungo domenicale
+                  </label>
+                  <p className="mt-1 text-xs opacity-70">
+                    Colazione {effetti.colazione}, gel a {effetti.gelPerOra} g CHO/ora (protocollo gara) e cena
+                    C2 di preferenza. Si spunta da solo da {dati.regole.lungoDomenicaleAutomatico.distanzaKmMin} km.
+                  </p>
+                </div>
+              )}
             </li>
           )
         })}

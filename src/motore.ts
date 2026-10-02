@@ -212,3 +212,21 @@ function assegnaPasti(dati: Dati, giorni: GiornoProposto[], motivi: Proposta['mo
     g.cena = cena
   })
 }
+
+/** Cosa cambia segnando il lungo domenicale, letto dalle regole (per spiegarlo nel modulo). */
+export function effettiLungoDomenicale(dati: Dati): { colazione: string; gelPerOra: number } {
+  const contesto: Contesto = {
+    tipo: 'ROSSO',
+    distanzaKm: 0,
+    durataMinuti: null,
+    minutiSopraRitmoMedio: 0,
+    lungoDomenicale: true,
+    qualitaNelTesto: false,
+    riposo: false,
+    domaniRossoPesante: false,
+  }
+  return {
+    colazione: prima(dati.regole.sceltaColazione, contesto).colazione,
+    gelPerOra: prima(dati.regole.gelInCorsa, contesto).grammiChoPerOra,
+  }
+}

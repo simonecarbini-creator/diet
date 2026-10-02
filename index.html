@@ -15,8 +15,43 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>DIET</title>
+    <style>
+      /* Schermata di avvio: compare subito, prima del codice dell'app (vedi main.tsx). */
+      #avvio {
+        position: fixed; inset: 0; z-index: 100;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px;
+        background: #e4f6f0; transition: opacity 0.35s ease;
+      }
+      #avvio.via { opacity: 0; pointer-events: none; }
+      /* La GIF ha lo sfondo bianco: sta in una card bianca arrotondata, come un adesivo. */
+      #avvio img {
+        width: 220px; height: 220px; border-radius: 36px; background: #fff;
+        box-shadow: 0 10px 30px rgb(0 0 0 / 0.12);
+      }
+      /* Barra a bastoncino di zucchero: strisce rosa e panna in obliquo che scorrono. */
+      #avvio .barra {
+        width: 200px; height: 16px; border: 2.5px solid #2a1a14; border-radius: 999px;
+        background: #fff4e6; overflow: hidden;
+      }
+      #avvio .riempimento {
+        height: 100%; width: 0; border-radius: 999px;
+        background: repeating-linear-gradient(-45deg, #f77fb8 0 8px, #fff4e6 8px 16px);
+        background-size: 22.63px 22.63px;
+        animation: avanza 2.4s ease-in-out forwards, strisce 0.6s linear infinite;
+      }
+      @keyframes avanza { to { width: 100%; } }
+      @keyframes strisce { to { background-position: 22.63px 0; } }
+      @media (prefers-color-scheme: dark) { #avvio { background: #0c1f1b; } }
+      @media (prefers-reduced-motion: reduce) {
+        #avvio .riempimento { animation: avanza 2.4s linear forwards; }
+      }
+    </style>
   </head>
   <body>
+    <div id="avvio" role="status" aria-label="Caricamento">
+      <img src="/logo/logo-animato.gif" alt="" />
+      <div class="barra"><div class="riempimento"></div></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

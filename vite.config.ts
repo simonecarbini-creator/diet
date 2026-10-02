@@ -18,7 +18,9 @@ export default defineConfig({
       // Il manifest è public/site.webmanifest, dal kit del logo.
       manifest: false,
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,ics}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,gif,ico,webmanifest,ics}'],
+        // La GIF della schermata di avvio pesa circa 1 MB.
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         cleanupOutdatedCaches: true,
       },
     }),
