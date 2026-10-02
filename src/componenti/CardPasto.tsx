@@ -77,7 +77,8 @@ export function CardPasto({
             : 'border border-bordo'
       }`}
     >
-      <div className="flex items-start">
+      {/* Giornata libera: finché il pasto non è deciso, funzionano solo ✓ e ✕. */}
+      <div className={`flex items-start ${sgarro ? 'pointer-events-none opacity-40' : ''}`} aria-hidden={sgarro ? true : undefined}>
         <div className="flex shrink-0 flex-col items-center gap-2 self-stretch py-4 pl-4 pr-1">
           <button
             type="button"
@@ -95,26 +96,6 @@ export function CardPasto({
               {consumato && '✓'}
             </span>
           </button>
-          {sgarro && (
-            <>
-              <button
-                type="button"
-                onClick={sgarro.onConferma}
-                aria-label={`Conferma ${etichetta} come da piano`}
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-ok text-sm font-bold text-white shadow"
-              >
-                ✓
-              </button>
-              <button
-                type="button"
-                onClick={sgarro.onElimina}
-                aria-label={`Togli ${etichetta} e scrivi cosa hai mangiato`}
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-ko text-sm font-bold text-white shadow"
-              >
-                ✕
-              </button>
-            </>
-          )}
         </div>
 
         <button
@@ -177,6 +158,29 @@ export function CardPasto({
           </div>
         </button>
       </div>
+
+      {sgarro && (
+        <div className="flex items-center justify-between gap-3 px-4 pb-3">
+          <button
+            type="button"
+            onClick={sgarro.onConferma}
+            aria-label={`Tieni ${etichetta} come da piano`}
+            className="flex items-center gap-2 rounded-full bg-ok py-1.5 pl-1.5 pr-4 font-semibold text-white shadow"
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-sm">✓</span>
+            Tieni
+          </button>
+          <button
+            type="button"
+            onClick={sgarro.onElimina}
+            aria-label={`Togli ${etichetta} e scrivi cosa hai mangiato`}
+            className="flex items-center gap-2 rounded-full bg-ko py-1.5 pl-4 pr-1.5 font-semibold text-white shadow"
+          >
+            Togli
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-sm">✕</span>
+          </button>
+        </div>
+      )}
 
       {pasto && (conteggio || (settimana && settimana.promemoriaSera.length > 0)) && (
         <div className="space-y-2 px-4 pb-3">

@@ -58,7 +58,8 @@ In cima:
   (`kcal`/`cho` del giorno in `dati.json`) e la somma dei pasti effettivi, che si aggiorna
   quando si sceglie la merenda o si sostituisce un pasto (es. "piano 426 g · finora 368 g").
   *Decisione 2026-10-01: i totali del piano includono una merenda stimata, la somma no
-  finché la merenda non è scelta.*
+  finché la merenda non è scelta.* *Decisione 2026-10-02: il secondo riquadro è "Consumati finora"
+  (somma dei soli pasti spuntati, in tempo reale), con il riferimento alla somma dei pasti del giorno.*
 - Se previsti: indicazione gel in corsa e spuntino serale. **I CHO dei gel sono separati e
   non entrano nei totali del giorno.**
 

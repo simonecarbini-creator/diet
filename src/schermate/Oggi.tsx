@@ -60,6 +60,8 @@ export function Oggi({ data, ora, passato = false }: Props) {
   const { giorno } = trovato
   const tipo = isTipoGiornata(giorno.tipo) ? dati.tipiGiornata[giorno.tipo] : null
   const somma = totaliPasti(voci)
+  // Solo i pasti spuntati: cresce in tempo reale man mano che si mangia.
+  const consumati = totaliPasti(voci.filter((v) => stato.consumati.includes(v.categoria)))
 
   // Cene della settimana (con le sostituzioni salvate) per i contatori C2/C4.
   const cenaEffettiva = (g: typeof giorno) =>
@@ -109,15 +111,17 @@ export function Oggi({ data, ora, passato = false }: Props) {
           <div className="text-sm opacity-70">{formatNumero(giorno.kcal)} kcal</div>
         </div>
         <div className="rounded-xl border border-bordo bg-superficie p-3">
-          <div className="text-xs font-semibold uppercase opacity-70">Somma pasti</div>
+          <div className="text-xs font-semibold uppercase opacity-70">Consumati finora</div>
           <div className="text-4xl font-bold leading-tight tabular-nums text-cho">
-            {formatNumero(somma.cho)}
+            {formatNumero(consumati.cho)}
             <span className="ml-1 text-base">g CHO</span>
           </div>
           <div className="text-sm opacity-70">
-            {formatNumero(somma.kcal)} kcal ·{' '}
-            {formatNumero(somma.proteine)} g proteine
-            {somma.senzaProteine.length > 0 && '*'}
+            {formatNumero(consumati.kcal)} kcal · {formatNumero(consumati.proteine)} g proteine
+            {consumati.senzaProteine.length > 0 && '*'}
+          </div>
+          <div className="mt-1 text-xs">
+            su <span className="font-semibold">{formatNumero(somma.cho)} g CHO</span> dei pasti di oggi
           </div>
           {somma.pastiMancanti.includes('merenda') && (
             <div className="mt-1 text-xs font-semibold">merenda da scegliere</div>
@@ -127,9 +131,9 @@ export function Oggi({ data, ora, passato = false }: Props) {
               + {somma.pastiLiberi.length} {somma.pastiLiberi.length === 1 ? 'pasto libero' : 'pasti liberi'} (CHO ND)
             </div>
           )}
-          {somma.senzaProteine.length > 0 && (
+          {consumati.senzaProteine.length > 0 && (
             <div className="mt-1 text-xs opacity-70">
-              * senza {somma.senzaProteine.join(', ')}: proteine non presenti nel piano
+              * senza {consumati.senzaProteine.join(', ')}: proteine non presenti nel piano
             </div>
           )}
         </div>

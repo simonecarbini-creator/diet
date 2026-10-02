@@ -32,7 +32,8 @@ inaffidabile. Ogni funzione deve funzionare senza rete. Nessuna chiamata esterna
 nessun font remoto, nessuna CDN a runtime.
 
 **5. Il disclaimer resta.** Il campo `disclaimer` di `dati.json` va mostrato in fondo
-alle schermate principali. Non rimuoverlo, non riscriverlo.
+alle schermate principali. Non rimuoverlo, non riscriverlo. (Il testo è stato cambiato
+dall'utente il 2026-10-02: piano settimanale basato sul programma di allenamento.)
 
 ## Stack
 
