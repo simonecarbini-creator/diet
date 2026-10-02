@@ -6,7 +6,7 @@ import { CardPastoLibero } from '../componenti/CardPastoLibero'
 import { Conferma } from '../componenti/Conferma'
 import { etichettePasti } from '../etichette'
 import { formatData, formatNumero } from '../formato'
-import { cercaGiorno, giornoDopo, indicePastoCorrente, totaliPasti, vociDelGiorno } from '../giornata'
+import { cercaGiorno, giornataEquivalente, giornoDopo, indicePastoCorrente, totaliPasti, vociDelGiorno } from '../giornata'
 import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
 import { settimane } from '../piano'
 import { conteggiCene, vincoliSeraPrima } from '../vincoli'
@@ -59,7 +59,6 @@ export function Oggi({ data, ora, passato = false }: Props) {
 
   const { giorno } = trovato
   const tipo = isTipoGiornata(giorno.tipo) ? dati.tipiGiornata[giorno.tipo] : null
-  const somma = totaliPasti(voci)
   // Solo i pasti spuntati: cresce in tempo reale man mano che si mangia.
   const consumati = totaliPasti(voci.filter((v) => stato.consumati.includes(v.categoria)))
 
@@ -117,23 +116,11 @@ export function Oggi({ data, ora, passato = false }: Props) {
             <span className="ml-1 text-base">g CHO</span>
           </div>
           <div className="text-sm opacity-70">
-            {formatNumero(consumati.kcal)} kcal · {formatNumero(consumati.proteine)} g proteine
-            {consumati.senzaProteine.length > 0 && '*'}
+            {formatNumero(consumati.kcal)} kcal · {formatNumero(consumati.proteine)} g pro
           </div>
-          <div className="mt-1 text-xs">
-            su <span className="font-semibold">{formatNumero(somma.cho)} g CHO</span> dei pasti di oggi
-          </div>
-          {somma.pastiMancanti.includes('merenda') && (
-            <div className="mt-1 text-xs font-semibold">merenda da scegliere</div>
-          )}
-          {somma.pastiLiberi.length > 0 && (
+          {consumati.pastiLiberi.length > 0 && (
             <div className="mt-1 text-xs font-semibold text-ko">
-              + {somma.pastiLiberi.length} {somma.pastiLiberi.length === 1 ? 'pasto libero' : 'pasti liberi'} (CHO ND)
-            </div>
-          )}
-          {consumati.senzaProteine.length > 0 && (
-            <div className="mt-1 text-xs opacity-70">
-              * senza {consumati.senzaProteine.join(', ')}: proteine non presenti nel piano
+              + {consumati.pastiLiberi.length} {consumati.pastiLiberi.length === 1 ? 'pasto libero' : 'pasti liberi'} ND
             </div>
           )}
         </div>
@@ -157,6 +144,13 @@ export function Oggi({ data, ora, passato = false }: Props) {
           </span>
         </span>
       </label>
+
+      {stato.sgarro && Object.keys(stato.liberi ?? {}).length > 0 && giornataEquivalente(giorno, stato) && (
+        <p className="mt-2 rounded-xl bg-ok/15 px-3 py-2 text-sm">
+          Giornata libera, ma con totali equivalenti al piano (entro ±{dati.regole.giornataLibera.tolleranzaPercento}% su
+          kcal, CHO e proteine): conta come rispettata.
+        </p>
+      )}
 
       {(giorno.gelCho > 0 || giorno.spuntinoSerale) && (
         <section className="mt-3 space-y-1 rounded-xl border border-bordo bg-superficie p-3 text-sm">
@@ -193,7 +187,7 @@ export function Oggi({ data, ora, passato = false }: Props) {
               etichetta={etichettePasti[voce.categoria]}
               consumato={stato.consumati.includes(voce.categoria)}
               onConsumato={(consumato) => segnaConsumato(voce.categoria, consumato)}
-              onSalva={(testo) => pastoLibero(voce.categoria, testo)}
+              onSalva={(libero) => pastoLibero(voce.categoria, libero)}
               onRipristina={ripristinaPasto}
             />
           ) : (
@@ -227,11 +221,11 @@ export function Oggi({ data, ora, passato = false }: Props) {
           distruttiva
           onAnnulla={() => setDaTogliere(null)}
           onConferma={() => {
-            pastoLibero(daTogliere, '')
+            pastoLibero(daTogliere, { testo: '' })
             setDaTogliere(null)
           }}
         >
-          Al posto del pasto del piano scriverai cosa hai mangiato. I suoi CHO non saranno conteggiati (ND).
+          Al posto del pasto del piano scriverai cosa hai mangiato. Se non ne inserisci i valori, i suoi CHO restano ND.
         </Conferma>
       )}
       {chiudiLibera && (

@@ -182,6 +182,11 @@
       "quando": { "e": [ { "var": "tipo", "==": "GRIGIO" }, { "var": "domaniRossoPesante", "==": true } ] }
     },
 
+    "giornataLibera": {
+      "tolleranzaPercento": 5,
+      "nota": "Una giornata libera conta come rispettata se tutti i pasti liberi hanno kcal, CHO e proteine e il totale del giorno resta entro questa percentuale da quello dei pasti del piano. Decisione dell'utente del 2026-10-02."
+    },
+
     "regolaSabato": "Si tagliano SOLO i cereali. Proteine (130 g) e grassi (90 g) restano identici agli altri giorni. Nessun pre-corsa, nessuno spuntino serale.",
 
     "assegnazionePasti": {

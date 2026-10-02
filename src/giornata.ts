@@ -13,6 +13,18 @@ import {
   type Settimana,
 } from './dati'
 
+/** Pasto libero della giornata di sgarro; i valori sono facoltativi (se si conoscono). */
+export type PastoLibero = { testo: string; kcal?: number; cho?: number; proteine?: number }
+
+/** I pasti liberi salvati prima dei valori erano solo testo. */
+export function comeLibero(valore: string | PastoLibero): PastoLibero {
+  return typeof valore === 'string' ? { testo: valore } : valore
+}
+
+export function haValori(libero: PastoLibero): boolean {
+  return libero.kcal !== undefined && libero.cho !== undefined && libero.proteine !== undefined
+}
+
 export type VocePasto = {
   categoria: CategoriaPasto
   orario: string
@@ -22,14 +34,14 @@ export type VocePasto = {
   delPiano?: PastoRisolto | null
   /** Id previsto dal piano (null se il piano lo lascia da scegliere). */
   idPiano: string | null
-  /** Giornata libera: cosa si è mangiato al posto del pasto ('' = ancora da scrivere). */
-  libero?: string
+  /** Giornata libera: cosa si è mangiato al posto del pasto (testo '' = ancora da scrivere). */
+  libero?: PastoLibero
 }
 
 export function vociDelGiorno(
   giorno: Giorno,
   scelte: Partial<Record<CategoriaConId, string>> = {},
-  liberi: Partial<Record<CategoriaPasto, string>> = {},
+  liberi: Partial<Record<CategoriaPasto, string | PastoLibero>> = {},
 ): VocePasto[] {
   const orari = dati.orariPasti
   const voci: VocePasto[] = []
@@ -65,7 +77,7 @@ export function vociDelGiorno(
 
   for (const voce of voci) {
     const libero = liberi[voce.categoria]
-    if (libero !== undefined) voce.libero = libero
+    if (libero !== undefined) voce.libero = comeLibero(libero)
   }
   return voci.sort((a, b) => a.orario.localeCompare(b.orario))
 }
@@ -79,7 +91,7 @@ export type TotaliPasti = {
   senzaProteine: string[]
   /** Pasti senza valori (da scegliere): la somma è parziale. */
   pastiMancanti: CategoriaPasto[]
-  /** Pasti liberi della giornata di sgarro: CHO non dichiarati, esclusi dalla somma. */
+  /** Pasti liberi senza valori (CHO non dichiarati): esclusi dalla somma. */
   pastiLiberi: CategoriaPasto[]
 }
 
@@ -88,7 +100,13 @@ export function totaliPasti(voci: VocePasto[]): TotaliPasti {
   const totali: TotaliPasti = { kcal: 0, cho: 0, proteine: 0, senzaProteine: [], pastiMancanti: [], pastiLiberi: [] }
   for (const { categoria, pasto, libero } of voci) {
     if (libero !== undefined) {
-      totali.pastiLiberi.push(categoria)
+      if (haValori(libero)) {
+        totali.kcal += libero.kcal ?? 0
+        totali.cho += libero.cho ?? 0
+        totali.proteine += libero.proteine ?? 0
+      } else {
+        totali.pastiLiberi.push(categoria)
+      }
       continue
     }
     if (!pasto) {
@@ -133,19 +151,41 @@ export function oraLocale(adesso: Date): string {
 
 export type Esito = 'rispettato' | 'nonRispettato' | 'nonDichiarato'
 
+type StatoPerEsito = {
+  scelte: Partial<Record<CategoriaConId, string>>
+  consumati: CategoriaPasto[]
+  sgarro?: boolean
+  liberi?: Partial<Record<CategoriaPasto, string | PastoLibero>>
+}
+
+/**
+ * Giornata libera "equivalente": tutti i pasti liberi hanno i valori e kcal, CHO e proteine
+ * del giorno restano entro la tolleranza di dati.json rispetto ai pasti del piano.
+ */
+export function giornataEquivalente(giorno: Giorno, stato: StatoPerEsito): boolean {
+  const piano = totaliPasti(vociDelGiorno(giorno, stato.scelte))
+  const reale = totaliPasti(vociDelGiorno(giorno, stato.scelte, stato.liberi ?? {}))
+  if (reale.pastiLiberi.length > 0) return false
+  const tolleranza = dati.regole.giornataLibera.tolleranzaPercento / 100
+  const vicino = (valore: number, riferimento: number) => Math.abs(valore - riferimento) <= riferimento * tolleranza
+  // Le proteine si confrontano solo se il piano le riporta per tutti i pasti.
+  const proteine = piano.senzaProteine.length === 0 && reale.senzaProteine.length === 0
+  return vicino(reale.kcal, piano.kcal) && vicino(reale.cho, piano.cho) && (!proteine || vicino(reale.proteine, piano.proteine))
+}
+
 /**
  * Riepilogo del giorno dai pasti spuntati: tutti → rispettato, nessuno → non dichiarato,
  * solo alcuni → non rispettato. La merenda non scelta conta come non consumata.
  */
 export function esitoGiorno(
   giorno: Giorno,
-  stato: { scelte: Partial<Record<CategoriaConId, string>>; consumati: CategoriaPasto[]; sgarro?: boolean },
+  stato: StatoPerEsito,
 ): { esito: Esito; fatti: number; totali: number } {
   const voci = vociDelGiorno(giorno, stato.scelte)
   const fatti = voci.filter((v) => v.pasto && stato.consumati.includes(v.categoria)).length
-  // La giornata libera è sempre "non rispettato".
+  // Giornata libera: rispettata solo se i totali restano equivalenti al piano.
   const esito = stato.sgarro
-    ? 'nonRispettato'
+    ? giornataEquivalente(giorno, stato) ? 'rispettato' : 'nonRispettato'
     : fatti === 0 ? 'nonDichiarato' : fatti === voci.length ? 'rispettato' : 'nonRispettato'
   return { esito, fatti, totali: voci.length }
 }

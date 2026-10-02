@@ -159,6 +159,14 @@ export function Calcoli() {
           </p>
         </Sezione>
 
+        <Sezione titolo="Giornata libera">
+          <p>
+            Il riepilogo del giorno è pollice verso, a meno che tutti i pasti liberi abbiano kcal, CHO e proteine e il
+            totale resti entro ±{regole.giornataLibera.tolleranzaPercento}% da quello dei pasti del piano: allora conta
+            come rispettata.
+          </p>
+        </Sezione>
+
         <Sezione titolo="Vincoli della settimana">
           <ul className="list-disc space-y-1 pl-5">
             {regole.vincoliSettimanali.map((v) => (

@@ -284,6 +284,7 @@ export type Regole = {
     gelGrammiPerUnita:         number;
     gelNota:                   string;
     sabatoRicarica:            SabatoRicarica;
+    giornataLibera:            GiornataLibera;
     regolaSabato:              string;
     assegnazionePasti:         AssegnazionePasti;
     vincoliSettimanali:        VincoliSettimanali[];
@@ -348,6 +349,11 @@ export type GelInCorsaQuando = {
     ">"?:    number;
     ">="?:   number;
     sempre?: boolean;
+}
+
+export type GiornataLibera = {
+    tolleranzaPercento: number;
+    nota:               string;
 }
 
 export type LungoDomenicaleAutomatico = {

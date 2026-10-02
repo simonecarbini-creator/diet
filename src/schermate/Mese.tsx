@@ -128,14 +128,15 @@ export function Mese({ mese, oggi }: Props) {
       </div>
 
       {passati > 0 && (
-        <section className="mt-5 grid grid-cols-3 gap-2 text-center">
+        <section className="mt-4 flex items-center justify-around rounded-xl border border-bordo bg-superficie px-3 py-2.5">
           {(['rispettato', 'nonRispettato', 'nonDichiarato'] as const).map((esito) => (
-            <div key={esito} className="flex flex-col items-center gap-1 rounded-xl border border-bordo bg-superficie p-3">
+            <div
+              key={esito}
+              className="flex items-center gap-2"
+              aria-label={`${conteggi[esito]} ${{ rispettato: 'rispettati', nonRispettato: 'non rispettati', nonDichiarato: 'non registrati' }[esito]}`}
+            >
               <BadgeEsito esito={esito} />
-              <span className="text-2xl font-bold tabular-nums">{conteggi[esito]}</span>
-              <span className="text-xs opacity-70">
-                {{ rispettato: 'rispettati', nonRispettato: 'non rispettati', nonDichiarato: 'non registrati' }[esito]}
-              </span>
+              <span className="text-xl font-bold tabular-nums">{conteggi[esito]}</span>
             </div>
           ))}
         </section>

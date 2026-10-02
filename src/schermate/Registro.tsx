@@ -5,7 +5,7 @@ import { leggiTutto } from '../archivio'
 import { dati, isCategoriaConId, type CategoriaPasto } from '../dati'
 import { csv, condividiFile } from '../esporta'
 import { formatData, formatDataBreve } from '../formato'
-import { aggiungiGiorni, cercaGiorno } from '../giornata'
+import { aggiungiGiorni, cercaGiorno, comeLibero } from '../giornata'
 import { link } from '../navigazione'
 import { etichettePasti } from '../etichette'
 import type { Pesata } from '../peso'
@@ -144,8 +144,12 @@ function vociDiario(stati: [string, unknown][]): VoceDiario[] {
           testo: delPiano ? `${id} al posto di ${delPiano}` : `${id} scelta`,
         })
       }
-      for (const [categoria, testo] of Object.entries(stato.liberi ?? {})) {
-        if (testo) righe.push({ pasto: etichettePasti[categoria as CategoriaPasto], testo: `pasto libero: «${testo}»` })
+      for (const [categoria, valore] of Object.entries(stato.liberi ?? {})) {
+        const libero = valore === undefined ? null : comeLibero(valore)
+        if (libero?.testo) {
+          const cho = libero.cho !== undefined ? ` (${libero.cho} g CHO)` : ''
+          righe.push({ pasto: etichettePasti[categoria as CategoriaPasto], testo: `pasto libero: «${libero.testo}»${cho}` })
+        }
       }
       if (stato.sgarro && righe.length === 0) righe.push({ pasto: 'Giornata', testo: 'libera' })
       for (const [categoria, testo] of Object.entries(stato.note ?? {})) {

@@ -165,19 +165,17 @@ export function CardPasto({
             type="button"
             onClick={sgarro.onConferma}
             aria-label={`Tieni ${etichetta} come da piano`}
-            className="flex items-center gap-2 rounded-full bg-ok py-1.5 pl-1.5 pr-4 font-semibold text-white shadow"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-ok text-base font-bold text-white shadow"
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-sm">✓</span>
-            Tieni
+            ✓
           </button>
           <button
             type="button"
             onClick={sgarro.onElimina}
             aria-label={`Togli ${etichetta} e scrivi cosa hai mangiato`}
-            className="flex items-center gap-2 rounded-full bg-ko py-1.5 pl-4 pr-1.5 font-semibold text-white shadow"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-ko text-base font-bold text-white shadow"
           >
-            Togli
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-sm">✕</span>
+            ✕
           </button>
         </div>
       )}

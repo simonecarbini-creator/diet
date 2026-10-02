@@ -29,7 +29,7 @@ export function IconaPolliceGiu({ className = 'h-5 w-5', spessore = 2 }: Props) 
   )
 }
 
-/** Bilancia pesapersone vista dall'alto: quadrante con tacchette nella metà superiore. */
+/** Bilancia pesapersone digitale vista dall'alto: display in alto e impronte dei piedi. */
 export function IconaBilancia({
   className = 'h-6 w-6',
   spessore = 1.75,
@@ -38,19 +38,16 @@ export function IconaBilancia({
 }: Props & {
   /** Riempimento del piatto (es. bianco nel pulsante del peso). */
   piatto?: string
-  /** Colore di tacchette e lancetta. */
+  /** Colore di display e impronte. */
   segni?: string
 }) {
   return (
     <svg {...base} strokeWidth={spessore} className={className}>
       <rect x="2.5" y="2.5" width="19" height="19" rx="5" fill={piatto} />
-      <g stroke={segni}>
-        <path d="M8.36 10.40 7.15 9.70" />
-        <path d="M9.90 8.86 9.20 7.65" />
-        <path d="M12.00 8.30 12.00 6.90" />
-        <path d="M14.10 8.86 14.80 7.65" />
-        <path d="M15.64 10.40 16.85 9.70" />
-        <path d="M12 12.5 13.44 9.42" />
+      <g fill={segni} stroke="none">
+        <rect x="8" y="5.2" width="8" height="3.6" rx="1.2" />
+        <ellipse cx="9.2" cy="15" rx="1.9" ry="3.1" />
+        <ellipse cx="14.8" cy="15" rx="1.9" ry="3.1" />
       </g>
     </svg>
   )

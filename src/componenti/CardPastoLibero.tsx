@@ -1,22 +1,43 @@
 // Pasto libero della giornata di sgarro: al posto del pasto del piano c'è quello che si
-// è mangiato davvero, scritto a mano. I CHO non sono noti: si mostra "ND g CHO".
+// è mangiato davvero. Kcal, CHO e proteine sono facoltativi: senza, i CHO sono "ND".
 import { useState } from 'react'
 import type { CategoriaPasto } from '../dati'
-import type { VocePasto } from '../giornata'
+import { formatNumero } from '../formato'
+import { haValori, type PastoLibero, type VocePasto } from '../giornata'
 
 type Props = {
   voce: VocePasto
   etichetta: string
   consumato: boolean
   onConsumato: (consumato: boolean) => void
-  onSalva: (testo: string) => void
+  onSalva: (libero: PastoLibero) => void
   onRipristina: (categoria: CategoriaPasto) => void
 }
 
+type Bozza = { testo: string; kcal: string; cho: string; proteine: string }
+
+const daNumero = (v?: number) => (v === undefined ? '' : String(v))
+const numero = (t: string): number | undefined => {
+  const n = Number(t.trim().replace(',', '.'))
+  return t.trim() !== '' && Number.isFinite(n) && n >= 0 ? n : undefined
+}
+const campo = 'mt-1 block w-full min-w-0 rounded-lg border border-bordo bg-sfondo px-2.5 py-2 outline-none focus:border-cho'
+
 export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSalva, onRipristina }: Props) {
-  const testo = voce.libero ?? ''
-  const [bozza, setBozza] = useState<string | null>(testo === '' ? '' : null)
+  const libero = voce.libero ?? { testo: '' }
+  const daScrivere = libero.testo === ''
+  const [bozza, setBozza] = useState<Bozza | null>(
+    daScrivere ? { testo: '', kcal: '', cho: '', proteine: '' } : null,
+  )
   const [aperto, setAperto] = useState(false)
+
+  const apriModifica = () =>
+    setBozza({
+      testo: libero.testo,
+      kcal: daNumero(libero.kcal),
+      cho: daNumero(libero.cho),
+      proteine: daNumero(libero.proteine),
+    })
 
   if (bozza !== null) {
     return (
@@ -29,25 +50,51 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
           <textarea
             rows={3}
             autoFocus
-            value={bozza}
-            onChange={(e) => setBozza(e.target.value)}
+            value={bozza.testo}
+            onChange={(e) => setBozza({ ...bozza, testo: e.target.value })}
             placeholder="es. pizza margherita e una birra"
-            className="mt-1 w-full resize-none rounded-lg border border-bordo bg-sfondo px-2.5 py-2 outline-none focus:border-cho"
+            className={`${campo} resize-none`}
           />
         </label>
-        <div className="mt-2 grid grid-cols-2 gap-2">
+        <p className="mt-2 text-xs opacity-70">
+          Valori facoltativi: se li conosci, il pasto entra nei totali e la giornata può risultare equivalente al piano.
+        </p>
+        <div className="mt-1 grid grid-cols-3 gap-2">
+          {(
+            [
+              ['kcal', 'Kcal'],
+              ['cho', 'g CHO'],
+              ['proteine', 'g pro'],
+            ] as const
+          ).map(([chiave, testo]) => (
+            <label key={chiave} className="block min-w-0">
+              <span className="text-xs font-semibold uppercase opacity-70">{testo}</span>
+              <input
+                inputMode="decimal"
+                value={bozza[chiave]}
+                onChange={(e) => setBozza({ ...bozza, [chiave]: e.target.value })}
+                className={`${campo} font-semibold`}
+              />
+            </label>
+          ))}
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
           <button
             type="button"
-            onClick={() => (testo === '' ? onRipristina(voce.categoria) : setBozza(null))}
+            onClick={() => (daScrivere ? onRipristina(voce.categoria) : setBozza(null))}
             className="rounded-xl border border-bordo p-2.5 font-medium"
           >
-            {testo === '' ? 'Rimetti il pasto' : 'Annulla'}
+            {daScrivere ? 'Rimetti il pasto' : 'Annulla'}
           </button>
           <button
             type="button"
-            disabled={bozza.trim() === ''}
+            disabled={bozza.testo.trim() === ''}
             onClick={() => {
-              onSalva(bozza.trim())
+              const valori = { kcal: numero(bozza.kcal), cho: numero(bozza.cho), proteine: numero(bozza.proteine) }
+              onSalva({
+                testo: bozza.testo.trim(),
+                ...Object.fromEntries(Object.entries(valori).filter(([, v]) => v !== undefined)),
+              })
               setBozza(null)
             }}
             className="rounded-xl bg-cho p-2.5 font-bold text-white disabled:opacity-40"
@@ -59,6 +106,7 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
     )
   }
 
+  const conValori = haValori(libero)
   return (
     <article id={`pasto-${voce.categoria}`} className="scroll-mt-20 rounded-xl border border-bordo bg-superficie">
       <div className="flex items-start">
@@ -88,18 +136,24 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
             <div className="text-xs font-semibold uppercase tracking-wide opacity-70">
               {etichetta} · <span className="text-ko">libero</span>
             </div>
-            <div className="font-semibold leading-snug">{testo}</div>
-            <div className="text-sm opacity-70">al posto di {voce.pasto?.id ?? 'del pasto del piano'}</div>
+            <div className="font-semibold leading-snug">{libero.testo}</div>
+            <div className="text-sm opacity-70">
+              {conValori
+                ? `${formatNumero(libero.kcal ?? 0)} kcal · ${formatNumero(libero.proteine ?? 0)} g pro`
+                : `al posto di ${voce.pasto?.id ?? 'del pasto del piano'}`}
+            </div>
           </div>
           <div className="shrink-0 text-right text-cho">
-            <div className="text-3xl font-bold leading-none">ND</div>
+            <div className="text-3xl font-bold leading-none tabular-nums">
+              {conValori ? formatNumero(libero.cho ?? 0) : 'ND'}
+            </div>
             <div className="text-xs font-semibold">g CHO</div>
           </div>
         </button>
       </div>
       {aperto && (
         <div className="grid grid-cols-2 gap-2 border-t border-bordo px-4 pb-4 pt-3">
-          <button type="button" onClick={() => setBozza(testo)} className="rounded-xl border border-bordo p-2.5 font-medium">
+          <button type="button" onClick={apriModifica} className="rounded-xl border border-bordo p-2.5 font-medium">
             Modifica
           </button>
           <button type="button" onClick={() => onRipristina(voce.categoria)} className="rounded-xl border border-bordo p-2.5 font-medium">

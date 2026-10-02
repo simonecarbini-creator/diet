@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { leggi, scrivi } from './archivio'
 import type { CategoriaConId, CategoriaPasto } from './dati'
+import type { PastoLibero } from './giornata'
 
 export type StatoGiorno = {
   /** Pasti scelti al posto di quelli del piano (o la merenda, se il piano non la indica). */
@@ -14,8 +15,8 @@ export type StatoGiorno = {
   sgarro?: boolean
   /** Giornata libera: pasti del piano confermati così come sono. */
   confermati?: CategoriaPasto[]
-  /** Giornata libera: pasti sostituiti da ciò che si è mangiato ('' = ancora da scrivere). */
-  liberi?: Partial<Record<CategoriaPasto, string>>
+  /** Giornata libera: pasti sostituiti da ciò che si è mangiato (testo '' = ancora da scrivere). */
+  liberi?: Partial<Record<CategoriaPasto, string | PastoLibero>>
 }
 
 const statoVuoto: StatoGiorno = { scelte: {}, consumati: [] }
@@ -66,8 +67,8 @@ export function useStatoGiorno(data: string) {
       aggiorna({ ...stato, confermati })
     },
     /** testo '' = pasto tolto, in attesa di scrivere cosa si è mangiato. */
-    pastoLibero(categoria: CategoriaPasto, testo: string) {
-      aggiorna({ ...stato, liberi: { ...stato.liberi, [categoria]: testo } })
+    pastoLibero(categoria: CategoriaPasto, libero: PastoLibero) {
+      aggiorna({ ...stato, liberi: { ...stato.liberi, [categoria]: libero } })
     },
     ripristinaPasto(categoria: CategoriaPasto) {
       const liberi = { ...stato.liberi }
