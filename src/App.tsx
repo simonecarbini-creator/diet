@@ -9,6 +9,8 @@ import { verificaDati } from './verifica'
 import { compilaDatiDiProva } from './prova'
 import { Intestazione } from './componenti/Intestazione'
 import { PiePagina } from './componenti/PiePagina'
+import { FinestraPeso, PulsantePeso } from './componenti/Peso'
+import { promemoriaPesata, usePesi } from './peso'
 
 function App() {
   const errori = verificaDati(dati)
@@ -22,6 +24,9 @@ function App() {
   }, [])
 
   const oggi = dataLocale(adesso)
+  const { pesate, aggiungi, elimina } = usePesi()
+  const [finestraPeso, setFinestraPeso] = useState(false)
+  const promemoria = promemoriaPesata(oggi, oraLocale(adesso), pesate)
 
   // TEMPORANEO: vedi prova.ts.
   useEffect(() => {
@@ -41,7 +46,16 @@ function App() {
   return (
     <>
       <Intestazione oggi={oggi} />
-      <div className="mx-auto max-w-xl px-4 pb-28 pt-4">
+      {promemoria && (
+        <button
+          type="button"
+          onClick={() => setFinestraPeso(true)}
+          className="block w-full bg-cho px-4 py-2 text-center text-sm font-semibold text-white"
+        >
+          {promemoria === 'vigilia' ? 'Domattina pesati a digiuno' : 'Oggi è il giorno della pesata'} ›
+        </button>
+      )}
+      <div className="mx-auto max-w-xl px-4 pb-36 pt-4">
         {errori.length > 0 && (
           <ul className="mb-4 rounded-xl border-2 border-red-600 p-3 text-sm text-red-600">
             {errori.map((errore) => (
@@ -69,6 +83,18 @@ function App() {
 
         <PiePagina />
       </div>
+
+      {!finestraPeso && <PulsantePeso promemoria={promemoria !== null} onApri={() => setFinestraPeso(true)} />}
+      {finestraPeso && (
+        <FinestraPeso
+          pesate={pesate}
+          oggi={oggi}
+          promemoria={promemoria}
+          onAggiungi={aggiungi}
+          onElimina={elimina}
+          onChiudi={() => setFinestraPeso(false)}
+        />
+      )}
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-bordo bg-superficie pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto flex max-w-xl">

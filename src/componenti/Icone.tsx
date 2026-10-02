@@ -28,3 +28,41 @@ export function IconaPolliceGiu({ className = 'h-5 w-5', spessore = 2 }: Props) 
     </svg>
   )
 }
+
+/** Bilancia pesapersone stilizzata. */
+export function IconaBilancia({ className = 'h-6 w-6', spessore = 1.75 }: Props) {
+  return (
+    <svg {...base} strokeWidth={spessore} className={className}>
+      <rect x="3" y="3" width="18" height="18" rx="4" />
+      <path d="M7.5 9.5a4.5 4.5 0 0 1 9 0" />
+      <path d="m12 9.5 1.8-2.4" />
+    </svg>
+  )
+}
+
+export function IconaFrecciaGiu({ className = 'h-4 w-4', spessore = 2 }: Props) {
+  return (
+    <svg {...base} strokeWidth={spessore} className={className}>
+      <path d="M12 5v14" />
+      <path d="m19 12-7 7-7-7" />
+    </svg>
+  )
+}
+
+export function IconaFrecciaSu({ className = 'h-4 w-4', spessore = 2 }: Props) {
+  return (
+    <svg {...base} strokeWidth={spessore} className={className}>
+      <path d="M12 19V5" />
+      <path d="m5 12 7-7 7 7" />
+    </svg>
+  )
+}
+
+export function IconaUguale({ className = 'h-4 w-4', spessore = 2 }: Props) {
+  return (
+    <svg {...base} strokeWidth={spessore} className={className}>
+      <path d="M5 9h14" />
+      <path d="M5 15h14" />
+    </svg>
+  )
+}

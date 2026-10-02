@@ -4,10 +4,12 @@ type Props = {
   titolo: string
   onChiudi: () => void
   children: ReactNode
+  /** Il pulsante "Ho capito" in fondo: utile per i popup solo informativi. */
+  conConferma?: boolean
 }
 
 /** Finestra informativa dal basso: si chiude con ✕, "Ho capito" o toccando fuori. */
-export function Popup({ titolo, onChiudi, children }: Props) {
+export function Popup({ titolo, onChiudi, children, conConferma = true }: Props) {
   useEffect(() => {
     const precedente = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -17,7 +19,7 @@ export function Popup({ titolo, onChiudi, children }: Props) {
   }, [])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50" onClick={onChiudi}>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm" onClick={onChiudi}>
       <div
         role="dialog"
         aria-modal="true"
@@ -37,9 +39,11 @@ export function Popup({ titolo, onChiudi, children }: Props) {
           </button>
         </div>
         <div className="mt-2 space-y-3">{children}</div>
-        <button type="button" onClick={onChiudi} className="mt-4 w-full rounded-xl border border-bordo p-3 font-medium">
-          Ho capito
-        </button>
+        {conConferma && (
+          <button type="button" onClick={onChiudi} className="mt-4 w-full rounded-xl border border-bordo p-3 font-medium">
+            Ho capito
+          </button>
+        )}
       </div>
     </div>
   )
