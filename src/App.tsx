@@ -10,6 +10,7 @@ import { Calcoli } from './schermate/Calcoli'
 import { CambiaPiano } from './schermate/CambiaPiano'
 import { Registro } from './schermate/Registro'
 import { Backup } from './schermate/Backup'
+import { Pasti } from './schermate/Pasti'
 import { Menu } from './componenti/Menu'
 import { verificaDati } from './verifica'
 import { Intestazione } from './componenti/Intestazione'
@@ -77,6 +78,7 @@ function App() {
         {rotta.schermata === 'calcoli' && <Calcoli />}
         {rotta.schermata === 'piano' && <CambiaPiano oggi={oggi} />}
         {rotta.schermata === 'backup' && <Backup oggi={oggi} />}
+        {rotta.schermata === 'pasti' && <Pasti />}
         {rotta.schermata === 'registro' && <Registro pesate={pesate} onApriPeso={() => setFinestraPeso(true)} />}
         {rotta.schermata === 'settimana' && <Settimana numero={rotta.numero} oggi={oggi} />}
         {rotta.schermata === 'giorno' && (

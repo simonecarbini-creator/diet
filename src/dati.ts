@@ -3,6 +3,7 @@
 // generati (npm run tipi).
 import datiJson from '../dati.json'
 import type { Dati } from './tipi/dati.generati'
+import { pastiUtente } from './pastiUtente'
 
 export const dati: Dati = datiJson
 
@@ -56,6 +57,8 @@ export type PastoRisolto = {
   tags?: string[]
   /** Cene: tipi giornata in cui il pasto è ammesso (es. C4 solo VERDE e GRIGIO). */
   soloTipiGiornata?: string[]
+  /** Alternativa aggiunta dall'utente nell'app (non è in dati.json). */
+  utente?: boolean
 }
 
 export function isTipoGiornata(tipo: string): tipo is TipoGiornata {
@@ -161,6 +164,28 @@ function trovaColazione(id: string): PastoRisolto | null {
 }
 
 export function trovaPasto(categoria: CategoriaConId, id: string): PastoRisolto | null {
+  return trovaPastoDelPiano(categoria, id) ?? trovaPastoUtente(categoria, id)
+}
+
+function trovaPastoUtente(categoria: CategoriaConId, id: string): PastoRisolto | null {
+  const p = pastiUtente().find((u) => u.id === id && u.categoria === categoria)
+  if (!p) return null
+  return {
+    id: p.id,
+    nome: p.nome,
+    kcal: p.kcal,
+    cho: p.cho,
+    proteine: p.proteine,
+    alimenti: p.alimenti,
+    base: p.base ?? undefined,
+    note: p.note,
+    utente: true,
+    // Le merende si mostrano con la loro composizione.
+    ...(categoria === 'merenda' ? { composizione: p.nome } : {}),
+  }
+}
+
+function trovaPastoDelPiano(categoria: CategoriaConId, id: string): PastoRisolto | null {
   switch (categoria) {
     case 'colazione':
       return trovaColazione(id)
@@ -198,26 +223,32 @@ export function spuntinoSerale(): PastoRisolto {
   return { ...dati.blocchi.spuntinoSerale }
 }
 
-/** Id di tutti i pasti che si possono scegliere per una categoria, nell'ordine del JSON. */
+/**
+ * Id di tutti i pasti che si possono scegliere per una categoria, nell'ordine del JSON;
+ * le alternative dell'utente seguono il loro pasto base (o vanno in fondo).
+ */
 export function idAlternative(categoria: CategoriaConId): string[] {
+  const utente = pastiUtente().filter((u) => u.categoria === categoria)
   const conVersioni = (elenco: ConVersioni[]) =>
     elenco.flatMap((p) => [
       p.id,
       ...(p.varianti ?? []).map((v) => v.id),
       ...(p.maggiorato ? [p.maggiorato.id] : []),
       ...(p.ridotto ? [p.ridotto.id] : []),
+      ...utente.filter((u) => u.base === p.id).map((u) => u.id),
     ])
+  const senzaBase = (ids: string[]) => [...ids, ...utente.filter((u) => !ids.includes(u.base ?? '') && !ids.includes(u.id)).map((u) => u.id)]
   switch (categoria) {
     case 'colazione':
-      return dati.blocchi.colazioni.map((c) => c.id)
+      return senzaBase(dati.blocchi.colazioni.map((c) => c.id))
     case 'spuntino':
-      return dati.blocchi.spuntini.map((s) => s.id)
+      return senzaBase(dati.blocchi.spuntini.map((s) => s.id))
     case 'pranzo':
-      return conVersioni(dati.pranzi)
+      return senzaBase(conVersioni(dati.pranzi))
     case 'cena':
-      return conVersioni(dati.cene)
+      return senzaBase(conVersioni(dati.cene))
     case 'merenda':
-      return [...dati.merende.map((m) => m.id), dati.merendaRidotta.id]
+      return senzaBase([...dati.merende.map((m) => m.id), dati.merendaRidotta.id])
   }
 }
 

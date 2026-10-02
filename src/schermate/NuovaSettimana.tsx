@@ -8,6 +8,7 @@ import { effettiLungoDomenicale, proponiSettimana, type GiornoInserito, type Gio
 import { link } from '../navigazione'
 import { salvaSettimana, settimane, settimaneSovrapposte } from '../piano'
 import { verificaDati } from '../verifica'
+import { pastiUtente } from '../pastiUtente'
 import { controllaVincoli } from '../vincoli'
 
 type Riga = {
@@ -350,7 +351,7 @@ export function NuovaSettimana() {
     kmTotali: Math.round(giorni.reduce((s, g) => s + g.distanzaKm, 0)),
     giorni: giorniCompleti,
   }
-  const errori = verificaDati({ ...dati, settimane: [nuova] })
+  const errori = verificaDati({ ...dati, settimane: [nuova] }, pastiUtente().map((p) => p.id))
   const esiti = controllaVincoli(
     giorniCompleti,
     Object.fromEntries(giorni.map((g) => [g.data, { pranzo: g.pranzo, cena: g.cena }])),

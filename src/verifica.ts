@@ -4,21 +4,22 @@
 import { validaQuando, valutaCondizione } from './condizioni.ts'
 import type { Dati } from './tipi/dati.generati'
 
-export function verificaDati(dati: Dati): string[] {
+/** idExtra: codici validi oltre a quelli di dati.json (alternative create nell'app). */
+export function verificaDati(dati: Dati, idExtra: string[] = []): string[] {
   const errori: string[] = []
 
-  const idColazioni = new Set(dati.blocchi.colazioni.map((c) => c.id))
-  const idSpuntini = new Set(dati.blocchi.spuntini.map((s) => s.id))
+  const idColazioni = new Set([...dati.blocchi.colazioni.map((c) => c.id), ...idExtra])
+  const idSpuntini = new Set([...dati.blocchi.spuntini.map((s) => s.id), ...idExtra])
   const idPranzi = new Set(
     dati.pranzi.flatMap((p) => [
       p.id,
       p.ridotto.id,
       ...(p.maggiorato ? [p.maggiorato.id] : []),
       ...(p.varianti ?? []).map((v) => v.id),
-    ]),
+    ]).concat(idExtra),
   )
-  const idCene = new Set(dati.cene.flatMap((c) => [c.id, ...(c.ridotto ? [c.ridotto.id] : [])]))
-  const idMerende = new Set([...dati.merende.map((m) => m.id), dati.merendaRidotta.id])
+  const idCene = new Set([...dati.cene.flatMap((c) => [c.id, ...(c.ridotto ? [c.ridotto.id] : [])]), ...idExtra])
+  const idMerende = new Set([...dati.merende.map((m) => m.id), dati.merendaRidotta.id, ...idExtra])
 
   if (valutaCondizione(dati.blocchi.preCorsa.saltaSe, { tipo: '' }) === null) {
     errori.push(`blocchi.preCorsa.saltaSe: condizione "${dati.blocchi.preCorsa.saltaSe}" non riconosciuta`)

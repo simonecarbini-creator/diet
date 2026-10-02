@@ -9,6 +9,7 @@ export type Rotta =
   | { schermata: 'piano' }
   | { schermata: 'registro' }
   | { schermata: 'backup' }
+  | { schermata: 'pasti' }
   | { schermata: 'mese'; mese: string | null }
   | { schermata: 'settimana'; numero: number | null }
   | { schermata: 'giorno'; data: string }
@@ -21,6 +22,7 @@ function leggiRotta(hash: string): Rotta {
   if (parti[0] === 'piano') return { schermata: 'piano' }
   if (parti[0] === 'registro') return { schermata: 'registro' }
   if (parti[0] === 'backup') return { schermata: 'backup' }
+  if (parti[0] === 'pasti') return { schermata: 'pasti' }
   if (parti[0] === 'mese') {
     return { schermata: 'mese', mese: /^\d{4}-\d{2}$/.test(parti[1] ?? '') ? parti[1] : null }
   }
@@ -42,6 +44,7 @@ export const link = {
   piano: '#/piano',
   registro: '#/registro',
   backup: '#/backup',
+  pasti: '#/pasti',
   mese: (mese?: string) => (mese === undefined ? '#/mese' : `#/mese/${mese}`),
   settimana: (numero?: number) => (numero === undefined ? '#/settimana' : `#/settimana/${numero}`),
   giorno: (data: string) => `#/giorno/${data}`,
