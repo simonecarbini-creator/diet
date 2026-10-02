@@ -25,7 +25,6 @@ type Props = {
   corrente: boolean
   consumato: boolean
   tipoGiorno: string
-  solaLettura: boolean
   settimana?: ContestoSettimana
   onConsumato: (consumato: boolean) => void
   onScegli: (id: string | null) => void
@@ -41,7 +40,6 @@ export function CardPasto({
   corrente,
   consumato,
   tipoGiorno,
-  solaLettura,
   settimana,
   nota,
   onAnnota,
@@ -54,7 +52,7 @@ export function CardPasto({
   const [bozzaNota, setBozzaNota] = useState<string | null>(null)
   const { pasto, categoria, delPiano } = voce
   const etichetta = etichettePasti[categoria]
-  const sceglibile = !solaLettura && isCategoriaConId(categoria)
+  const sceglibile = isCategoriaConId(categoria)
   // Codici del piano (STD, P1, C2, Mrid…) solo dove il calendario li assegna.
   const mostraCodice = isCategoriaConId(categoria) && categoria !== 'spuntino'
   // Se il nome ripete la categoria (es. "Pre-corsa"), meglio elencare gli alimenti.
@@ -84,7 +82,7 @@ export function CardPasto({
           <button
             type="button"
             onClick={() => onConsumato(!consumato)}
-            disabled={!pasto || solaLettura}
+            disabled={!pasto}
             aria-pressed={consumato}
             aria-label={consumato ? `${etichetta}: consumato` : `Segna ${etichetta} come consumato`}
             className={pasto ? '' : 'opacity-30'}
@@ -166,7 +164,7 @@ export function CardPasto({
               </>
             ) : (
               <div className="font-semibold">
-                {solaLettura ? 'Non scelta' : 'Da scegliere'}
+                Da scegliere
                 {sceglibile && <span className="text-cho"> ›</span>}
               </div>
             )}

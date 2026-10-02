@@ -1,5 +1,5 @@
 // Schermata Oggi (SPEC.md §3.1): cosa mangio adesso. Serve anche per il dettaglio di un
-// giorno dalla Settimana, in sola lettura per i giorni passati.
+// giorno dalla Settimana o dal Mese, anche passato (per segnare i pasti in ritardo).
 import { useEffect, useRef, useState } from 'react'
 import { CardPasto } from '../componenti/CardPasto'
 import { CardPastoLibero } from '../componenti/CardPastoLibero'
@@ -17,11 +17,11 @@ type Props = {
   data: string
   /** Ora corrente (HH:MM), solo se `data` è oggi: serve a evidenziare il pasto corrente. */
   ora: string | null
-  /** Giorni passati: si consultano ma non si cambiano. */
-  solaLettura?: boolean
+  /** Giorno passato: resta modificabile (si segna dopo), con un avviso. */
+  passato?: boolean
 }
 
-export function Oggi({ data, ora, solaLettura = false }: Props) {
+export function Oggi({ data, ora, passato = false }: Props) {
   const trovato = cercaGiorno(data)
   const { stato, scegli, segnaConsumato, annota, impostaSgarro, confermaPasto, pastoLibero, ripristinaPasto } =
     useStatoGiorno(data)
@@ -77,6 +77,11 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
 
   return (
     <>
+      {passato && (
+        <p className="mb-3 rounded-xl bg-superficie px-3 py-2 text-sm">
+          <span className="font-semibold">Giorno passato:</span> puoi ancora segnare i pasti, sceglierli o cambiarli.
+        </p>
+      )}
       <header>
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-xl font-bold first-letter:uppercase">{formatData(giorno.data)}</h1>
@@ -130,28 +135,24 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
         </div>
       </section>
 
-      {solaLettura ? (
-        stato.sgarro && <p className="mt-3 text-sm font-semibold text-ko">Giornata libera</p>
-      ) : (
-        <label className={`mt-3 flex items-start gap-3 rounded-xl border bg-superficie p-3 ${stato.sgarro ? 'border-2 border-dashed border-cho' : 'border-bordo'}`}>
-          <input
-            type="checkbox"
-            checked={!!stato.sgarro}
-            onChange={(e) => {
-              if (e.target.checked) impostaSgarro(true)
-              else if (Object.keys(stato.liberi ?? {}).length > 0) setChiudiLibera(true)
-              else impostaSgarro(false)
-            }}
-            className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--cho)]"
-          />
-          <span>
-            <span className="block font-semibold">Giornata libera</span>
-            <span className="block text-xs opacity-70">
-              Decidi pasto per pasto: ✓ lo tieni come da piano, ✕ lo togli e scrivi cosa hai mangiato.
-            </span>
+      <label className={`mt-3 flex items-start gap-3 rounded-xl border bg-superficie p-3 ${stato.sgarro ? 'border-2 border-dashed border-cho' : 'border-bordo'}`}>
+        <input
+          type="checkbox"
+          checked={!!stato.sgarro}
+          onChange={(e) => {
+            if (e.target.checked) impostaSgarro(true)
+            else if (Object.keys(stato.liberi ?? {}).length > 0) setChiudiLibera(true)
+            else impostaSgarro(false)
+          }}
+          className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--cho)]"
+        />
+        <span>
+          <span className="block font-semibold">Giornata libera</span>
+          <span className="block text-xs opacity-70">
+            Decidi pasto per pasto: ✓ lo tieni come da piano, ✕ lo togli e scrivi cosa hai mangiato.
           </span>
-        </label>
-      )}
+        </span>
+      </label>
 
       {(giorno.gelCho > 0 || giorno.spuntinoSerale) && (
         <section className="mt-3 space-y-1 rounded-xl border border-bordo bg-superficie p-3 text-sm">
@@ -198,7 +199,6 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
             corrente={i === corrente}
             consumato={stato.consumati.includes(voce.categoria)}
             tipoGiorno={giorno.tipo}
-            solaLettura={solaLettura}
             settimana={voce.categoria === 'cena' ? contesto : undefined}
             nota={stato.note?.[voce.categoria]}
             onAnnota={(testo) => annota(voce.categoria, testo)}
@@ -207,7 +207,7 @@ export function Oggi({ data, ora, solaLettura = false }: Props) {
               if (isCategoriaConId(voce.categoria)) scegli(voce.categoria, id, voce.idPiano)
             }}
             sgarro={
-              stato.sgarro && !solaLettura && !(stato.confermati ?? []).includes(voce.categoria)
+              stato.sgarro && !(stato.confermati ?? []).includes(voce.categoria)
                 ? { onConferma: () => confermaPasto(voce.categoria), onElimina: () => setDaTogliere(voce.categoria) }
                 : undefined
             }

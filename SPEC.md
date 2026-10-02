@@ -88,7 +88,7 @@ Il pasto corrente (in base all'ora) è evidenziato e viene mostrato per primo al
 
 Il calendario a colpo d'occhio: una riga per giorno con data, allenamento, badge tipo, colazione, pranzo, cena, pallino per lo spuntino serale, gel, kcal e CHO.
 
-Toccando una riga si apre il dettaglio di quel giorno (stessa vista di "Oggi" ma in sola lettura per i giorni passati).
+Toccando una riga si apre il dettaglio di quel giorno (stessa vista di "Oggi"). *Decisione 2026-10-02: anche i giorni passati restano modificabili, per segnare i pasti in ritardo.*
 
 In fondo, il **controllo dei vincoli settimanali** da `regole.vincoliSettimanali`:
 

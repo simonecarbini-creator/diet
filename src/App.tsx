@@ -88,7 +88,7 @@ function App() {
               key={rotta.data}
               data={rotta.data}
               ora={rotta.data === oggi ? oraLocale(adesso) : null}
-              solaLettura={rotta.data < oggi}
+              passato={rotta.data < oggi}
             />
           </>
         )}
