@@ -75,7 +75,7 @@ function Inserimento({
   return (
     <>
       <Etichetta testo="Dal (lunedì)">
-        <input type="date" value={dal} onChange={(e) => e.target.value && onDal(e.target.value)} className={`${campo} mt-1`} />
+        <input type="date" value={dal} onChange={(e) => e.target.value && onDal(e.target.value)} className={`${campo} mt-1 h-11 py-0 leading-[2.75rem]`} />
       </Etichetta>
 
       <ul className="mt-4 space-y-3">

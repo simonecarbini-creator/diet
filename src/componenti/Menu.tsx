@@ -66,7 +66,7 @@ export function Menu({ aperto, onChiudi }: Props) {
           aperto ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <ul className="divide-y divide-bordo border-y border-bordo">
+        <ul className="divide-y divide-bordo border-b border-bordo">
           {voci.map((voce) => (
             <li key={voce.href}>
               <a href={voce.href} onClick={onChiudi} className="block px-5 py-4">

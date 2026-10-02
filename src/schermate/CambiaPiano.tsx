@@ -80,7 +80,7 @@ export function CambiaPiano({ oggi }: { oggi: string }) {
             </label>
             <label className="block">
               <span className="text-xs font-semibold uppercase opacity-70">Data</span>
-              <input type="date" value={data} min={oggi} onChange={(e) => setData(e.target.value)} className={`${campo} h-[3.1rem] text-left`} />
+              <input type="date" value={data} min={oggi} onChange={(e) => setData(e.target.value)} className={`${campo} h-[3.1rem] py-0 leading-[3.1rem] text-left`} />
             </label>
           </div>
         ) : (

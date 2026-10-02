@@ -8,6 +8,8 @@
   --sfondo: #e4f6f0;
   --superficie: #ffffff;
   --bordo: #c8e7dd;
+  /* Contorno delle card dei giorni: un po' più deciso del bordo normale. */
+  --contorno: #92cdb9;
   /* Rosa scuro del logo: più leggibile del rosa glassa sui numeri dei CHO. */
   --cho: #e0549a;
   --ok: #2e8b57;
@@ -20,6 +22,7 @@
     --sfondo: #0c1f1b;
     --superficie: #15302a;
     --bordo: #24473f;
+    --contorno: #3b6b60;
     --cho: #f77fb8;
     --ok: #4fbf80;
     --ko: #f87171;
@@ -31,9 +34,23 @@
   --color-sfondo: var(--sfondo);
   --color-superficie: var(--superficie);
   --color-bordo: var(--bordo);
+  --color-contorno: var(--contorno);
   --color-cho: var(--cho);
   --color-ok: var(--ok);
   --color-ko: var(--ko);
+}
+
+/* Safari su iPhone: nel campo data con altezza fissa il valore finisce in alto.
+   Si allinea il contenuto al centro e si toglie il margine interno del valore. */
+input[type='date'] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: flex;
+  align-items: center;
+}
+input[type='date']::-webkit-date-and-time-value {
+  margin: 0;
+  text-align: left;
 }
 
 body {

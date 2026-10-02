@@ -44,7 +44,7 @@ function CellaGiorno({
       href={link.giorno(data)}
       aria-label={`${data}, ${giorno.tipo}`}
       className={`flex aspect-square flex-col items-center justify-between overflow-hidden rounded-lg border bg-superficie pt-1 ${
-        eOggi ? 'border-2 border-cho' : 'border-bordo'
+        eOggi ? 'border-2 border-cho' : 'border-[1.5px] border-contorno'
       }`}
     >
       <span className={`text-sm leading-none ${eOggi ? 'font-bold text-cho' : 'font-medium'}`}>{numero}</span>

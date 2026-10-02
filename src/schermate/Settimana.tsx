@@ -60,7 +60,7 @@ function RigaGiorno({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGior
       <a
         href={link.giorno(giorno.data)}
         className={`flex gap-3 rounded-xl border bg-superficie p-3 ${
-          giorno.data === oggi ? 'border-2 border-cho' : 'border-bordo'
+          giorno.data === oggi ? 'border-2 border-cho' : 'border-[1.5px] border-contorno'
         }`}
       >
         <div

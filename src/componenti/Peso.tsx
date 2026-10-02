@@ -123,7 +123,7 @@ export function FinestraPeso({ pesate, oggi, promemoria, onAggiungi, onElimina, 
               value={data}
               max={oggi}
               onChange={(e) => setData(e.target.value || oggi)}
-              className="mt-1 block h-[3.6rem] w-full min-w-0 max-w-full appearance-none rounded-xl border border-bordo bg-sfondo px-3 text-left outline-none focus:border-cho"
+              className="mt-1 block h-[3.6rem] w-full py-0 leading-[3.6rem] min-w-0 max-w-full appearance-none rounded-xl border border-bordo bg-sfondo px-3 text-left outline-none focus:border-cho"
             />
           </label>
         </div>
