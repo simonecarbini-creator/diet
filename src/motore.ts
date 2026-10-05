@@ -205,6 +205,12 @@ function assegnaPasti(dati: Dati, giorni: GiornoProposto[], motivi: Proposta['mo
 
   giorni.forEach((g, i) => {
     let cena = cene[i] as string
+    // Come per il pranzo: nei giorni indicati la versione maggiorata, se esiste (es. C3+ con più pane).
+    const maggiorata = dati.cene.find((c) => c.id === cena && 'maggiorato' in c && c.maggiorato)
+    if (maggiorata && 'maggiorato' in maggiorata && maggiorata.maggiorato && a.maggioratoNeiGiorni.includes(g.tipo)) {
+      cena = maggiorata.maggiorato.id
+      motivi[i].cena = `${motivi[i].cena}; maggiorata nei giorni ${a.maggioratoNeiGiorni.join(', ')}`
+    }
     if (grigio(g) && versioneGrigio(g).cena === 'ridotto') {
       cena = dati.cene.find((c) => c.id === cena)?.ridotto?.id ?? a.cenaRidottaDiRiserva
       motivi[i].cena = `ridotta nei giorni di riposo (${motivi[i].cena})`

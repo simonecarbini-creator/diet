@@ -18,7 +18,10 @@ export function verificaDati(dati: Dati, idExtra: string[] = []): string[] {
       ...(p.varianti ?? []).map((v) => v.id),
     ]).concat(idExtra),
   )
-  const idCene = new Set([...dati.cene.flatMap((c) => [c.id, ...(c.ridotto ? [c.ridotto.id] : [])]), ...idExtra])
+  const idCene = new Set([
+    ...dati.cene.flatMap((c) => [c.id, ...(c.ridotto ? [c.ridotto.id] : []), ...('maggiorato' in c && c.maggiorato ? [c.maggiorato.id] : [])]),
+    ...idExtra,
+  ])
   const idMerende = new Set([...dati.merende.map((m) => m.id), dati.merendaRidotta.id, ...idExtra])
 
   if (valutaCondizione(dati.blocchi.preCorsa.saltaSe, { tipo: '' }) === null) {

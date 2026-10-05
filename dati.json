@@ -907,6 +907,10 @@
         { "nome": "Olio EVO", "grammi": 15 },
         { "nome": "Frutto", "pezzi": 1 }
       ],
+      "maggiorato": {
+        "id": "C3+", "kcal": 870, "cho": 99, "modifiche": "pane 140 g (40 g in piu') nei giorni ROSSO",
+        "modificheGrammi": [{ "nome": "Pane", "grammi": 140 }]
+      },
       "note": "Ha 10 g di CHO in meno di C1: nei giorni ROSSO aggiungere 40 g di pane."
     },
     {
@@ -1626,7 +1630,7 @@
           "colazione": "STD",
           "spuntino": "intero",
           "pranzo": "P1",
-          "cena": "C3",
+          "cena": "C3+",
           "merenda": null,
           "spuntinoSerale": true,
           "gelCho": 0,

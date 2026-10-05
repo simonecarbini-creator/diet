@@ -137,9 +137,10 @@ export type Cene = {
     cho:                          number;
     proteine:                     number;
     alimenti:                     CeneAlimenti[];
-    ridotto?:                     CeneRidotto;
+    ridotto?:                     RidottoClass;
     contaComeOmega3?:             boolean;
     note?:                        string;
+    maggiorato?:                  RidottoClass;
     soloTipiGiornata?:            string[];
     incompatibileCon?:            string[];
     categoria?:                   string;
@@ -156,7 +157,7 @@ export type CeneAlimenti = {
     sostituibileCon?: string[];
 }
 
-export type CeneRidotto = {
+export type RidottoClass = {
     id:              string;
     kcal:            number;
     cho:             number;
@@ -227,10 +228,10 @@ export type Pranzi = {
     proteine:                     number;
     alimenti:                     PranziAlimenti[];
     varianti?:                    PranziVarianti[];
-    ridotto?:                     PranziRidotto;
+    ridotto?:                     Ridotto;
     note:                         string;
     tags?:                        string[];
-    maggiorato?:                  Maggiorato;
+    maggiorato?:                  PranziMaggiorato;
     categoria?:                   string;
     grassi?:                      number;
     soloTipiGiornata?:            string[];
@@ -245,7 +246,7 @@ export type PranziAlimenti = {
     sostituibileCon?: string[];
 }
 
-export type Maggiorato = {
+export type PranziMaggiorato = {
     id:              string;
     kcal:            number;
     cho:             number;
@@ -254,7 +255,7 @@ export type Maggiorato = {
     nota:            string;
 }
 
-export type PranziRidotto = {
+export type Ridotto = {
     id:              string;
     kcal:            number;
     cho:             number;
