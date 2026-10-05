@@ -78,7 +78,16 @@ export function PannelloScelta({
   // Alternative nascoste con lo swipe: solo finché il pannello è aperto.
   const [nascoste, setNascoste] = useState<string[]>([])
   const [ripristinate, setRipristinate] = useState<string[]>([])
+  // Accenno allo swipe: all'apertura e, se dopo 6 secondi non si è fatto nulla, ancora una volta.
+  const [accenno, setAccenno] = useState(1)
+  const [interagito, setInteragito] = useState(false)
+  useEffect(() => {
+    if (interagito) return
+    const timer = setTimeout(() => setAccenno(2), 6000)
+    return () => clearTimeout(timer)
+  }, [interagito])
   function nascondi(id: string) {
+    setInteragito(true)
     setNascoste((n) => [...n, id])
     setRipristinate((r) => r.filter((x) => x !== id))
     if (selezionato === id) setSelezionato(voce.pasto?.id ?? null)
@@ -132,14 +141,17 @@ export function PannelloScelta({
       <RigaScorrevole
         key={opzione.id}
         onNascondi={() => nascondi(opzione.id)}
-        accenno={opzione.id === principali[0]?.id && nascoste.length === 0}
+        accenno={opzione.id === principali[0]?.id && !interagito ? accenno : 0}
         ripristinata={ripristinate.includes(opzione.id)}
       >
         <button
           type="button"
           disabled={!ammesso}
           aria-pressed={attivo}
-          onClick={() => setSelezionato(opzione.id)}
+          onClick={() => {
+            setSelezionato(opzione.id)
+            setInteragito(true)
+          }}
           className={`w-full rounded-xl border bg-superficie p-3 text-left disabled:opacity-40 ${
             attivo ? 'border-cho outline-2 outline-cho' : 'border-bordo'
           } ${secondaria && !attivo ? 'opacity-60' : ''}`}
@@ -288,7 +300,12 @@ export function PannelloScelta({
           </div>
         )}
 
-        {nascoste.length > 0 ? (
+        <p className="mb-2 text-xs opacity-70">
+          <span className="freccia-swipe font-bold">←</span> Scorri a sinistra per nascondere quelle che non puoi
+          preparare
+          {nascoste.length > 0 ? '; tocca una nascosta per rimetterla.' : '.'}
+        </p>
+        {nascoste.length > 0 && (
           <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
             <span className="opacity-70">Nascoste:</span>
             {nascoste.map((id) => (
@@ -303,10 +320,6 @@ export function PannelloScelta({
               </button>
             ))}
           </div>
-        ) : (
-          <p className="mb-2 text-xs opacity-70">
-            ← Scorri a sinistra per nascondere quelle che non puoi preparare: le ritrovi qui finché il pannello è aperto.
-          </p>
         )}
 
         <ul className="space-y-2">{principali.map((p) => rigaOpzione(p, false))}</ul>

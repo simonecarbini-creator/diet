@@ -6,15 +6,15 @@ import { useRef, useState, type ReactNode } from 'react'
 type Props = {
   children: ReactNode
   onNascondi: () => void
-  /** Piccolo movimento all'apertura per suggerire il gesto. */
-  accenno?: boolean
+  /** Movimento che suggerisce il gesto; ogni volta che il numero cambia si ripete. */
+  accenno?: number
   /** Appena ripristinata: ricompare con una breve dissolvenza. */
   ripristinata?: boolean
 }
 
 const SOGLIA = 0.35 // frazione della larghezza oltre la quale la riga si nasconde
 
-export function RigaScorrevole({ children, onNascondi, accenno = false, ripristinata = false }: Props) {
+export function RigaScorrevole({ children, onNascondi, accenno = 0, ripristinata = false }: Props) {
   const [spostamento, setSpostamento] = useState(0)
   const [fase, setFase] = useState<'ferma' | 'trascina' | 'esce' | 'chiude'>('ferma')
   const riga = useRef<HTMLDivElement>(null)
@@ -43,13 +43,15 @@ export function RigaScorrevole({ children, onNascondi, accenno = false, ripristi
           Nascondi
         </div>
         <div
+          // Cambiando la chiave l'elemento si ricrea e l'animazione di accenno riparte.
+          key={`accenno-${accenno}`}
           ref={riga}
           style={{
             transform: fase === 'esce' ? 'translateX(-110%)' : `translateX(${spostamento}px)`,
             touchAction: 'pan-y',
           }}
           className={`relative ${fase === 'trascina' ? '' : 'transition-transform duration-200 ease-out'} ${
-            accenno && fase === 'ferma' && spostamento === 0 ? 'accenno-swipe' : ''
+            accenno > 0 && fase === 'ferma' && spostamento === 0 ? 'accenno-swipe' : ''
           }`}
           onTransitionEnd={(e) => {
             if (fase === 'esce' && e.propertyName === 'transform') setFase('chiude')
