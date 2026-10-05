@@ -300,9 +300,11 @@ export function PannelloScelta({
           </div>
         )}
 
-        <p className="mb-2 text-xs opacity-70">
-          <span className="freccia-swipe font-bold">←</span> Scorri a sinistra per nascondere quelle che non puoi
-          preparare
+        <p className="mb-2 text-sm">
+          <span className="font-bold text-cho">
+            <span className="freccia-swipe">←</span> Scorri a sinistra
+          </span>{' '}
+          per nascondere quelle che non puoi preparare
           {nascoste.length > 0 ? '; tocca una nascosta per rimetterla.' : '.'}
         </p>
         {nascoste.length > 0 && (

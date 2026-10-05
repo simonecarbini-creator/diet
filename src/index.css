@@ -80,13 +80,17 @@ body {
 
 /* Pannello delle alternative: accenno allo swipe all'apertura e ricomparsa delle nascoste. */
 @keyframes accenno-swipe {
-  0% { transform: translateX(0); }
-  32% { transform: translateX(-104px); }
-  55% { transform: translateX(-104px); }
-  100% { transform: translateX(0); }
+  0% { transform: translate3d(0, 0, 0); }
+  28% { transform: translate3d(-110px, 0, 0); }
+  44% { transform: translate3d(-110px, 0, 0); }
+  66% { transform: translate3d(14px, 0, 0); }
+  79% { transform: translate3d(-6px, 0, 0); }
+  90% { transform: translate3d(2px, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
 }
+/* Esce, torna oltre la posizione e si assesta con due piccoli rimbalzi. */
 .accenno-swipe {
-  animation: accenno-swipe 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.35s 1;
+  animation: accenno-swipe 1.15s cubic-bezier(0.33, 1, 0.68, 1) 0.35s 1 both;
 }
 /* Solo la freccetta del promemoria si muove, di pochi pixel: la card resta ferma. */
 @keyframes freccia-swipe {

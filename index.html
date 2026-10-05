@@ -23,11 +23,9 @@
         background: #e4f6f0; transition: opacity 0.35s ease;
       }
       #avvio.via { opacity: 0; pointer-events: none; }
-      /* La GIF ha lo sfondo bianco: sta in una card bianca arrotondata, come un adesivo. */
-      #avvio img {
-        width: 220px; height: 220px; border-radius: 36px; background: #fff;
-        box-shadow: 0 10px 30px rgb(0 0 0 / 0.12);
-      }
+      /* La GIF ha lo sfondo bianco: con "multiply" il bianco prende il colore dello sfondo e resta
+         solo la ciambella sul verdino. Nel tema scuro non funziona: lì sta in una card chiara. */
+      #avvio img { width: 220px; height: 220px; mix-blend-mode: multiply; }
       /* Barra a bastoncino di zucchero: strisce rosa e panna in obliquo che scorrono. */
       #avvio .barra {
         width: 200px; height: 16px; border: 2.5px solid #2a1a14; border-radius: 999px;
@@ -41,7 +39,13 @@
       }
       @keyframes avanza { to { width: 100%; } }
       @keyframes strisce { to { background-position: 22.63px 0; } }
-      @media (prefers-color-scheme: dark) { #avvio { background: #0c1f1b; } }
+      @media (prefers-color-scheme: dark) {
+        #avvio { background: #0c1f1b; }
+        #avvio img {
+          mix-blend-mode: normal; border-radius: 36px; background: #fff;
+          box-shadow: 0 10px 30px rgb(0 0 0 / 0.3);
+        }
+      }
       @media (prefers-reduced-motion: reduce) {
         #avvio .riempimento { animation: avanza 3.6s linear forwards; }
       }

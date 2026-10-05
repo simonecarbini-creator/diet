@@ -21,6 +21,9 @@ export function RigaScorrevole({ children, onNascondi, accenno = 0, ripristinata
   const inizio = useRef<{ x: number; y: number; direzione: 'orizzontale' | 'verticale' | null } | null>(null)
   const trascinata = useRef(false)
 
+  // Durante l'accenno niente transizione sullo stesso elemento: le due animazioni si ostacolerebbero.
+  const inAccenno = accenno > 0 && fase === 'ferma' && spostamento === 0
+
   const riduciMovimento = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   function nascondi() {
@@ -47,11 +50,13 @@ export function RigaScorrevole({ children, onNascondi, accenno = 0, ripristinata
           key={`accenno-${accenno}`}
           ref={riga}
           style={{
-            transform: fase === 'esce' ? 'translateX(-110%)' : `translateX(${spostamento}px)`,
+            // translate3d + will-change: il movimento passa alla scheda grafica, niente scatti su iPhone.
+            transform: fase === 'esce' ? 'translate3d(-110%, 0, 0)' : `translate3d(${spostamento}px, 0, 0)`,
+            willChange: 'transform',
             touchAction: 'pan-y',
           }}
-          className={`relative ${fase === 'trascina' ? '' : 'transition-transform duration-200 ease-out'} ${
-            accenno > 0 && fase === 'ferma' && spostamento === 0 ? 'accenno-swipe' : ''
+          className={`relative ${
+            inAccenno ? 'accenno-swipe' : fase === 'trascina' ? '' : 'transition-transform duration-200 ease-out'
           }`}
           onTransitionEnd={(e) => {
             if (fase === 'esce' && e.propertyName === 'transform') setFase('chiude')
