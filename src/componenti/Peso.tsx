@@ -21,7 +21,7 @@ export function PulsantePeso({ promemoria, onApri }: PropsPulsante) {
       onClick={onApri}
       aria-label={promemoria ? 'Peso: è il momento di pesarti' : 'Peso'}
       // Niente cerchio: la bilancia rosa con quadrante bianco, alone bianco e ombra per staccarsi da tutto.
-      className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 items-center justify-center text-cho [filter:drop-shadow(0_0_1.5px_#fff)_drop-shadow(0_0_1.5px_#fff)_drop-shadow(0_4px_8px_rgb(0_0_0/0.28))]"
+      className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 items-center justify-center text-cho [filter:drop-shadow(0_0_1.5px_#fff)_drop-shadow(0_0_1.5px_#fff)_drop-shadow(0_7px_12px_rgb(0_0_0/0.42))]"
     >
       <IconaBilancia className="h-14 w-14" quadrante="#fff" />
       {promemoria && (
