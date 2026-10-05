@@ -6,7 +6,7 @@
 import { useEffect, useState } from 'react'
 import { dati, idAlternative, trovaPasto, type CategoriaConId, type PastoRisolto } from '../dati'
 import { formatDifferenzaCho, formatNumero } from '../formato'
-import { targetGiorno, type VocePasto } from '../giornata'
+import { targetGiorno, valutaAlternativa, type VocePasto } from '../giornata'
 import { RiassuntoAlimenti } from './Alimenti'
 import { DifferenzaKcal } from './DifferenzaKcal'
 import { conteggiDelPasto, frazioneLimite, nomeVincolo, oltreMassimo, type ConteggioVincolo } from '../vincoli'
@@ -92,13 +92,8 @@ export function PannelloScelta({
   // Dove arriva la giornata con ogni alternativa: nel target se CHO e kcal restano entro
   // il margine di dati.json rispetto al piano di oggi.
   const target = giornata ? targetGiorno(giornata.piano) : null
-  const totaleCon = (p: PastoRisolto) =>
-    giornata ? { cho: giornata.senzaQuesto.cho + p.cho, kcal: giornata.senzaQuesto.kcal + p.kcal } : null
-  const dentro = (valore: number, fascia: { da: number; a: number }) => valore >= fascia.da && valore <= fascia.a
-  const nelTarget = (p: PastoRisolto) => {
-    const totale = totaleCon(p)
-    return target && totale ? dentro(totale.cho, target.cho) && dentro(totale.kcal, target.kcal) : true
-  }
+  const valuta = (p: PastoRisolto) => (giornata && target ? valutaAlternativa(giornata.senzaQuesto, p, target) : null)
+  const nelTarget = (p: PastoRisolto) => valuta(p)?.nelTarget ?? true
 
   const principali = visibili
     .filter((p) => adattaAOggi(p, piano, giornata))
@@ -110,7 +105,7 @@ export function PannelloScelta({
     const ammesso = !opzione.soloTipiGiornata || opzione.soloTipiGiornata.includes(tipoGiorno)
     const diff = differenza(opzione)
     const conteggi = conteggiAltri ? conteggiDelPasto(conteggiAltri, opzione.base ?? opzione.id) : []
-    const totale = totaleCon(opzione)
+    const totale = valuta(opzione)
     return (
       <li key={opzione.id}>
         <button
@@ -151,12 +146,12 @@ export function PannelloScelta({
           )}
           {opzione.notaVersione && <p className="mt-1 text-sm">{opzione.notaVersione}</p>}
           {target && totale && ammesso && (
-            <p className={`mt-1 text-sm font-semibold ${nelTarget(opzione) ? 'text-ok' : 'text-ko'}`}>
-              {nelTarget(opzione) ? '✓ ' : ''}giornata a{' '}
-              <span className={dentro(totale.cho, target.cho) ? '' : 'underline'}>{formatNumero(totale.cho)} g CHO</span>
+            <p className={`mt-1 text-sm font-semibold ${totale.nelTarget ? 'text-ok' : 'text-ko'}`}>
+              {totale.nelTarget ? '✓ ' : ''}giornata a{' '}
+              <span className={totale.choDentro ? '' : 'underline'}>{formatNumero(totale.cho)} g CHO</span>
               {' · '}
-              <span className={dentro(totale.kcal, target.kcal) ? '' : 'underline'}>{formatNumero(totale.kcal)} kcal</span>
-              {nelTarget(opzione) ? ', nel target' : ', fuori target'}
+              <span className={totale.kcalDentro ? '' : 'underline'}>{formatNumero(totale.kcal)} kcal</span>
+              {totale.nelTarget ? ', nel target' : ', fuori target'}
             </p>
           )}
           {conteggi.map((conteggio) => {

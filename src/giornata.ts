@@ -252,3 +252,19 @@ export function targetGiorno(piano: { cho: number; kcal: number }): TargetGiorno
   })
   return { cho: fascia(piano.cho), kcal: fascia(piano.kcal), margine }
 }
+
+/**
+ * Dove arriva la giornata scegliendo un pasto al posto di un altro, e se resta nel target:
+ * CHO e kcal entrambi entro il margine del piano del giorno.
+ */
+export function valutaAlternativa(
+  senzaQuesto: { cho: number; kcal: number },
+  opzione: { cho: number; kcal: number },
+  target: TargetGiorno,
+): { cho: number; kcal: number; choDentro: boolean; kcalDentro: boolean; nelTarget: boolean } {
+  const cho = senzaQuesto.cho + opzione.cho
+  const kcal = senzaQuesto.kcal + opzione.kcal
+  const choDentro = cho >= target.cho.da && cho <= target.cho.a
+  const kcalDentro = kcal >= target.kcal.da && kcal <= target.kcal.a
+  return { cho, kcal, choDentro, kcalDentro, nelTarget: choDentro && kcalDentro }
+}

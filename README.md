@@ -14,6 +14,9 @@ npm run dev        # anteprima locale su http://localhost:5173
 npm run build      # rigenera i tipi, verifica dati.json, compila in dist/
 ```
 
+`npm test` esegue i test dei calcoli (`test/calcoli.test.ts`): CHO e kcal dei pasti, totali del giorno,
+target quando si cambia un pasto, giornata libera, motore delle regole, vincoli settimanali.
+Sono dentro `npm run build`: se un test fallisce, GitHub non pubblica la nuova versione.
 `npm run prova-motore` confronta il motore delle regole con la settimana 4.
 `npm run tipi` rigenera `src/tipi/dati.generati.ts` da `dati.json`;
 `npm run verifica` controlla che il calendario si riferisca a pasti e tipi esistenti.
