@@ -9,7 +9,17 @@ import { formatDifferenzaCho, formatNumero } from '../formato'
 import { targetGiorno, valutaAlternativa, type VocePasto } from '../giornata'
 import { RiassuntoAlimenti } from './Alimenti'
 import { DifferenzaKcal } from './DifferenzaKcal'
+import { RigaScorrevole } from './RigaScorrevole'
 import { conteggiDelPasto, frazioneLimite, nomeVincolo, oltreMassimo, type ConteggioVincolo } from '../vincoli'
+
+/** "questo pranzo", "questa cena"…: per le frasi sul totale della giornata. */
+const questo: Record<CategoriaConId, string> = {
+  colazione: 'questa colazione',
+  spuntino: 'questo spuntino',
+  pranzo: 'questo pranzo',
+  merenda: 'questa merenda',
+  cena: 'questa cena',
+}
 
 /** "senzaYogurt" → "senza yogurt" */
 function etichettaTag(tag: string): string {
@@ -65,6 +75,18 @@ export function PannelloScelta({
 }: Props) {
   const [selezionato, setSelezionato] = useState<string | null>(voce.pasto?.id ?? null)
   const [filtri, setFiltri] = useState<string[]>([])
+  // Alternative nascoste con lo swipe: solo finché il pannello è aperto.
+  const [nascoste, setNascoste] = useState<string[]>([])
+  const [ripristinate, setRipristinate] = useState<string[]>([])
+  function nascondi(id: string) {
+    setNascoste((n) => [...n, id])
+    setRipristinate((r) => r.filter((x) => x !== id))
+    if (selezionato === id) setSelezionato(voce.pasto?.id ?? null)
+  }
+  function ripristina(id: string) {
+    setNascoste((n) => n.filter((x) => x !== id))
+    setRipristinate((r) => [...r, id])
+  }
 
   // Sotto il pannello la pagina non deve scorrere.
   useEffect(() => {
@@ -79,7 +101,7 @@ export function PannelloScelta({
     .map((id) => trovaPasto(categoria, id))
     .filter((p): p is PastoRisolto => p !== null)
   const tuttiTag = [...new Set(pasti.flatMap((p) => p.tags ?? []))]
-  const visibili = pasti.filter((p) => filtri.every((f) => p.tags?.includes(f)))
+  const visibili = pasti.filter((p) => !nascoste.includes(p.id) && filtri.every((f) => p.tags?.includes(f)))
 
   const sostituito = voce.delPiano !== undefined
   // Riferimento per la differenza di CHO: il pasto del piano, se il piano lo indica.
@@ -107,7 +129,12 @@ export function PannelloScelta({
     const conteggi = conteggiAltri ? conteggiDelPasto(conteggiAltri, opzione.base ?? opzione.id) : []
     const totale = valuta(opzione)
     return (
-      <li key={opzione.id}>
+      <RigaScorrevole
+        key={opzione.id}
+        onNascondi={() => nascondi(opzione.id)}
+        accenno={opzione.id === principali[0]?.id && nascoste.length === 0}
+        ripristinata={ripristinate.includes(opzione.id)}
+      >
         <button
           type="button"
           disabled={!ammesso}
@@ -146,13 +173,29 @@ export function PannelloScelta({
           )}
           {opzione.notaVersione && <p className="mt-1 text-sm">{opzione.notaVersione}</p>}
           {target && totale && ammesso && (
-            <p className={`mt-1 text-sm font-semibold ${totale.nelTarget ? 'text-ok' : 'text-ko'}`}>
-              {totale.nelTarget ? '✓ ' : ''}giornata a{' '}
-              <span className={totale.choDentro ? '' : 'underline'}>{formatNumero(totale.cho)} g CHO</span>
-              {' · '}
-              <span className={totale.kcalDentro ? '' : 'underline'}>{formatNumero(totale.kcal)} kcal</span>
-              {totale.nelTarget ? ', nel target' : ', fuori target'}
-            </p>
+            <div className={`mt-2 rounded-lg px-2.5 py-2 text-sm ${totale.nelTarget ? 'bg-ok/10' : 'bg-ko/10'}`}>
+              <div className="text-xs font-semibold uppercase opacity-70">Giornata con {questo[categoria]}</div>
+              <div>
+                CHO <span className={`font-bold ${totale.choDentro ? '' : 'text-ko'}`}>{formatNumero(totale.cho)}</span> /{' '}
+                {formatNumero(target.cho.piano)} g del piano · kcal{' '}
+                <span className={`font-bold ${totale.kcalDentro ? '' : 'text-ko'}`}>{formatNumero(totale.kcal)}</span> /{' '}
+                {formatNumero(target.kcal.piano)}
+              </div>
+              <div className={`font-semibold ${totale.nelTarget ? 'text-ok' : 'text-ko'}`}>
+                {totale.nelTarget
+                  ? `✓ nel target (piano ±${target.margine}%)`
+                  : `✗ fuori target: ${[
+                      !totale.choDentro &&
+                        (totale.cho < target.cho.da ? `CHO sotto ${target.cho.da} g` : `CHO sopra ${target.cho.a} g`),
+                      !totale.kcalDentro &&
+                        (totale.kcal < target.kcal.da
+                          ? `kcal sotto ${formatNumero(target.kcal.da)}`
+                          : `kcal sopra ${formatNumero(target.kcal.a)}`),
+                    ]
+                      .filter(Boolean)
+                      .join(', ')}`}
+              </div>
+            </div>
           )}
           {conteggi.map((conteggio) => {
             const conQuesta = conteggio.volte + 1
@@ -169,7 +212,9 @@ export function PannelloScelta({
             )
           })}
           <p className="mt-1 text-sm">
-            <span className="opacity-70">{formatNumero(opzione.kcal)} kcal</span>
+            <span className="opacity-70">
+              {questo[categoria].charAt(0).toUpperCase() + questo[categoria].slice(1)}: {formatNumero(opzione.kcal)} kcal
+            </span>
             {riferimento && <DifferenzaKcal differenza={opzione.kcal - riferimento.kcal} />}
             <span className="text-xs opacity-70">
               {opzione.tags && opzione.tags.length > 0 && ` · ${opzione.tags.map(etichettaTag).join(' · ')}`}
@@ -177,7 +222,7 @@ export function PannelloScelta({
             </span>
           </p>
         </button>
-      </li>
+      </RigaScorrevole>
     )
   }
 
@@ -241,6 +286,27 @@ export function PannelloScelta({
               )
             })}
           </div>
+        )}
+
+        {nascoste.length > 0 ? (
+          <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
+            <span className="opacity-70">Nascoste:</span>
+            {nascoste.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => ripristina(id)}
+                aria-label={`Ripristina ${id}`}
+                className="rounded-full border border-bordo bg-superficie px-3 py-1 font-semibold"
+              >
+                {id} ↺
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="mb-2 text-xs opacity-70">
+            ← Scorri a sinistra per nascondere quelle che non puoi preparare: le ritrovi qui finché il pannello è aperto.
+          </p>
         )}
 
         <ul className="space-y-2">{principali.map((p) => rigaOpzione(p, false))}</ul>
