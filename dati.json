@@ -1,7 +1,7 @@
 {
   "$schema": "./dati.schema.json",
   "versione": "1.0.0",
-  "aggiornato": "2026-10-01",
+  "aggiornato": "2026-10-05",
   "_nota": "Fonte di verita' unica del piano alimentare. kcal e CHO sono valori calcolati; le proteine sono stime arrotondate. Tutti i grammi degli alimenti sono A CRUDO, tranne i legumi che sono indicati lessati e sgocciolati.",
 
   "atleta": {
@@ -1547,6 +1547,126 @@
           "kcal": 3700,
           "cho": 494,
           "note": "Prova di gara: stesso protocollo gel di Firenze, glicemie annotate prima, durante e dopo."
+        }
+      ]
+    },
+    {
+      "numero": 5,
+      "dal": "2026-10-05",
+      "al": "2026-10-11",
+      "kmTotali": 96,
+      "giorni": [
+        {
+          "data": "2026-10-05",
+          "allenamento": "Corsa lenta 13 km + 6x100",
+          "distanzaKm": 13,
+          "tipo": "VERDE",
+          "colazione": "STD",
+          "spuntino": "soloFrutto",
+          "pranzo": "P2",
+          "cena": "C4",
+          "merenda": null,
+          "spuntinoSerale": false,
+          "gelCho": 0,
+          "kcal": 3110,
+          "cho": 426
+        },
+        {
+          "data": "2026-10-06",
+          "allenamento": "16 km corsa progressiva",
+          "distanzaKm": 16,
+          "tipo": "VERDE",
+          "colazione": "STD",
+          "spuntino": "intero",
+          "pranzo": "P1",
+          "cena": "C2",
+          "merenda": null,
+          "spuntinoSerale": false,
+          "gelCho": 30,
+          "kcal": 3240,
+          "cho": 424,
+          "note": "Progressiva sotto i 18 km: resta VERDE, ma con spuntino intero e pranzo P1 perche' domani ci sono i 4x2000. Niente crucifere a cena."
+        },
+        {
+          "data": "2026-10-07",
+          "allenamento": "Ripetute: riscaldamento 4 km + 4x2000 a 3'55\"-4'00\" rec 1'30\" da fermo + leggero defaticamento",
+          "distanzaKm": 13,
+          "tipo": "ROSSO",
+          "colazione": "STD",
+          "spuntino": "intero",
+          "pranzo": "P1",
+          "cena": "C1",
+          "merenda": null,
+          "spuntinoSerale": true,
+          "gelCho": 30,
+          "kcal": 3560,
+          "cho": 463,
+          "note": "Circa 32 minuti sopra il ritmo medio: colazione STD, non MAGG. Recupero da fermo: la glicemia tende a salire tra una prova e l'altra."
+        },
+        {
+          "data": "2026-10-08",
+          "allenamento": "Corsa lenta 15 km + 6x100",
+          "distanzaKm": 15,
+          "tipo": "VERDE",
+          "colazione": "STD",
+          "spuntino": "intero",
+          "pranzo": "P2",
+          "cena": "C2",
+          "merenda": null,
+          "spuntinoSerale": false,
+          "gelCho": 0,
+          "kcal": 3240,
+          "cho": 418
+        },
+        {
+          "data": "2026-10-09",
+          "allenamento": "Ripetute: riscaldamento 4 km + 10x300 in allungo rec 200 m + 1 km defaticamento",
+          "distanzaKm": 10,
+          "tipo": "ROSSO",
+          "colazione": "STD",
+          "spuntino": "intero",
+          "pranzo": "P1",
+          "cena": "C3",
+          "merenda": null,
+          "spuntinoSerale": true,
+          "gelCho": 0,
+          "kcal": 3620,
+          "cho": 473,
+          "note": "Qualita' breve: cena C3 con 40 g di pane in piu' (gia' contati)."
+        },
+        {
+          "data": "2026-10-10",
+          "allenamento": "Riposo",
+          "distanzaKm": 0,
+          "tipo": "GRIGIO",
+          "ricarica": true,
+          "colazione": "STD",
+          "spuntino": "soloFrutto",
+          "pranzo": "P1",
+          "cena": "C1rid",
+          "merenda": "Mrid",
+          "spuntinoSerale": false,
+          "gelCho": 0,
+          "kcal": 2625,
+          "cho": 346,
+          "note": "Riposo di ricarica: domenica gara 10K dentro il frazionato. Colazione STD e pranzo pieno, si tagliano solo merenda e cena. Niente crucifere."
+        },
+        {
+          "data": "2026-10-11",
+          "allenamento": "GARA 10K con km prima e dopo: riscaldamento 4 km a 5'00\" + frazionato 24 km (12 km a 4'50\" + 6 km a 4'30\" + 6 km a 4'00\") + 1 km defaticamento",
+          "distanzaKm": 29,
+          "tipo": "ROSSO",
+          "lungoDomenicale": true,
+          "colazione": "MAGG",
+          "spuntino": "intero",
+          "pranzo": "P1",
+          "cena": "C2",
+          "merenda": null,
+          "spuntinoSerale": true,
+          "gelCho": 160,
+          "kcal": 3680,
+          "cho": 480,
+          "note": "Il lungo piu' lungo finora, con gara dentro: protocollo gel di Firenze, glicemie annotate prima, durante e dopo. Spuntino serale obbligatorio. Orari dei pasti da adattare all'ora di partenza della gara."
         }
       ]
     }

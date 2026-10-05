@@ -424,13 +424,8 @@ export type SceltaColazione = {
 
 export type SceltaColazioneQuando = {
     oppure?: PurpleOppure[];
-    e?:      TentacledE[];
+    e?:      FluffyE[];
     sempre?: boolean;
-}
-
-export type TentacledE = {
-    var:  string;
-    "==": boolean | string;
 }
 
 export type SceltaSpuntino = {

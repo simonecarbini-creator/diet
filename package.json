@@ -8,7 +8,7 @@
     "build": "npm run tipi && npm run verifica && tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "tipi": "quicktype dati.json --lang ts --just-types --top-level Dati --prefer-types --no-date-times --no-integer-strings --no-boolean-strings --no-combine-classes -o src/tipi/dati.generati.ts",
+    "tipi": "quicktype dati.json --lang ts --just-types --top-level Dati --prefer-types --no-date-times --no-integer-strings --no-boolean-strings --no-combine-classes --no-enums -o src/tipi/dati.generati.ts",
     "verifica": "node scripts/verifica-dati.ts",
     "prova-motore": "node scripts/prova-motore.ts"
   },
