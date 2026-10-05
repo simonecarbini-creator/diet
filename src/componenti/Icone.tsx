@@ -1,4 +1,6 @@
-// Icone a linea in SVG (disegno da Lucide, licenza ISC): prendono il colore del testo.
+// Icone in SVG (a linea da Lucide, licenza ISC; bilancia fornita dall'utente): prendono il colore del testo.
+import { useId } from 'react'
+
 type Props = { className?: string; spessore?: number }
 
 const base = {
@@ -29,25 +31,26 @@ export function IconaPolliceGiu({ className = 'h-5 w-5', spessore = 2 }: Props) 
   )
 }
 
-/** Bilancia pesapersone digitale vista dall'alto: display in alto e impronte dei piedi. */
-export function IconaBilancia({
-  className = 'h-6 w-6',
-  spessore = 1.75,
-  piatto = 'none',
-  segni = 'currentColor',
-}: Props & {
-  /** Riempimento del piatto (es. bianco nel pulsante del peso). */
-  piatto?: string
-  /** Colore di display e impronte. */
-  segni?: string
-}) {
+/**
+ * Bilancia (disegno fornito dall'utente, icon-scale.svg): quadrato arrotondato con il quadrante
+ * a mezzaluna e la lancetta. Prende il colore del testo; "quadrante" riempie la mezzaluna.
+ */
+export function IconaBilancia({ className = 'h-6 w-6', quadrante }: { className?: string; quadrante?: string }) {
+  // Id della maschera unico per ogni icona nella pagina (useId può contenere caratteri non validi in url()).
+  const maschera = `bilancia-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
   return (
-    <svg {...base} strokeWidth={spessore} className={className}>
-      <rect x="2.5" y="2.5" width="19" height="19" rx="5" fill={piatto} />
-      <g fill={segni} stroke="none">
-        <rect x="8" y="5.2" width="8" height="3.6" rx="1.2" />
-        <ellipse cx="9.2" cy="15" rx="1.9" ry="3.1" />
-        <ellipse cx="14.8" cy="15" rx="1.9" ry="3.1" />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className={className} aria-hidden="true">
+      <defs>
+        <mask id={maschera} maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+          <rect width="512" height="512" fill="#fff" />
+          <path d="M150 240A106 106 0 0 1 362 240Z" fill="#000" stroke="#000" strokeWidth="24" strokeLinejoin="round" />
+        </mask>
+      </defs>
+      {quadrante && <path d="M150 240A106 106 0 0 1 362 240Z" fill={quadrante} stroke={quadrante} strokeWidth="24" strokeLinejoin="round" />}
+      <rect x="56" y="56" width="400" height="400" rx="112" fill="currentColor" mask={`url(#${maschera})`} />
+      <g fill="currentColor" stroke="currentColor" strokeLinecap="round">
+        <line x1="256" y1="238" x2="300" y2="172" strokeWidth="30" />
+        <circle cx="256" cy="238" r="26" stroke="none" />
       </g>
     </svg>
   )
