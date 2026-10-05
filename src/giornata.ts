@@ -225,25 +225,30 @@ export function giornoDellaSettimana(data: string): number {
 }
 
 /**
- * CHO del giorno senza un pasto, per valutare un'alternativa: gli altri pasti assegnati
+ * CHO e kcal del giorno senza un pasto, per valutare un'alternativa: gli altri pasti assegnati
  * più la merenda media se la merenda non è ancora scelta (come nel totale del piano).
  */
-export function choSenza(voci: VocePasto[], categoria: CategoriaPasto): number {
+export function totaliSenza(voci: VocePasto[], categoria: CategoriaPasto): { cho: number; kcal: number } {
   const altri = voci.filter((v) => v.categoria !== categoria)
   const merendaDaStimare = altri.some((v) => v.categoria === 'merenda' && !v.pasto && v.libero === undefined)
-  return totaliPasti(altri).cho + (merendaDaStimare ? merendaMedia().cho : 0)
+  const totali = totaliPasti(altri)
+  const stima = merendaDaStimare ? merendaMedia() : { cho: 0, kcal: 0 }
+  return { cho: totali.cho + stima.cho, kcal: totali.kcal + stima.kcal }
 }
 
-/** L'obiettivo di CHO del tipo di giornata, allargato dal margine di dati.json (sceltaPasti). */
-export function targetCho(tipo: string): { min: number; max: number; da: number; a: number; margine: number } | null {
-  if (!Object.hasOwn(dati.tipiGiornata, tipo)) return null
-  const t = dati.tipiGiornata[tipo as keyof typeof dati.tipiGiornata]
+export type TargetGiorno = {
+  cho: { piano: number; da: number; a: number }
+  kcal: { piano: number; da: number; a: number }
+  margine: number
+}
+
+/** Il piano del giorno (CHO e kcal) con il margine di dati.json (regole.sceltaPasti). */
+export function targetGiorno(piano: { cho: number; kcal: number }): TargetGiorno {
   const margine = dati.regole.sceltaPasti.tolleranzaPercento
-  return {
-    min: t.choTargetMin,
-    max: t.choTargetMax,
-    da: t.choTargetMin * (1 - margine / 100),
-    a: t.choTargetMax * (1 + margine / 100),
-    margine,
-  }
+  const fascia = (valore: number) => ({
+    piano: valore,
+    da: Math.round(valore * (1 - margine / 100)),
+    a: Math.round(valore * (1 + margine / 100)),
+  })
+  return { cho: fascia(piano.cho), kcal: fascia(piano.kcal), margine }
 }

@@ -161,17 +161,11 @@ export function Calcoli() {
 
         <Sezione titolo="Cambiare un pasto">
           <p>
-            Quando cambi un pasto, ogni alternativa dice dove arriva la giornata: è «nel target» se i CHO del giorno
-            restano nell'obiettivo del tipo di giornata, con un margine di ±{regole.sceltaPasti.tolleranzaPercento}%.
-            Quelle nel target vengono prima; nessuna è bloccata.
+            Quando cambi un pasto, ogni alternativa dice dove arriva la giornata: è «nel target» se CHO e kcal del
+            giorno restano entro ±{regole.sceltaPasti.tolleranzaPercento}% dal piano di quel giorno (per esempio, con un
+            piano di 426 g CHO e 3110 kcal: 405–447 g e 2955–3266 kcal). Quelle nel target vengono prima; nessuna è
+            bloccata.
           </p>
-          <ul className="list-disc space-y-1 pl-5">
-            {Object.entries(dati.tipiGiornata).map(([tipo, t]) => (
-              <li key={tipo}>
-                <Tipo tipo={tipo} /> {t.choTargetMin}–{t.choTargetMax} g CHO
-              </li>
-            ))}
-          </ul>
           <p>
             In «Altre versioni» finiscono le alternative pensate per altri giorni: le colazioni di un altro tipo (MAGG,
             RID), le versioni ridotte fuori dai giorni GRIGIO e le maggiorate fuori dai giorni ROSSO.

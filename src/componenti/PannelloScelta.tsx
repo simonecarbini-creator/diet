@@ -6,7 +6,7 @@
 import { useEffect, useState } from 'react'
 import { dati, idAlternative, trovaPasto, type CategoriaConId, type PastoRisolto } from '../dati'
 import { formatDifferenzaCho, formatNumero } from '../formato'
-import { targetCho, type VocePasto } from '../giornata'
+import { targetGiorno, type VocePasto } from '../giornata'
 import { RiassuntoAlimenti } from './Alimenti'
 import { DifferenzaKcal } from './DifferenzaKcal'
 import { conteggiDelPasto, frazioneLimite, nomeVincolo, oltreMassimo, type ConteggioVincolo } from '../vincoli'
@@ -19,8 +19,10 @@ function etichettaTag(tag: string): string {
 export type ContestoGiornata = {
   tipo: string
   ricarica: boolean
-  /** CHO del giorno senza questo pasto (vedi choSenza in giornata.ts). */
-  choSenzaQuesto: number
+  /** CHO e kcal del giorno senza questo pasto (vedi totaliSenza in giornata.ts). */
+  senzaQuesto: { cho: number; kcal: number }
+  /** Il piano del giorno: il riferimento per la tolleranza. */
+  piano: { cho: number; kcal: number }
 }
 
 type Props = {
@@ -87,12 +89,15 @@ export function PannelloScelta({
   const scelta = pasti.find((p) => p.id === selezionato)
   const daConfermare = scelta && scelta.id !== voce.pasto?.id
 
-  // Dove arriva la giornata con ogni alternativa, rispetto all'obiettivo del tipo di giornata.
-  const target = giornata ? targetCho(giornata.tipo) : null
-  const totaleCon = (p: PastoRisolto) => (giornata ? giornata.choSenzaQuesto + p.cho : null)
+  // Dove arriva la giornata con ogni alternativa: nel target se CHO e kcal restano entro
+  // il margine di dati.json rispetto al piano di oggi.
+  const target = giornata ? targetGiorno(giornata.piano) : null
+  const totaleCon = (p: PastoRisolto) =>
+    giornata ? { cho: giornata.senzaQuesto.cho + p.cho, kcal: giornata.senzaQuesto.kcal + p.kcal } : null
+  const dentro = (valore: number, fascia: { da: number; a: number }) => valore >= fascia.da && valore <= fascia.a
   const nelTarget = (p: PastoRisolto) => {
     const totale = totaleCon(p)
-    return target && totale !== null ? totale >= target.da && totale <= target.a : true
+    return target && totale ? dentro(totale.cho, target.cho) && dentro(totale.kcal, target.kcal) : true
   }
 
   const principali = visibili
@@ -145,11 +150,13 @@ export function PannelloScelta({
             </div>
           )}
           {opzione.notaVersione && <p className="mt-1 text-sm">{opzione.notaVersione}</p>}
-          {target && totale !== null && ammesso && (
+          {target && totale && ammesso && (
             <p className={`mt-1 text-sm font-semibold ${nelTarget(opzione) ? 'text-ok' : 'text-ko'}`}>
-              {nelTarget(opzione)
-                ? `✓ giornata a ${formatNumero(totale)} g CHO, nel target`
-                : `giornata a ${formatNumero(totale)} g CHO, fuori target`}
+              {nelTarget(opzione) ? '✓ ' : ''}giornata a{' '}
+              <span className={dentro(totale.cho, target.cho) ? '' : 'underline'}>{formatNumero(totale.cho)} g CHO</span>
+              {' · '}
+              <span className={dentro(totale.kcal, target.kcal) ? '' : 'underline'}>{formatNumero(totale.kcal)} kcal</span>
+              {nelTarget(opzione) ? ', nel target' : ', fuori target'}
             </p>
           )}
           {conteggi.map((conteggio) => {
@@ -210,9 +217,11 @@ export function PannelloScelta({
             <span className="font-bold text-cho">{formatNumero(riferimento.cho)} g CHO</span>
           </p>
         )}
-        {target && giornata && (
+        {target && (
           <p className="mt-1 text-xs opacity-70">
-            Obiettivo di oggi ({giornata.tipo}): {target.min}–{target.max} g CHO, con margine ±{target.margine}%
+            Piano di oggi: {formatNumero(target.cho.piano)} g CHO · {formatNumero(target.kcal.piano)} kcal. Nel target
+            (±{target.margine}%): {target.cho.da}–{target.cho.a} g CHO e {formatNumero(target.kcal.da)}–
+            {formatNumero(target.kcal.a)} kcal
           </p>
         )}
       </header>

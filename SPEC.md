@@ -83,8 +83,8 @@ Il pasto corrente (in base all'ora) è evidenziato e viene mostrato per primo al
 - La merenda nel calendario è spesso `null`: va scelta ogni giorno. La card mostra un selettore con le 12 opzioni, filtrabili per tag.
 - Le alternative (P2 al posto di P1, C4 al posto di C1) si cambiano al volo e la sostituzione **vale solo per oggi**, non modifica il piano.
   *Decisione 2026-10-05: il pannello di scelta è "guidato". Ogni alternativa mostra dove arriva la giornata
-  rispetto all'obiettivo di CHO del tipo di giornata (± `regole.sceltaPasti.tolleranzaPercento`); prima quelle
-  nel target. In "Altre versioni": colazioni di un altro tipo, ridotte fuori dai GRIGIO, maggiorate fuori dai
+  rispetto al piano di quel giorno: nel target se CHO e kcal restano entro ± `regole.sceltaPasti.tolleranzaPercento`
+  (corretto il 2026-10-05: prima il margine allargava la fascia del tipo di giornata); prima quelle nel target. In "Altre versioni": colazioni di un altro tipo, ridotte fuori dai GRIGIO, maggiorate fuori dai
   ROSSO. Le colazioni sono 33 (STD, MAGG, RID, ciascuna con 10 alternative B1-B10).*
 - Quando si sostituisce un pasto, mostrare la **differenza di CHO** rispetto all'originale (es. "−15 g CHO rispetto a P1"), perché è quello che va compensato.
 - Se il giorno ha `ricarica: true` (sabato prima di una domenica pesante), mostrarlo come nota in evidenza: non è un riposo qualsiasi.

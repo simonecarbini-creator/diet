@@ -184,7 +184,7 @@
 
     "sceltaPasti": {
       "tolleranzaPercento": 5,
-      "nota": "Quando si cambia un pasto, l'alternativa e' 'nel target' se con lei i CHO del giorno restano nell'obiettivo del tipo di giornata (tipiGiornata), con questo margine. Non blocca la scelta: la ordina e la segnala. Decisione dell'utente del 2026-10-05."
+      "nota": "Quando si cambia un pasto, l'alternativa e' 'nel target' se con lei CHO e kcal del giorno restano entro questa percentuale dal piano di quel giorno (kcal e cho del giorno nel calendario). Non blocca la scelta: la ordina e la segnala. Decisione dell'utente del 2026-10-05."
     },
 
     "giornataLibera": {
