@@ -182,6 +182,11 @@
       "quando": { "e": [ { "var": "tipo", "==": "GRIGIO" }, { "var": "domaniRossoPesante", "==": true } ] }
     },
 
+    "sceltaPasti": {
+      "tolleranzaPercento": 5,
+      "nota": "Quando si cambia un pasto, l'alternativa e' 'nel target' se con lei i CHO del giorno restano nell'obiettivo del tipo di giornata (tipiGiornata), con questo margine. Non blocca la scelta: la ordina e la segnala. Decisione dell'utente del 2026-10-05."
+    },
+
     "giornataLibera": {
       "tolleranzaPercento": 5,
       "nota": "Una giornata libera conta come rispettata se tutti i pasti liberi hanno kcal, CHO e proteine e il totale del giorno resta entro questa percentuale da quello dei pasti del piano. Decisione dell'utente del 2026-10-02."
@@ -238,44 +243,1625 @@
     "colazioni": [
       {
         "id": "STD",
-        "nome": "Colazione standard",
-        "orario": "al rientro, entro 45' dalla fine della corsa",
+        "base": "STD",
+        "nome": "Yogurt greco, avena e fette biscottate",
+        "categoria": "latticini",
         "kcal": 700,
         "cho": 90,
         "proteine": 33,
+        "grassi": 20,
         "alimenti": [
-          { "nome": "Yogurt greco 0%", "grammi": 200, "sostituibileCon": ["Ricotta 200 g", "Latte o bevanda di soia 300 ml + fonte proteica"] },
-          { "nome": "Avena (fiocchi)", "grammi": 70, "sostituibileCon": ["Fiocchi d'orzo 70 g", "Fiocchi di farro 70 g", "Muesli senza zuccheri aggiunti 65 g"] },
-          { "nome": "Frutta secca", "grammi": 20 },
-          { "nome": "Gocce di cioccolato fondente", "grammi": 5 },
-          { "nome": "Frutta disidratata", "grammi": 10 },
-          { "nome": "Fette biscottate integrali", "grammi": null, "pezzi": 3 },
-          { "nome": "Composta di frutta", "grammi": 40 }
+          {
+            "nome": "Yogurt greco 0%",
+            "grammi": 200,
+            "sostituibileCon": [
+              "Ricotta 200 g",
+              "Latte o bevanda di soia 300 ml + fonte proteica"
+            ]
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 70,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 70 g",
+              "Fiocchi di farro 70 g",
+              "Muesli senza zuccheri aggiunti 65 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Gocce di cioccolato fondente",
+            "grammi": 5
+          },
+          {
+            "nome": "Frutta disidratata",
+            "grammi": 10
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 3
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 40
+          }
         ],
-        "note": "E' il pasto post-allenamento: il momento in cui i carboidrati sono meglio tollerati."
+        "note": "E' il pasto post-allenamento: il momento in cui i carboidrati sono meglio tollerati.",
+        "tags": [
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "STD",
+        "orario": "al rientro, entro 45' dalla fine della corsa"
+      },
+      {
+        "id": "B1",
+        "base": "B1",
+        "nome": "Porridge caldo di avena con frutta",
+        "categoria": "latte",
+        "kcal": 680,
+        "cho": 95,
+        "proteine": 32,
+        "grassi": 18,
+        "alimenti": [
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 75
+          },
+          {
+            "nome": "Latte parzialmente scremato",
+            "grammi": 250,
+            "note": "ml"
+          },
+          {
+            "nome": "Banana",
+            "grammi": 100
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 15
+          },
+          {
+            "nome": "Miele",
+            "grammi": 15
+          },
+          {
+            "nome": "Yogurt greco 0%",
+            "grammi": 100,
+            "note": "a parte, o mescolato a fine cottura"
+          }
+        ],
+        "note": "Il porridge COTTO 5 minuti e' la forma che sviluppa meglio il gel di beta-glucani: e' la colazione con la curva glicemica piu' dolce di tutta la lista. Lo yogurt a parte serve a chiudere le proteine, che il solo latte non copre.",
+        "tags": [
+          "caldo",
+          "invernale",
+          "curvaDolce"
+        ],
+        "tipoColazione": "STD"
+      },
+      {
+        "id": "B2",
+        "base": "B2",
+        "nome": "Overnight d'orzo con soia e frutta",
+        "categoria": "soia",
+        "kcal": 700,
+        "cho": 92,
+        "proteine": 34,
+        "grassi": 17,
+        "alimenti": [
+          {
+            "nome": "Fiocchi d'orzo",
+            "grammi": 75,
+            "sostituibileCon": [
+              "Fiocchi d'avena 75 g",
+              "Fiocchi di farro 75 g"
+            ]
+          },
+          {
+            "nome": "Bevanda di soia non zuccherata",
+            "grammi": 250,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15,
+            "sostituibileCon": [
+              "Yogurt greco 0% 150 g",
+              "Fiocchi di latte 130 g"
+            ]
+          },
+          {
+            "nome": "Banana",
+            "grammi": 100
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 15,
+            "note": "da aggiungere al mattino, non la sera prima"
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 3
+          }
+        ],
+        "note": "Si prepara la sera prima: fiocchi e soia in frigo, il resto al mattino. Per addensare davvero usa 180 ml di soia e bevi il resto a parte: con 250 ml resta liquido. La soia e' l'unica bevanda vegetale con proteine paragonabili al latte (3,3 g/100 ml); mandorla, riso, avena e cocco stanno sotto 1 g e non reggono questa colazione.",
+        "tags": [
+          "soia",
+          "preparareSeraPrima",
+          "freddo",
+          "veloce"
+        ],
+        "tipoColazione": "STD"
+      },
+      {
+        "id": "B3",
+        "base": "B3",
+        "nome": "Pane integrale, ricotta e composta",
+        "categoria": "latticini",
+        "kcal": 739,
+        "cho": 92,
+        "proteine": 27,
+        "grassi": 27,
+        "alimenti": [
+          {
+            "nome": "Pane integrale",
+            "grammi": 100
+          },
+          {
+            "nome": "Ricotta vaccina",
+            "grammi": 180
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 45
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 10
+          },
+          {
+            "nome": "Mela o pera",
+            "grammi": 150
+          },
+          {
+            "nome": "Banana",
+            "grammi": 60
+          }
+        ],
+        "note": "Niente cereali in fiocchi: utile quando sei stanco dello yogurt e dell'avena insieme. E' la colazione con meno proteine della lista (27 g): recuperale a pranzo o aggiungi 40 g di ricotta.",
+        "tags": [
+          "daSpalmare",
+          "veloce",
+          "pocheProteine"
+        ],
+        "tipoColazione": "STD"
+      },
+      {
+        "id": "B4",
+        "base": "B4",
+        "nome": "Pane, uova e frutta",
+        "categoria": "uova",
+        "kcal": 722,
+        "cho": 87,
+        "proteine": 32,
+        "grassi": 24,
+        "alimenti": [
+          {
+            "nome": "Pane integrale",
+            "grammi": 120
+          },
+          {
+            "nome": "Uova",
+            "pezzi": 3,
+            "note": "strapazzate o in camicia"
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 30
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 10
+          }
+        ],
+        "note": "Mezza salata e mezza dolce. Le uova rallentano lo svuotamento gastrico: ottimo nei giorni VERDE, un po' meno quando devi ricostituire glicogeno in fretta dopo una seduta lunga.",
+        "tags": [
+          "salata",
+          "uova",
+          "sazieta"
+        ],
+        "tipoColazione": "STD"
+      },
+      {
+        "id": "B5",
+        "base": "B5",
+        "nome": "Skyr con frutti di bosco e fiocchi",
+        "categoria": "latticini",
+        "kcal": 700,
+        "cho": 91,
+        "proteine": 38,
+        "grassi": 18,
+        "alimenti": [
+          {
+            "nome": "Skyr",
+            "grammi": 200,
+            "sostituibileCon": [
+              "Yogurt greco 0% 200 g"
+            ]
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 65
+          },
+          {
+            "nome": "Frutti di bosco",
+            "grammi": 150,
+            "note": "anche surgelati"
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 3
+          },
+          {
+            "nome": "Miele",
+            "grammi": 18
+          }
+        ],
+        "note": "La piu' ricca di proteine (38 g) e la piu' vicina alla STD come struttura. Lo skyr e' piu' asciutto del greco: utile se la consistenza densa ti pesa.",
+        "tags": [
+          "veloce",
+          "freddo",
+          "proteineAlte"
+        ],
+        "tipoColazione": "STD"
+      },
+      {
+        "id": "B6",
+        "base": "B6",
+        "nome": "Frullato proteico con pane",
+        "categoria": "latte",
+        "kcal": 696,
+        "cho": 96,
+        "proteine": 37,
+        "grassi": 17,
+        "alimenti": [
+          {
+            "nome": "Latte parzialmente scremato",
+            "grammi": 300,
+            "note": "ml"
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 35
+          },
+          {
+            "nome": "Burro d'arachidi",
+            "grammi": 15
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15
+          },
+          {
+            "nome": "Pane integrale",
+            "grammi": 60
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 30
+          }
+        ],
+        "note": "Meta' si beve: e' la colazione per le mattine in cui dopo la corsa non hai fame. Essendo liquida, lo svuotamento gastrico e' piu' rapido e la glicemia sale prima: tienilo presente la prima volta che la usi.",
+        "tags": [
+          "daBere",
+          "senzaFame",
+          "veloce",
+          "curvaRapida"
+        ],
+        "tipoColazione": "STD"
+      },
+      {
+        "id": "B7",
+        "base": "B7",
+        "nome": "Fiocchi di latte, fette biscottate e miele",
+        "categoria": "latticini",
+        "kcal": 698,
+        "cho": 90,
+        "proteine": 36,
+        "grassi": 20,
+        "alimenti": [
+          {
+            "nome": "Fiocchi di latte",
+            "grammi": 220
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 7
+          },
+          {
+            "nome": "Miele",
+            "grammi": 25,
+            "sostituibileCon": [
+              "Composta di frutta 50 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 18
+          },
+          {
+            "nome": "Mela o pera",
+            "grammi": 150
+          }
+        ],
+        "note": "Zero yogurt e zero avena: la via d'uscita quando sei stanco di entrambi. I fiocchi di latte danno 26 g di proteine con pochi grassi.",
+        "tags": [
+          "senzaYogurt",
+          "senzaAvena",
+          "veloce"
+        ],
+        "tipoColazione": "STD"
+      },
+      {
+        "id": "B8",
+        "base": "B8",
+        "nome": "Pane, parmigiano e frutta (salata)",
+        "categoria": "salata",
+        "kcal": 680,
+        "cho": 93,
+        "proteine": 33,
+        "grassi": 17,
+        "alimenti": [
+          {
+            "nome": "Pane integrale",
+            "grammi": 120
+          },
+          {
+            "nome": "Parmigiano",
+            "grammi": 30
+          },
+          {
+            "nome": "Bresaola",
+            "grammi": 30,
+            "sostituibileCon": [
+              "Salmone affumicato 40 g",
+              "Prosciutto crudo sgrassato 35 g"
+            ]
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          },
+          {
+            "nome": "Mela o pera",
+            "grammi": 120
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 10
+          }
+        ],
+        "note": "Completamente salata, zero latticini dolci. La frutta qui non e' un contorno: porta quasi la meta' dei carboidrati, quindi non saltarla.",
+        "tags": [
+          "salata",
+          "senzaYogurt",
+          "senzaAvena",
+          "veloce"
+        ],
+        "tipoColazione": "STD"
+      },
+      {
+        "id": "B9",
+        "base": "B9",
+        "nome": "Yogurt di soia con farro e cacao",
+        "categoria": "soia",
+        "kcal": 698,
+        "cho": 87,
+        "proteine": 36,
+        "grassi": 18,
+        "alimenti": [
+          {
+            "nome": "Yogurt di soia non zuccherato",
+            "grammi": 200
+          },
+          {
+            "nome": "Fiocchi di farro",
+            "grammi": 75,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 75 g"
+            ]
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15,
+            "sostituibileCon": [
+              "Yogurt greco 0% 150 g"
+            ]
+          },
+          {
+            "nome": "Cacao amaro in polvere",
+            "grammi": 8
+          },
+          {
+            "nome": "Banana",
+            "grammi": 100
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 15
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 2
+          }
+        ],
+        "note": "Lo yogurt di soia non zuccherato ha circa la meta' delle proteine del greco, da qui l'integrazione. Controlla in etichetta che non sia la versione 'al gusto di': quelle aggiungono 8-10 g di zuccheri per 100 g.",
+        "tags": [
+          "soia",
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "STD"
+      },
+      {
+        "id": "B10",
+        "base": "B10",
+        "nome": "Budino di chia con soia e pane",
+        "categoria": "soia",
+        "kcal": 714,
+        "cho": 87,
+        "proteine": 36,
+        "grassi": 17,
+        "alimenti": [
+          {
+            "nome": "Semi di chia",
+            "grammi": 30
+          },
+          {
+            "nome": "Bevanda di soia non zuccherata",
+            "grammi": 250,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15,
+            "sostituibileCon": [
+              "Yogurt greco 0% 150 g"
+            ]
+          },
+          {
+            "nome": "Pane integrale",
+            "grammi": 110
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 40
+          },
+          {
+            "nome": "Frutti di bosco",
+            "grammi": 120
+          },
+          {
+            "nome": "Banana",
+            "grammi": 70
+          }
+        ],
+        "note": "Si prepara la sera prima e addensa davvero (la chia assorbe fino a 10 volte il suo peso). Porta ~12 g di fibra e omega-3 vegetali. Le prime volte vai piano: con questi volumi di corsa la chia puo' dare gonfiore.",
+        "tags": [
+          "soia",
+          "preparareSeraPrima",
+          "freddo",
+          "fibraAlta"
+        ],
+        "tipoColazione": "STD"
       },
       {
         "id": "MAGG",
-        "nome": "Colazione maggiorata",
+        "base": "STD",
+        "nome": "Yogurt greco, avena e fette biscottate",
+        "categoria": "latticini",
         "kcal": 840,
         "cho": 121,
         "proteine": 34,
-        "base": "STD",
-        "aggiunte": [
-          { "nome": "Banana", "grammi": 120 },
-          { "nome": "Fetta biscottata integrale", "pezzi": 1 }
-        ]
+        "grassi": 21,
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "alimenti": [
+          {
+            "nome": "Yogurt greco 0%",
+            "grammi": 200,
+            "sostituibileCon": [
+              "Ricotta 200 g",
+              "Latte o bevanda di soia 300 ml + fonte proteica"
+            ]
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 70,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 70 g",
+              "Fiocchi di farro 70 g",
+              "Muesli senza zuccheri aggiunti 65 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Gocce di cioccolato fondente",
+            "grammi": 5
+          },
+          {
+            "nome": "Frutta disidratata",
+            "grammi": 10
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 4
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 40
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          }
+        ],
+        "note": "E' il pasto post-allenamento: il momento in cui i carboidrati sono meglio tollerati.",
+        "tags": [
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "MAGG"
+      },
+      {
+        "id": "B1+",
+        "base": "B1",
+        "nome": "Porridge caldo di avena con frutta",
+        "categoria": "latte",
+        "kcal": 822,
+        "cho": 125,
+        "proteine": 34,
+        "grassi": 19,
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "alimenti": [
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 75
+          },
+          {
+            "nome": "Latte parzialmente scremato",
+            "grammi": 250,
+            "note": "ml"
+          },
+          {
+            "nome": "Banana",
+            "grammi": 220
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 15
+          },
+          {
+            "nome": "Miele",
+            "grammi": 15
+          },
+          {
+            "nome": "Yogurt greco 0%",
+            "grammi": 100,
+            "note": "a parte, o mescolato a fine cottura"
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 1
+          }
+        ],
+        "note": "Il porridge COTTO 5 minuti e' la forma che sviluppa meglio il gel di beta-glucani: e' la colazione con la curva glicemica piu' dolce di tutta la lista. Lo yogurt a parte serve a chiudere le proteine, che il solo latte non copre.",
+        "tags": [
+          "caldo",
+          "invernale",
+          "curvaDolce"
+        ],
+        "tipoColazione": "MAGG"
+      },
+      {
+        "id": "B2+",
+        "base": "B2",
+        "nome": "Overnight d'orzo con soia e frutta",
+        "categoria": "soia",
+        "kcal": 842,
+        "cho": 122,
+        "proteine": 36,
+        "grassi": 18,
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "alimenti": [
+          {
+            "nome": "Fiocchi d'orzo",
+            "grammi": 75,
+            "sostituibileCon": [
+              "Fiocchi d'avena 75 g",
+              "Fiocchi di farro 75 g"
+            ]
+          },
+          {
+            "nome": "Bevanda di soia non zuccherata",
+            "grammi": 250,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15,
+            "sostituibileCon": [
+              "Yogurt greco 0% 150 g",
+              "Fiocchi di latte 130 g"
+            ]
+          },
+          {
+            "nome": "Banana",
+            "grammi": 220
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 15,
+            "note": "da aggiungere al mattino, non la sera prima"
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 4
+          }
+        ],
+        "note": "Si prepara la sera prima: fiocchi e soia in frigo, il resto al mattino. Per addensare davvero usa 180 ml di soia e bevi il resto a parte: con 250 ml resta liquido. La soia e' l'unica bevanda vegetale con proteine paragonabili al latte (3,3 g/100 ml); mandorla, riso, avena e cocco stanno sotto 1 g e non reggono questa colazione.",
+        "tags": [
+          "soia",
+          "preparareSeraPrima",
+          "freddo",
+          "veloce"
+        ],
+        "tipoColazione": "MAGG"
+      },
+      {
+        "id": "B3+",
+        "base": "B3",
+        "nome": "Pane integrale, ricotta e composta",
+        "categoria": "latticini",
+        "kcal": 881,
+        "cho": 122,
+        "proteine": 29,
+        "grassi": 28,
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "alimenti": [
+          {
+            "nome": "Pane integrale",
+            "grammi": 100
+          },
+          {
+            "nome": "Ricotta vaccina",
+            "grammi": 180
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 45
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 10
+          },
+          {
+            "nome": "Mela o pera",
+            "grammi": 150
+          },
+          {
+            "nome": "Banana",
+            "grammi": 180
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 1
+          }
+        ],
+        "note": "Niente cereali in fiocchi: utile quando sei stanco dello yogurt e dell'avena insieme. E' la colazione con meno proteine della lista (27 g): recuperale a pranzo o aggiungi 40 g di ricotta.",
+        "tags": [
+          "daSpalmare",
+          "veloce",
+          "pocheProteine"
+        ],
+        "tipoColazione": "MAGG"
+      },
+      {
+        "id": "B4+",
+        "base": "B4",
+        "nome": "Pane, uova e frutta",
+        "categoria": "uova",
+        "kcal": 864,
+        "cho": 117,
+        "proteine": 34,
+        "grassi": 25,
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "alimenti": [
+          {
+            "nome": "Pane integrale",
+            "grammi": 120
+          },
+          {
+            "nome": "Uova",
+            "pezzi": 3,
+            "note": "strapazzate o in camicia"
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 30
+          },
+          {
+            "nome": "Banana",
+            "grammi": 240
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 10
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 1
+          }
+        ],
+        "note": "Mezza salata e mezza dolce. Le uova rallentano lo svuotamento gastrico: ottimo nei giorni VERDE, un po' meno quando devi ricostituire glicogeno in fretta dopo una seduta lunga.",
+        "tags": [
+          "salata",
+          "uova",
+          "sazieta"
+        ],
+        "tipoColazione": "MAGG"
+      },
+      {
+        "id": "B5+",
+        "base": "B5",
+        "nome": "Skyr con frutti di bosco e fiocchi",
+        "categoria": "latticini",
+        "kcal": 842,
+        "cho": 121,
+        "proteine": 40,
+        "grassi": 19,
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "alimenti": [
+          {
+            "nome": "Skyr",
+            "grammi": 200,
+            "sostituibileCon": [
+              "Yogurt greco 0% 200 g"
+            ]
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 65
+          },
+          {
+            "nome": "Frutti di bosco",
+            "grammi": 150,
+            "note": "anche surgelati"
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 4
+          },
+          {
+            "nome": "Miele",
+            "grammi": 18
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          }
+        ],
+        "note": "La piu' ricca di proteine (38 g) e la piu' vicina alla STD come struttura. Lo skyr e' piu' asciutto del greco: utile se la consistenza densa ti pesa.",
+        "tags": [
+          "veloce",
+          "freddo",
+          "proteineAlte"
+        ],
+        "tipoColazione": "MAGG"
+      },
+      {
+        "id": "B6+",
+        "base": "B6",
+        "nome": "Frullato proteico con pane",
+        "categoria": "latte",
+        "kcal": 838,
+        "cho": 126,
+        "proteine": 39,
+        "grassi": 18,
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "alimenti": [
+          {
+            "nome": "Latte parzialmente scremato",
+            "grammi": 300,
+            "note": "ml"
+          },
+          {
+            "nome": "Banana",
+            "grammi": 240
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 35
+          },
+          {
+            "nome": "Burro d'arachidi",
+            "grammi": 15
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15
+          },
+          {
+            "nome": "Pane integrale",
+            "grammi": 60
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 30
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 1
+          }
+        ],
+        "note": "Meta' si beve: e' la colazione per le mattine in cui dopo la corsa non hai fame. Essendo liquida, lo svuotamento gastrico e' piu' rapido e la glicemia sale prima: tienilo presente la prima volta che la usi.",
+        "tags": [
+          "daBere",
+          "senzaFame",
+          "veloce",
+          "curvaRapida"
+        ],
+        "tipoColazione": "MAGG"
+      },
+      {
+        "id": "B7+",
+        "base": "B7",
+        "nome": "Fiocchi di latte, fette biscottate e miele",
+        "categoria": "latticini",
+        "kcal": 840,
+        "cho": 120,
+        "proteine": 38,
+        "grassi": 21,
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "alimenti": [
+          {
+            "nome": "Fiocchi di latte",
+            "grammi": 220
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 8
+          },
+          {
+            "nome": "Miele",
+            "grammi": 25,
+            "sostituibileCon": [
+              "Composta di frutta 50 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 18
+          },
+          {
+            "nome": "Mela o pera",
+            "grammi": 150
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          }
+        ],
+        "note": "Zero yogurt e zero avena: la via d'uscita quando sei stanco di entrambi. I fiocchi di latte danno 26 g di proteine con pochi grassi.",
+        "tags": [
+          "senzaYogurt",
+          "senzaAvena",
+          "veloce"
+        ],
+        "tipoColazione": "MAGG"
+      },
+      {
+        "id": "B8+",
+        "base": "B8",
+        "nome": "Pane, parmigiano e frutta (salata)",
+        "categoria": "salata",
+        "kcal": 822,
+        "cho": 123,
+        "proteine": 35,
+        "grassi": 18,
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "alimenti": [
+          {
+            "nome": "Pane integrale",
+            "grammi": 120
+          },
+          {
+            "nome": "Parmigiano",
+            "grammi": 30
+          },
+          {
+            "nome": "Bresaola",
+            "grammi": 30,
+            "sostituibileCon": [
+              "Salmone affumicato 40 g",
+              "Prosciutto crudo sgrassato 35 g"
+            ]
+          },
+          {
+            "nome": "Banana",
+            "grammi": 240
+          },
+          {
+            "nome": "Mela o pera",
+            "grammi": 120
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 10
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 1
+          }
+        ],
+        "note": "Completamente salata, zero latticini dolci. La frutta qui non e' un contorno: porta quasi la meta' dei carboidrati, quindi non saltarla.",
+        "tags": [
+          "salata",
+          "senzaYogurt",
+          "senzaAvena",
+          "veloce"
+        ],
+        "tipoColazione": "MAGG"
+      },
+      {
+        "id": "B9+",
+        "base": "B9",
+        "nome": "Yogurt di soia con farro e cacao",
+        "categoria": "soia",
+        "kcal": 840,
+        "cho": 117,
+        "proteine": 38,
+        "grassi": 19,
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "alimenti": [
+          {
+            "nome": "Yogurt di soia non zuccherato",
+            "grammi": 200
+          },
+          {
+            "nome": "Fiocchi di farro",
+            "grammi": 75,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 75 g"
+            ]
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15,
+            "sostituibileCon": [
+              "Yogurt greco 0% 150 g"
+            ]
+          },
+          {
+            "nome": "Cacao amaro in polvere",
+            "grammi": 8
+          },
+          {
+            "nome": "Banana",
+            "grammi": 220
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 15
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 3
+          }
+        ],
+        "note": "Lo yogurt di soia non zuccherato ha circa la meta' delle proteine del greco, da qui l'integrazione. Controlla in etichetta che non sia la versione 'al gusto di': quelle aggiungono 8-10 g di zuccheri per 100 g.",
+        "tags": [
+          "soia",
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "MAGG"
+      },
+      {
+        "id": "B10+",
+        "base": "B10",
+        "nome": "Budino di chia con soia e pane",
+        "categoria": "soia",
+        "kcal": 856,
+        "cho": 117,
+        "proteine": 38,
+        "grassi": 18,
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "alimenti": [
+          {
+            "nome": "Semi di chia",
+            "grammi": 30
+          },
+          {
+            "nome": "Bevanda di soia non zuccherata",
+            "grammi": 250,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15,
+            "sostituibileCon": [
+              "Yogurt greco 0% 150 g"
+            ]
+          },
+          {
+            "nome": "Pane integrale",
+            "grammi": 110
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 40
+          },
+          {
+            "nome": "Frutti di bosco",
+            "grammi": 120
+          },
+          {
+            "nome": "Banana",
+            "grammi": 190
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 1
+          }
+        ],
+        "note": "Si prepara la sera prima e addensa davvero (la chia assorbe fino a 10 volte il suo peso). Porta ~12 g di fibra e omega-3 vegetali. Le prime volte vai piano: con questi volumi di corsa la chia puo' dare gonfiore.",
+        "tags": [
+          "soia",
+          "preparareSeraPrima",
+          "freddo",
+          "fibraAlta"
+        ],
+        "tipoColazione": "MAGG"
       },
       {
         "id": "RID",
-        "nome": "Colazione ridotta",
+        "base": "STD",
+        "nome": "Yogurt greco, avena e fette biscottate",
+        "categoria": "latticini",
         "kcal": 590,
         "cho": 62,
         "proteine": 32,
-        "base": "STD",
-        "rimozioni": ["Fette biscottate integrali", "Composta di frutta"]
+        "grassi": 20,
+        "modifiche": "Niente fette biscottate, niente composta",
+        "alimenti": [
+          {
+            "nome": "Yogurt greco 0%",
+            "grammi": 200,
+            "sostituibileCon": [
+              "Ricotta 200 g",
+              "Latte o bevanda di soia 300 ml + fonte proteica"
+            ]
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 70,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 70 g",
+              "Fiocchi di farro 70 g",
+              "Muesli senza zuccheri aggiunti 65 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Gocce di cioccolato fondente",
+            "grammi": 5
+          },
+          {
+            "nome": "Frutta disidratata",
+            "grammi": 10
+          }
+        ],
+        "note": "E' il pasto post-allenamento: il momento in cui i carboidrati sono meglio tollerati.",
+        "tags": [
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "RID"
+      },
+      {
+        "id": "B1rid",
+        "base": "B1",
+        "nome": "Porridge caldo di avena con frutta",
+        "categoria": "latte",
+        "kcal": 562,
+        "cho": 71,
+        "proteine": 30,
+        "grassi": 17,
+        "modifiche": "Niente miele, avena 55 g",
+        "alimenti": [
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 55
+          },
+          {
+            "nome": "Latte parzialmente scremato",
+            "grammi": 250,
+            "note": "ml"
+          },
+          {
+            "nome": "Banana",
+            "grammi": 100
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 15
+          },
+          {
+            "nome": "Yogurt greco 0%",
+            "grammi": 100,
+            "note": "a parte, o mescolato a fine cottura"
+          }
+        ],
+        "note": "Il porridge COTTO 5 minuti e' la forma che sviluppa meglio il gel di beta-glucani: e' la colazione con la curva glicemica piu' dolce di tutta la lista. Lo yogurt a parte serve a chiudere le proteine, che il solo latte non copre.",
+        "tags": [
+          "caldo",
+          "invernale",
+          "curvaDolce"
+        ],
+        "tipoColazione": "RID"
+      },
+      {
+        "id": "B2rid",
+        "base": "B2",
+        "nome": "Overnight d'orzo con soia e frutta",
+        "categoria": "soia",
+        "kcal": 595,
+        "cho": 72,
+        "proteine": 31,
+        "grassi": 16,
+        "modifiche": "Niente fette biscottate",
+        "alimenti": [
+          {
+            "nome": "Fiocchi d'orzo",
+            "grammi": 75,
+            "sostituibileCon": [
+              "Fiocchi d'avena 75 g",
+              "Fiocchi di farro 75 g"
+            ]
+          },
+          {
+            "nome": "Bevanda di soia non zuccherata",
+            "grammi": 250,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15,
+            "sostituibileCon": [
+              "Yogurt greco 0% 150 g",
+              "Fiocchi di latte 130 g"
+            ]
+          },
+          {
+            "nome": "Banana",
+            "grammi": 100
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 15,
+            "note": "da aggiungere al mattino, non la sera prima"
+          }
+        ],
+        "note": "Si prepara la sera prima: fiocchi e soia in frigo, il resto al mattino. Per addensare davvero usa 180 ml di soia e bevi il resto a parte: con 250 ml resta liquido. La soia e' l'unica bevanda vegetale con proteine paragonabili al latte (3,3 g/100 ml); mandorla, riso, avena e cocco stanno sotto 1 g e non reggono questa colazione.",
+        "tags": [
+          "soia",
+          "preparareSeraPrima",
+          "freddo",
+          "veloce"
+        ],
+        "tipoColazione": "RID"
+      },
+      {
+        "id": "B3rid",
+        "base": "B3",
+        "nome": "Pane integrale, ricotta e composta",
+        "categoria": "latticini",
+        "kcal": 619,
+        "cho": 66,
+        "proteine": 25,
+        "grassi": 27,
+        "modifiche": "Niente composta, pane 80 g",
+        "alimenti": [
+          {
+            "nome": "Pane integrale",
+            "grammi": 80
+          },
+          {
+            "nome": "Ricotta vaccina",
+            "grammi": 180
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 10
+          },
+          {
+            "nome": "Mela o pera",
+            "grammi": 150
+          },
+          {
+            "nome": "Banana",
+            "grammi": 60
+          }
+        ],
+        "note": "Niente cereali in fiocchi: utile quando sei stanco dello yogurt e dell'avena insieme. E' la colazione con meno proteine della lista (27 g): recuperale a pranzo o aggiungi 40 g di ricotta.",
+        "tags": [
+          "daSpalmare",
+          "veloce",
+          "pocheProteine"
+        ],
+        "tipoColazione": "RID"
+      },
+      {
+        "id": "B4rid",
+        "base": "B4",
+        "nome": "Pane, uova e frutta",
+        "categoria": "uova",
+        "kcal": 602,
+        "cho": 62,
+        "proteine": 29,
+        "grassi": 23,
+        "modifiche": "Niente composta, pane 90 g",
+        "alimenti": [
+          {
+            "nome": "Pane integrale",
+            "grammi": 90
+          },
+          {
+            "nome": "Uova",
+            "pezzi": 3,
+            "note": "strapazzate o in camicia"
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 10
+          }
+        ],
+        "note": "Mezza salata e mezza dolce. Le uova rallentano lo svuotamento gastrico: ottimo nei giorni VERDE, un po' meno quando devi ricostituire glicogeno in fretta dopo una seduta lunga.",
+        "tags": [
+          "salata",
+          "uova",
+          "sazieta"
+        ],
+        "tipoColazione": "RID"
+      },
+      {
+        "id": "B5rid",
+        "base": "B5",
+        "nome": "Skyr con frutti di bosco e fiocchi",
+        "categoria": "latticini",
+        "kcal": 571,
+        "cho": 65,
+        "proteine": 35,
+        "grassi": 17,
+        "modifiche": "Niente fette biscottate, miele 10 g",
+        "alimenti": [
+          {
+            "nome": "Skyr",
+            "grammi": 200,
+            "sostituibileCon": [
+              "Yogurt greco 0% 200 g"
+            ]
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 65
+          },
+          {
+            "nome": "Frutti di bosco",
+            "grammi": 150,
+            "note": "anche surgelati"
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Miele",
+            "grammi": 10
+          }
+        ],
+        "note": "La piu' ricca di proteine (38 g) e la piu' vicina alla STD come struttura. Lo skyr e' piu' asciutto del greco: utile se la consistenza densa ti pesa.",
+        "tags": [
+          "veloce",
+          "freddo",
+          "proteineAlte"
+        ],
+        "tipoColazione": "RID"
+      },
+      {
+        "id": "B6rid",
+        "base": "B6",
+        "nome": "Frullato proteico con pane",
+        "categoria": "latte",
+        "kcal": 576,
+        "cho": 71,
+        "proteine": 34,
+        "grassi": 16,
+        "modifiche": "Niente composta, pane 30 g",
+        "alimenti": [
+          {
+            "nome": "Latte parzialmente scremato",
+            "grammi": 300,
+            "note": "ml"
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 35
+          },
+          {
+            "nome": "Burro d'arachidi",
+            "grammi": 15
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15
+          },
+          {
+            "nome": "Pane integrale",
+            "grammi": 30
+          }
+        ],
+        "note": "Meta' si beve: e' la colazione per le mattine in cui dopo la corsa non hai fame. Essendo liquida, lo svuotamento gastrico e' piu' rapido e la glicemia sale prima: tienilo presente la prima volta che la usi.",
+        "tags": [
+          "daBere",
+          "senzaFame",
+          "veloce",
+          "curvaRapida"
+        ],
+        "tipoColazione": "RID"
+      },
+      {
+        "id": "B7rid",
+        "base": "B7",
+        "nome": "Fiocchi di latte, fette biscottate e miele",
+        "categoria": "latticini",
+        "kcal": 582,
+        "cho": 65,
+        "proteine": 34,
+        "grassi": 19,
+        "modifiche": "Miele 10 g, 5 fette biscottate",
+        "alimenti": [
+          {
+            "nome": "Fiocchi di latte",
+            "grammi": 220
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 5
+          },
+          {
+            "nome": "Miele",
+            "grammi": 10,
+            "sostituibileCon": [
+              "Composta di frutta 50 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 18
+          },
+          {
+            "nome": "Mela o pera",
+            "grammi": 150
+          }
+        ],
+        "note": "Zero yogurt e zero avena: la via d'uscita quando sei stanco di entrambi. I fiocchi di latte danno 26 g di proteine con pochi grassi.",
+        "tags": [
+          "senzaYogurt",
+          "senzaAvena",
+          "veloce"
+        ],
+        "tipoColazione": "RID"
+      },
+      {
+        "id": "B8rid",
+        "base": "B8",
+        "nome": "Pane, parmigiano e frutta (salata)",
+        "categoria": "salata",
+        "kcal": 560,
+        "cho": 70,
+        "proteine": 29,
+        "grassi": 16,
+        "modifiche": "Pane 70 g",
+        "alimenti": [
+          {
+            "nome": "Pane integrale",
+            "grammi": 70
+          },
+          {
+            "nome": "Parmigiano",
+            "grammi": 30
+          },
+          {
+            "nome": "Bresaola",
+            "grammi": 30,
+            "sostituibileCon": [
+              "Salmone affumicato 40 g",
+              "Prosciutto crudo sgrassato 35 g"
+            ]
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          },
+          {
+            "nome": "Mela o pera",
+            "grammi": 120
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 10
+          }
+        ],
+        "note": "Completamente salata, zero latticini dolci. La frutta qui non e' un contorno: porta quasi la meta' dei carboidrati, quindi non saltarla.",
+        "tags": [
+          "salata",
+          "senzaYogurt",
+          "senzaAvena",
+          "veloce"
+        ],
+        "tipoColazione": "RID"
+      },
+      {
+        "id": "B9rid",
+        "base": "B9",
+        "nome": "Yogurt di soia con farro e cacao",
+        "categoria": "soia",
+        "kcal": 574,
+        "cho": 65,
+        "proteine": 32,
+        "grassi": 17,
+        "modifiche": "Niente fette biscottate, farro 60 g",
+        "alimenti": [
+          {
+            "nome": "Yogurt di soia non zuccherato",
+            "grammi": 200
+          },
+          {
+            "nome": "Fiocchi di farro",
+            "grammi": 60,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 75 g"
+            ]
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15,
+            "sostituibileCon": [
+              "Yogurt greco 0% 150 g"
+            ]
+          },
+          {
+            "nome": "Cacao amaro in polvere",
+            "grammi": 8
+          },
+          {
+            "nome": "Banana",
+            "grammi": 100
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 15
+          }
+        ],
+        "note": "Lo yogurt di soia non zuccherato ha circa la meta' delle proteine del greco, da qui l'integrazione. Controlla in etichetta che non sia la versione 'al gusto di': quelle aggiungono 8-10 g di zuccheri per 100 g.",
+        "tags": [
+          "soia",
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "RID"
+      },
+      {
+        "id": "B10rid",
+        "base": "B10",
+        "nome": "Budino di chia con soia e pane",
+        "categoria": "soia",
+        "kcal": 602,
+        "cho": 63,
+        "proteine": 34,
+        "grassi": 17,
+        "modifiche": "Niente composta, pane 90 g",
+        "alimenti": [
+          {
+            "nome": "Semi di chia",
+            "grammi": 30
+          },
+          {
+            "nome": "Bevanda di soia non zuccherata",
+            "grammi": 250,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15,
+            "sostituibileCon": [
+              "Yogurt greco 0% 150 g"
+            ]
+          },
+          {
+            "nome": "Pane integrale",
+            "grammi": 90
+          },
+          {
+            "nome": "Frutti di bosco",
+            "grammi": 120
+          },
+          {
+            "nome": "Banana",
+            "grammi": 70
+          }
+        ],
+        "note": "Si prepara la sera prima e addensa davvero (la chia assorbe fino a 10 volte il suo peso). Porta ~12 g di fibra e omega-3 vegetali. Le prime volte vai piano: con questi volumi di corsa la chia puo' dare gonfiore.",
+        "tags": [
+          "soia",
+          "preparareSeraPrima",
+          "freddo",
+          "fibraAlta"
+        ],
+        "tipoColazione": "RID"
       }
     ],
+
+    "tipiColazione": {
+      "STD": {
+        "nome": "Standard",
+        "usoSe": "altrimenti (tutti i giorni VERDE e i ROSSO non pesanti)"
+      },
+      "MAGG": {
+        "nome": "Maggiorata",
+        "usoSe": "distanza >= 20 km, oppure >= 50 min sopra ritmo medio, oppure lungo domenicale",
+        "regola": "colazione STD corrispondente + banana 120 g + 1 fetta biscottata integrale"
+      },
+      "RID": {
+        "nome": "Ridotta",
+        "usoSe": "tipo == GRIGIO e il giorno dopo non e' ROSSO pesante",
+        "regola": "si taglia solo la quota di pane / fette biscottate / miele / composta / cereali; fonte proteica e frutta secca restano intatte"
+      }
+    },
 
     "spuntini": [
       {
@@ -1348,6 +2934,16 @@
     { "id": "M11", "kcal": 400, "cho": 48, "proteine": 8, "composizione": "Banana 150 g + mandorle o noci 30 g + 3 fette biscottate integrali", "tags": ["ufficio", "senzaYogurt", "senzaCucchiaio", "pocheProteine"] },
     { "id": "M12", "kcal": 390, "cho": 55, "proteine": 12, "composizione": "Bruschetta: pane 70 g + pomodorini + parmigiano 20 g + olio EVO 5 g + 1 frutto", "tags": ["salata", "senzaYogurt", "senzaCucchiaio"] }
   ],
+  "noteColazioni": [
+    "Tutte le colazioni sono il PASTO POST-ALLENAMENTO: vanno fatte entro 45-60 minuti dalla fine della corsa.",
+    "Il pre-corsa delle 5:15 (banana 120 g + caffe' + acqua) resta invariato qualunque colazione si scelga.",
+    "Beta-glucani: avena e orzo ne hanno, farro e chia molto meno. B1, B2 e B5 sono le migliori sulla curva glicemica; B6 (liquida) e' la piu' rapida.",
+    "Fiocchi, non flakes: un solo ingrediente in etichetta, spessi e opachi. I cereali estrusi hanno indice glicemico alto anche se integrali.",
+    "Bevande vegetali: solo la soia regge queste colazioni (3,3 g proteine/100 ml). Mandorla, riso, avena e cocco stanno sotto 1 g.",
+    "B3 ha 27 g di proteine, la piu' bassa: compensare nel resto della giornata o aggiungere 40 g di ricotta.",
+    "B4 e B6 hanno profili opposti sullo svuotamento gastrico: le uova lo rallentano, il frullato lo accelera."
+  ],
+
   "notePasti": [
     "Tutti i pesi sono a crudo, tranne i legumi che sono gia' lessati e sgocciolati. Pesce e carne perdono il 20-28% in cottura, quindi se li compri gia' cotti in gastronomia prendine circa un quarto in meno.",
     "Le cene C7, C8, C9 e C11 sono pesce BIANCO: non contano nel minimo settimanale di 3 pasti con pesce grasso, che resta coperto da C2 e, a pranzo, da P9.",

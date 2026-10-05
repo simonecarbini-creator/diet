@@ -5,7 +5,7 @@ import { formatDifferenzaCho, formatNumero } from '../formato'
 import { ElencoAlimenti } from './Alimenti'
 import { etichettePasti } from '../etichette'
 import { DifferenzaKcal } from './DifferenzaKcal'
-import { PannelloScelta } from './PannelloScelta'
+import { PannelloScelta, type ContestoGiornata } from './PannelloScelta'
 import { ContatoreSettimana, PromemoriaSera } from './Vincoli'
 import { conteggiDelPasto, frazioneLimite, idBase, type ConteggioVincolo } from '../vincoli'
 
@@ -31,6 +31,8 @@ type Props = {
   /** Diario: nota su cosa è stato mangiato davvero. */
   nota?: string
   onAnnota: (testo: string) => void
+  /** Per il pannello di scelta: dove arriva la giornata con ogni alternativa. */
+  giornata?: ContestoGiornata
   /** Giornata libera, pasto ancora da decidere: si conferma (✓) o si toglie (✕). */
   sgarro?: { onConferma: () => void; onElimina: () => void }
 }
@@ -44,6 +46,7 @@ export function CardPasto({
   nota,
   onAnnota,
   sgarro,
+  giornata,
   onConsumato,
   onScegli,
 }: Props) {
@@ -267,6 +270,7 @@ export function CardPasto({
           voce={voce}
           tipoGiorno={tipoGiorno}
           conteggiAltri={settimana?.conteggiAltri}
+          giornata={giornata}
           onChiudi={() => setPannello(false)}
           onScegli={(id) => {
             onScegli(id)

@@ -6,7 +6,7 @@ import { CardPastoLibero } from '../componenti/CardPastoLibero'
 import { Conferma } from '../componenti/Conferma'
 import { etichettePasti } from '../etichette'
 import { formatData, formatNumero } from '../formato'
-import { cercaGiorno, giornataEquivalente, giornoDopo, indicePastoCorrente, totaliPasti, vociDelGiorno } from '../giornata'
+import { cercaGiorno, choSenza, giornataEquivalente, giornoDopo, indicePastoCorrente, totaliPasti, vociDelGiorno } from '../giornata'
 import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
 import { settimane } from '../piano'
 import { conteggiVincoli, vincoliSeraPrima, type PastiDelGiorno } from '../vincoli'
@@ -211,6 +211,7 @@ export function Oggi({ data, ora, passato = false }: Props) {
                   : undefined
             }
             nota={stato.note?.[voce.categoria]}
+            giornata={{ tipo: giorno.tipo, ricarica: !!giorno.ricarica, choSenzaQuesto: choSenza(voci, voce.categoria) }}
             onAnnota={(testo) => annota(voce.categoria, testo)}
             onConsumato={(consumato) => segnaConsumato(voce.categoria, consumato)}
             onScegli={(id) => {

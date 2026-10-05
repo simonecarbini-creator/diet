@@ -51,9 +51,11 @@ export function verificaDati(dati: Dati, idExtra: string[] = []): string[] {
       ])
     }
   }
+  // Colazioni: ogni tipo usato dalle regole deve esistere tra i tipi di colazione.
   for (const colazione of dati.blocchi.colazioni) {
-    const base = dati.blocchi.colazioni.find((c) => c.id === colazione.base)
-    if (base?.alimenti) controllaNomi(colazione.id, base.alimenti, colazione.rimozioni ?? [])
+    if (!Object.hasOwn(dati.blocchi.tipiColazione, colazione.tipoColazione)) {
+      errori.push(`colazione ${colazione.id}: tipo "${colazione.tipoColazione}" sconosciuto`)
+    }
   }
 
   // Le condizioni delle regole devono essere leggibili dall'app.

@@ -12,6 +12,7 @@ export type Dati = {
     pranzi:                Pranzi[];
     cene:                  Cene[];
     merende:               Merende[];
+    noteColazioni:         string[];
     notePasti:             string[];
     merendaRidotta:        MerendaRidotta;
     merendaNote:           string[];
@@ -50,35 +51,34 @@ export type Gara = {
 export type Blocchi = {
     preCorsa:       PreCorsa;
     colazioni:      Colazioni[];
+    tipiColazione:  TipiColazione;
     spuntini:       Spuntini[];
     spuntinoSerale: BlocchiSpuntinoSerale;
 }
 
 export type Colazioni = {
-    id:         string;
-    nome:       string;
-    orario?:    string;
-    kcal:       number;
-    cho:        number;
-    proteine:   number;
-    alimenti?:  ColazioniAlimenti[];
-    note?:      string;
-    base?:      string;
-    aggiunte?:  Aggiunte[];
-    rimozioni?: string[];
-}
-
-export type Aggiunte = {
-    nome:    string;
-    grammi?: number;
-    pezzi?:  number;
+    id:            string;
+    base:          string;
+    nome:          string;
+    categoria:     string;
+    kcal:          number;
+    cho:           number;
+    proteine:      number;
+    grassi:        number;
+    alimenti:      ColazioniAlimenti[];
+    note:          string;
+    tags:          string[];
+    tipoColazione: string;
+    orario?:       string;
+    modifiche?:    string;
 }
 
 export type ColazioniAlimenti = {
     nome:             string;
-    grammi:           number | null;
+    grammi?:          number;
     sostituibileCon?: string[];
     pezzi?:           number;
+    note?:            string;
 }
 
 export type PreCorsa = {
@@ -128,6 +128,23 @@ export type BlocchiSpuntinoSerale = {
 export type SpuntinoSeraleVarianti = {
     nome:     string;
     alimenti: ModificheGrammiElement[];
+}
+
+export type TipiColazione = {
+    STD:  Std;
+    MAGG: Magg;
+    RID:  Magg;
+}
+
+export type Magg = {
+    nome:   string;
+    usoSe:  string;
+    regola: string;
+}
+
+export type Std = {
+    nome:  string;
+    usoSe: string;
 }
 
 export type Cene = {
@@ -294,6 +311,7 @@ export type Regole = {
     gelGrammiPerUnita:         number;
     gelNota:                   string;
     sabatoRicarica:            SabatoRicarica;
+    sceltaPasti:               GiornataLibera;
     giornataLibera:            GiornataLibera;
     regolaSabato:              string;
     assegnazionePasti:         AssegnazionePasti;

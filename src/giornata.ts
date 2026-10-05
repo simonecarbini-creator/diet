@@ -223,3 +223,27 @@ export function giornoDellaSettimana(data: string): number {
   const [anno, mese, giorno] = data.split('-').map(Number)
   return new Date(anno, mese - 1, giorno).getDay() || 7
 }
+
+/**
+ * CHO del giorno senza un pasto, per valutare un'alternativa: gli altri pasti assegnati
+ * più la merenda media se la merenda non è ancora scelta (come nel totale del piano).
+ */
+export function choSenza(voci: VocePasto[], categoria: CategoriaPasto): number {
+  const altri = voci.filter((v) => v.categoria !== categoria)
+  const merendaDaStimare = altri.some((v) => v.categoria === 'merenda' && !v.pasto && v.libero === undefined)
+  return totaliPasti(altri).cho + (merendaDaStimare ? merendaMedia().cho : 0)
+}
+
+/** L'obiettivo di CHO del tipo di giornata, allargato dal margine di dati.json (sceltaPasti). */
+export function targetCho(tipo: string): { min: number; max: number; da: number; a: number; margine: number } | null {
+  if (!Object.hasOwn(dati.tipiGiornata, tipo)) return null
+  const t = dati.tipiGiornata[tipo as keyof typeof dati.tipiGiornata]
+  const margine = dati.regole.sceltaPasti.tolleranzaPercento
+  return {
+    min: t.choTargetMin,
+    max: t.choTargetMax,
+    da: t.choTargetMin * (1 - margine / 100),
+    a: t.choTargetMax * (1 + margine / 100),
+    margine,
+  }
+}

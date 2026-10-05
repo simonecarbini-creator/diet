@@ -59,6 +59,10 @@ export type PastoRisolto = {
   soloTipiGiornata?: string[]
   /** Alternativa aggiunta dall'utente nell'app (non è in dati.json). */
   utente?: boolean
+  /** Pranzi, cene e merende: versione ridotta o maggiorata di un pasto base. */
+  versione?: 'ridotto' | 'maggiorato'
+  /** Colazioni: STD, MAGG o RID (la famiglia a cui appartiene l'alternativa). */
+  tipoColazione?: string
 }
 
 export function isTipoGiornata(tipo: string): tipo is TipoGiornata {
@@ -130,6 +134,7 @@ function cercaConVersioni(elenco: ConVersioni[], id: string): PastoRisolto | nul
           proteine: null,
           alimenti: applicaModifiche(pasto.alimenti, versione),
           notaVersione: versione.nota,
+          versione: etichetta,
           base: pasto.id,
           note: pasto.note,
         }
@@ -149,17 +154,20 @@ function trovaColazione(id: string): PastoRisolto | null {
   const base = colazione.base
     ? dati.blocchi.colazioni.find((c) => c.id === colazione.base)
     : undefined
-  const alimenti = applicaModifiche(colazione.alimenti ?? base?.alimenti ?? [], colazione)
+  // Ogni colazione ha la sua lista completa di alimenti; "Quando" è quello della STD.
+  const std = dati.blocchi.colazioni.find((c) => c.id === 'STD')
   return {
     id,
     nome: colazione.nome,
     kcal: colazione.kcal,
     cho: colazione.cho,
     proteine: colazione.proteine,
-    alimenti,
-    base: colazione.base,
-    quando: colazione.orario ?? base?.orario,
+    alimenti: colazione.alimenti,
+    base: colazione.base !== colazione.id ? colazione.base : undefined,
+    quando: colazione.orario ?? base?.orario ?? std?.orario,
     note: colazione.note ?? base?.note,
+    notaVersione: 'modifiche' in colazione ? colazione.modifiche : undefined,
+    tipoColazione: colazione.tipoColazione,
   }
 }
 
@@ -209,6 +217,7 @@ function trovaPastoDelPiano(categoria: CategoriaConId, id: string): PastoRisolto
             alimenti: [],
             composizione: merenda.composizione,
             tags: 'tags' in merenda ? merenda.tags : [],
+            ...(merenda.id === dati.merendaRidotta.id ? { versione: 'ridotto' as const } : {}),
           }
         : null
     }

@@ -247,10 +247,21 @@ export function Pasti() {
     .filter((p): p is PastoRisolto => p !== null)
   const basi = pastiBase(categoria)
   // Pranzi e cene: un gruppo per pasto base con le sue versioni.
+  // Colazioni: un gruppo per tipo (STD, MAGG, RID); le tue alternative in fondo.
+  const tipiColazione = Object.entries(dati.blocchi.tipiColazione)
   const gruppi =
-    basi.length > 0
-      ? basi.map((b) => ({ titolo: `${b.id} · ${b.nome}`, pasti: pasti.filter((p) => p.id === b.id || p.base === b.id) }))
-      : [{ titolo: null, pasti }]
+    categoria === 'colazione'
+      ? [
+          ...tipiColazione.map(([tipo, info]) => ({
+            titolo: `${info.nome} (${tipo})`,
+            pasti: pasti.filter((p) => p.tipoColazione === tipo),
+          })),
+          { titolo: 'Le tue', pasti: pasti.filter((p) => !p.tipoColazione) },
+        ].filter((g) => g.pasti.length > 0)
+      : basi.length > 0
+        ? basi.map((b) => ({ titolo: `${b.id} · ${b.nome}`, pasti: pasti.filter((p) => p.id === b.id || p.base === b.id) }))
+        : [{ titolo: null, pasti }]
+  const note = categoria === 'colazione' ? dati.noteColazioni : []
 
   return (
     <>
@@ -338,6 +349,17 @@ export function Pasti() {
           </button>
         )}
       </div>
+
+      {note.length > 0 && (
+        <details className="mt-4 rounded-xl bg-superficie p-3 text-sm">
+          <summary className="font-semibold">Da sapere sulle colazioni</summary>
+          <ul className="mt-2 list-disc space-y-1 pl-5">
+            {note.map((n) => (
+              <li key={n}>{n}</li>
+            ))}
+          </ul>
+        </details>
+      )}
 
       <div className="mt-4 space-y-5">
         {gruppi.map((g, i) => (

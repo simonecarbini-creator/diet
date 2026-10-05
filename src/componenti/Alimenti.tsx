@@ -1,8 +1,11 @@
 import type { Alimento } from '../dati'
 import { formatNumero } from '../formato'
 
+/** Le bevande hanno la nota "ml": la quantità è in millilitri, non in grammi. */
+const inMillilitri = (alimento: Alimento) => alimento.note === 'ml'
+
 function quantita(alimento: Alimento): string {
-  if (alimento.grammi != null) return `${formatNumero(alimento.grammi)} g`
+  if (alimento.grammi != null) return `${formatNumero(alimento.grammi)} ${inMillilitri(alimento) ? 'ml' : 'g'}`
   if (alimento.pezzi != null) return `${alimento.pezzi} pz`
   return ''
 }
@@ -35,7 +38,9 @@ export function ElencoAlimenti({ alimenti }: { alimenti: Alimento[] }) {
               )}
             </span>
           </div>
-          {!alimento.rimosso && alimento.note && <div className="text-sm opacity-70">{alimento.note}</div>}
+          {!alimento.rimosso && alimento.note && !inMillilitri(alimento) && (
+            <div className="text-sm opacity-70">{alimento.note}</div>
+          )}
           {!alimento.rimosso && alimento.sostituibileCon && (
             <div className="text-sm opacity-70">oppure: {alimento.sostituibileCon.join(' · ')}</div>
           )}
