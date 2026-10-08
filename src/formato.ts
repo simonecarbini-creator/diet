@@ -15,12 +15,6 @@ export function formatData(data: string): string {
   return dataLunga.format(comeDate(data))
 }
 
-/** 15 → "+15 g CHO", -15 → "−15 g CHO" (segno meno tipografico). */
-export function formatDifferenzaCho(differenza: number): string {
-  const segno = differenza > 0 ? '+' : '−'
-  return `${segno}${formatNumero(Math.abs(differenza))} g CHO`
-}
-
 const dataBreve = new Intl.DateTimeFormat('it-IT', { weekday: 'short', day: 'numeric' })
 const giornoMese = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short' })
 
@@ -39,16 +33,16 @@ export function formatGiornoMese(data: string): string {
   return giornoMese.format(comeDate(data))
 }
 
-/** 90 → "+90 kcal", -90 → "−90 kcal" */
-export function formatDifferenzaKcal(differenza: number): string {
-  const segno = differenza > 0 ? '+' : '−'
-  return `${segno}${formatNumero(Math.abs(differenza))} kcal`
-}
-
 const meseAnno = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' })
 
 /** "2026-10" → "ottobre 2026" */
 export function formatMese(mese: string): string {
   const [anno, numero] = mese.split('-').map(Number)
   return meseAnno.format(new Date(anno, numero - 1, 1))
+}
+
+/** 25, 'g' → "25 g in più"; −22, 'kcal' → "22 kcal in meno"; 0 → "uguale". In parole: niente segni da interpretare. */
+export function formatScarto(differenza: number, unita: string): string {
+  if (differenza === 0) return 'uguale'
+  return `${formatNumero(Math.abs(differenza))} ${unita} ${differenza > 0 ? 'in più' : 'in meno'}`
 }

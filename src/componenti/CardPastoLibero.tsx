@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { CategoriaPasto } from '../dati'
 import { formatNumero } from '../formato'
 import { haValori, type PastoLibero, type VocePasto } from '../giornata'
+import { bozzaDa, CampiPastoLibero, daBozza, type BozzaLibero } from './CampiPastoLibero'
 
 type Props = {
   voce: VocePasto
@@ -14,30 +15,13 @@ type Props = {
   onRipristina: (categoria: CategoriaPasto) => void
 }
 
-type Bozza = { testo: string; kcal: string; cho: string; proteine: string }
-
-const daNumero = (v?: number) => (v === undefined ? '' : String(v))
-const numero = (t: string): number | undefined => {
-  const n = Number(t.trim().replace(',', '.'))
-  return t.trim() !== '' && Number.isFinite(n) && n >= 0 ? n : undefined
-}
-const campo = 'mt-1 block w-full min-w-0 rounded-lg border border-bordo bg-sfondo px-2.5 py-2 outline-none focus:border-cho'
-
 export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSalva, onRipristina }: Props) {
   const libero = voce.libero ?? { testo: '' }
   const daScrivere = libero.testo === ''
-  const [bozza, setBozza] = useState<Bozza | null>(
-    daScrivere ? { testo: '', kcal: '', cho: '', proteine: '' } : null,
-  )
+  const [bozza, setBozza] = useState<BozzaLibero | null>(daScrivere ? bozzaDa() : null)
   const [aperto, setAperto] = useState(false)
 
-  const apriModifica = () =>
-    setBozza({
-      testo: libero.testo,
-      kcal: daNumero(libero.kcal),
-      cho: daNumero(libero.cho),
-      proteine: daNumero(libero.proteine),
-    })
+  const apriModifica = () => setBozza(bozzaDa(libero))
 
   if (bozza !== null) {
     return (
@@ -45,39 +29,7 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
         <div className="text-xs font-semibold uppercase tracking-wide opacity-70">
           {voce.orario} · {etichetta} · libero
         </div>
-        <label className="mt-2 block">
-          <span className="text-sm font-semibold">Cosa hai mangiato?</span>
-          <textarea
-            rows={3}
-            autoFocus
-            value={bozza.testo}
-            onChange={(e) => setBozza({ ...bozza, testo: e.target.value })}
-            placeholder="es. pizza margherita e una birra"
-            className={`${campo} resize-none`}
-          />
-        </label>
-        <p className="mt-2 text-xs opacity-70">
-          Valori facoltativi: se li conosci, il pasto entra nei totali e la giornata può risultare equivalente al piano.
-        </p>
-        <div className="mt-1 grid grid-cols-3 gap-2">
-          {(
-            [
-              ['kcal', 'Kcal'],
-              ['cho', 'g CHO'],
-              ['proteine', 'g pro'],
-            ] as const
-          ).map(([chiave, testo]) => (
-            <label key={chiave} className="block min-w-0">
-              <span className="text-xs font-semibold uppercase opacity-70">{testo}</span>
-              <input
-                inputMode="decimal"
-                value={bozza[chiave]}
-                onChange={(e) => setBozza({ ...bozza, [chiave]: e.target.value })}
-                className={`${campo} font-semibold`}
-              />
-            </label>
-          ))}
-        </div>
+        <CampiPastoLibero bozza={bozza} onCambia={setBozza} autoFocus />
         <div className="mt-3 grid grid-cols-2 gap-2">
           <button
             type="button"
@@ -90,11 +42,7 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
             type="button"
             disabled={bozza.testo.trim() === ''}
             onClick={() => {
-              const valori = { kcal: numero(bozza.kcal), cho: numero(bozza.cho), proteine: numero(bozza.proteine) }
-              onSalva({
-                testo: bozza.testo.trim(),
-                ...Object.fromEntries(Object.entries(valori).filter(([, v]) => v !== undefined)),
-              })
+              onSalva(daBozza(bozza))
               setBozza(null)
             }}
             className="rounded-xl bg-cho p-2.5 font-bold text-white disabled:opacity-40"

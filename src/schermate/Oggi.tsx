@@ -31,6 +31,8 @@ export function Oggi({ data, ora, passato = false }: Props) {
   const statiAltri = useStatiGiorni(giorniSettimana.map((g) => g.data).filter((d) => d !== data))
   const voci = trovato ? vociDelGiorno(trovato.giorno, stato.scelte, stato.liberi) : []
   const corrente = ora !== null && voci.length > 0 ? indicePastoCorrente(voci, ora) : null
+  // Scegliere un pasto lo spunta come consumato, ma non nei giorni futuri (lì si sta solo pianificando).
+  const futuro = ora === null && !passato
   const categoriaCorrente = corrente !== null ? voci[corrente].categoria : null
 
   // Porta il pasto corrente in cima solo all'apertura, non a ogni cambio d'ora.
@@ -216,12 +218,16 @@ export function Oggi({ data, ora, passato = false }: Props) {
               ricarica: !!giorno.ricarica,
               senzaQuesto: totaliSenza(voci, voce.categoria),
               piano: { cho: giorno.cho, kcal: giorno.kcal },
+              merendaStimata:
+                voce.categoria !== 'merenda' && voci.some((v) => v.categoria === 'merenda' && !v.pasto && v.libero === undefined),
+              liberiSenzaValori: totaliPasti(voci.filter((v) => v.categoria !== voce.categoria)).pastiLiberi.length,
             }}
             onAnnota={(testo) => annota(voce.categoria, testo)}
             onConsumato={(consumato) => segnaConsumato(voce.categoria, consumato)}
             onScegli={(id) => {
-              if (isCategoriaConId(voce.categoria)) scegli(voce.categoria, id, voce.idPiano)
+              if (isCategoriaConId(voce.categoria)) scegli(voce.categoria, id, voce.idPiano, id !== null && !futuro)
             }}
+            onLibero={(libero) => pastoLibero(voce.categoria, libero, !futuro)}
             sgarro={
               stato.sgarro && !(stato.confermati ?? []).includes(voce.categoria)
                 ? { onConferma: () => confermaPasto(voce.categoria), onElimina: () => setDaTogliere(voce.categoria) }

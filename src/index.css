@@ -111,3 +111,26 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .accenno-swipe, .compari, .freccia-swipe { animation: none; }
 }
+
+/* Settimana, appena si arriva: oggi si solleva e si accende, gli altri giorni si spengono un attimo. */
+@keyframes illumina {
+  0% { transform: scale(1); }
+  25%, 65% { transform: scale(1.035); }
+  100% { transform: scale(1); }
+}
+@keyframes spegni {
+  0% { opacity: 1; }
+  25%, 65% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+.illumina {
+  position: relative;
+  z-index: 1;
+  animation: illumina 1.6s cubic-bezier(0.33, 1, 0.68, 1) 0.15s 1 both;
+}
+.spegni {
+  animation: spegni 1.6s ease-in-out 0.15s 1 both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .illumina, .spegni { animation: none; }
+}

@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { isCategoriaConId, type Vincolo } from '../dati'
-import type { VocePasto } from '../giornata'
-import { formatDifferenzaCho, formatNumero } from '../formato'
+import type { PastoLibero, VocePasto } from '../giornata'
+import { formatNumero, formatScarto } from '../formato'
 import { ElencoAlimenti } from './Alimenti'
 import { etichettePasti } from '../etichette'
-import { DifferenzaKcal } from './DifferenzaKcal'
 import { PannelloScelta, type ContestoGiornata } from './PannelloScelta'
 import { ContatoreSettimana, PromemoriaSera } from './Vincoli'
 import { conteggiDelPasto, frazioneLimite, idBase, type ConteggioVincolo } from '../vincoli'
@@ -28,6 +27,8 @@ type Props = {
   settimana?: ContestoSettimana
   onConsumato: (consumato: boolean) => void
   onScegli: (id: string | null) => void
+  /** Pasto libero scelto nel pannello al posto di quello del piano. */
+  onLibero: (libero: PastoLibero) => void
   /** Diario: nota su cosa è stato mangiato davvero. */
   nota?: string
   onAnnota: (testo: string) => void
@@ -49,6 +50,7 @@ export function CardPasto({
   giornata,
   onConsumato,
   onScegli,
+  onLibero,
 }: Props) {
   const [aperto, setAperto] = useState(false)
   const [pannello, setPannello] = useState(false)
@@ -128,7 +130,6 @@ export function CardPasto({
                 </div>
                 <div className="text-sm">
                   <span className="opacity-70">{formatNumero(pasto.kcal)} kcal</span>
-                  {delPiano && <DifferenzaKcal differenza={pasto.kcal - delPiano.kcal} />}
                   {pasto.proteine !== null && (
                     <span className="opacity-70"> · {formatNumero(pasto.proteine)} g proteine</span>
                   )}
@@ -136,10 +137,9 @@ export function CardPasto({
                 {sostituito && (
                   <div className="text-sm font-semibold text-cho">
                     {delPiano
-                      ? `al posto di ${delPiano.id}` +
-                        (pasto.cho !== delPiano.cho
-                          ? ` · ${formatDifferenzaCho(pasto.cho - delPiano.cho)}`
-                          : '')
+                      ? `al posto di ${delPiano.id}: ` +
+                        (pasto.cho === delPiano.cho ? 'stessi CHO' : `${formatScarto(pasto.cho - delPiano.cho, 'g')} di CHO`) +
+                        (pasto.kcal === delPiano.kcal ? '' : `, ${formatScarto(pasto.kcal - delPiano.kcal, 'kcal')}`)
                       : 'scelta per oggi'}
                   </div>
                 )}
@@ -272,6 +272,10 @@ export function CardPasto({
           conteggiAltri={settimana?.conteggiAltri}
           giornata={giornata}
           onChiudi={() => setPannello(false)}
+          onLibero={(libero) => {
+            onLibero(libero)
+            setPannello(false)
+          }}
           onScegli={(id) => {
             onScegli(id)
             setPannello(false)

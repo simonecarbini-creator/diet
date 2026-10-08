@@ -1,4 +1,6 @@
 // Schermata Settimana (SPEC.md §3.2): il calendario a colpo d'occhio e i vincoli settimanali.
+import { useEffect, useState } from 'react'
+import { avvioChiuso } from '../avvio'
 import { dati, isTipoGiornata, type Giorno, type Settimana as TipoSettimana } from '../dati'
 import { formatDataBreve, formatGiornoMese, formatNumero } from '../formato'
 import { link } from '../navigazione'
@@ -46,7 +48,18 @@ function Riepilogo({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGiorn
   return <BadgeEsito esito={esito} />
 }
 
-function RigaGiorno({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGiorno; oggi: string }) {
+/** Riflettore: appena si arriva, oggi si illumina e gli altri giorni si spengono per un attimo. */
+function RigaGiorno({
+  giorno,
+  stato,
+  oggi,
+  riflettore,
+}: {
+  giorno: Giorno
+  stato?: StatoGiorno
+  oggi: string
+  riflettore: boolean
+}) {
   const tipo = isTipoGiornata(giorno.tipo) ? dati.tipiGiornata[giorno.tipo] : null
   const scelte = stato?.scelte ?? {}
   const pasti = [
@@ -57,11 +70,13 @@ function RigaGiorno({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGior
   const merenda = scelte.merenda ?? giorno.merenda
 
   return (
-    <li>
+    <li className={riflettore ? (giorno.data === oggi ? 'illumina' : 'spegni') : ''}>
       <a
         href={link.giorno(giorno.data)}
         className={`flex gap-3 rounded-xl border bg-superficie p-3 ${
-          giorno.data === oggi ? 'border-2 border-cho' : 'border-[1.5px] border-contorno'
+          giorno.data === oggi
+            ? 'border-2 border-cho shadow-[0_6px_20px_-4px_color-mix(in_srgb,var(--cho)_55%,transparent)]'
+            : 'border-[1.5px] border-contorno'
         }`}
       >
         <div
@@ -78,7 +93,9 @@ function RigaGiorno({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGior
             >
               {giorno.tipo}
             </span>
-            {giorno.data === oggi && <span className="text-xs font-semibold uppercase text-cho">oggi</span>}
+            {giorno.data === oggi && (
+              <span className="rounded-full bg-cho px-2 py-0.5 text-xs font-bold uppercase text-white">oggi</span>
+            )}
           </div>
           <p className="mt-0.5 line-clamp-2 text-sm">{giorno.allenamento}</p>
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -112,6 +129,18 @@ export function Settimana({ numero, oggi }: Props) {
   const settimana = scegliSettimana(numero, oggi)
   const giorni = settimana?.giorni ?? []
   const stati = useStatiGiorni(giorni.map((g) => g.data))
+  const contieneOggi = giorni.some((g) => g.data === oggi)
+  const [riflettore, setRiflettore] = useState(false)
+  useEffect(() => {
+    if (!contieneOggi) return
+    let annullato = false
+    void avvioChiuso.then(() => {
+      if (!annullato) setRiflettore(true)
+    })
+    return () => {
+      annullato = true
+    }
+  }, [contieneOggi])
 
   if (!settimana) {
     return <p>Nessuna settimana nel piano.</p>
@@ -160,7 +189,7 @@ export function Settimana({ numero, oggi }: Props) {
 
       <ul className="mt-4 space-y-2">
         {giorni.map((giorno) => (
-          <RigaGiorno key={giorno.data} giorno={giorno} stato={stati[giorno.data]} oggi={oggi} />
+          <RigaGiorno key={giorno.data} giorno={giorno} stato={stati[giorno.data]} oggi={oggi} riflettore={riflettore && contieneOggi} />
         ))}
       </ul>
       <p className="mt-2 text-xs opacity-70">

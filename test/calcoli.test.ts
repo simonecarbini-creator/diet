@@ -16,6 +16,7 @@ import {
 } from '../src/giornata'
 import { proponiSettimana, type GiornoInserito } from '../src/motore'
 import { verificaDati } from '../src/verifica'
+import { formatScarto } from '../src/formato'
 import { conteggiVincoli, controllaVincoli } from '../src/vincoli'
 
 function giorno(data: string) {
@@ -187,6 +188,72 @@ describe('giornata libera', () => {
 
   it('esito: libera non equivalente = non rispettato', () => {
     expect(esitoGiorno(lunedi, libera({ testo: 'pizza' })).esito).toBe('nonRispettato')
+  })
+})
+
+describe('cena del 6 ottobre (piano 424 g CHO · 3240 kcal, cena C2)', () => {
+  const martedi = giorno('2026-10-06')
+  const voci = vociDelGiorno(martedi)
+  const target = targetGiorno({ cho: martedi.cho, kcal: martedi.kcal })
+  // Senza cena: pre-corsa 25 + STD 90 + spuntino intero 22 + P1 154 + merenda media 57 = 348 g;
+  // 110 + 700 + 255 + 1030 + 368 = 2463 kcal.
+  const senza = totaliSenza(voci, 'cena')
+
+  it('gli altri pasti fanno 348 g CHO e 2463 kcal', () => {
+    expect(senza).toEqual({ cho: 348, kcal: 2463 })
+  })
+  it('target: 403–445 g CHO e 3078–3402 kcal', () => {
+    expect([target.cho.da, target.cho.a, target.kcal.da, target.kcal.a]).toEqual([403, 445, 3078, 3402])
+  })
+  it('con C2 del piano: 423 g e 3253 kcal, nel target', () => {
+    expect(valutaAlternativa(senza, trovaPasto('cena', 'C2')!, target)).toMatchObject({ cho: 423, kcal: 3253, nelTarget: true })
+  })
+  it('C10 (70 g, 779 kcal: 5 g e 11 kcal in meno di C2): 418 g e 3242 kcal, nel target', () => {
+    expect(valutaAlternativa(senza, trovaPasto('cena', 'C10')!, target)).toMatchObject({ cho: 418, kcal: 3242, nelTarget: true })
+  })
+  it('se gli altri pasti salgono a 379 g, anche C10 (−5 g) porta la giornata a 449 g: fuori target', () => {
+    const r = valutaAlternativa({ cho: 379, kcal: 2439 }, trovaPasto('cena', 'C10')!, target)
+    expect(r).toMatchObject({ cho: 449, kcal: 3218, choDentro: false, kcalDentro: true, nelTarget: false })
+  })
+})
+
+describe('differenze scritte a parole', () => {
+  it.each([
+    [25, 'g', '25 g in più'],
+    [-5, 'g', '5 g in meno'],
+    [-22, 'kcal', '22 kcal in meno'],
+    [0, 'kcal', 'uguale'],
+  ] as const)('%i %s → %s', (differenza, unita, atteso) => {
+    expect(formatScarto(differenza, unita)).toBe(atteso)
+  })
+})
+
+describe('pasto libero scelto in un giorno normale (5 ottobre)', () => {
+  const lunedi = giorno('2026-10-05')
+  const tutti = vociDelGiorno(lunedi).map((v) => v.categoria)
+  const conPranzo = (pranzo: object) => ({ scelte: { merenda: 'M2' }, consumati: tutti, liberi: { pranzo } })
+
+  it('conta come pasto spuntato', () => {
+    const r = esitoGiorno(lunedi, conPranzo({ testo: 'poke', kcal: 1050, cho: 150, proteine: 40 }))
+    expect(r.fatti).toBe(r.totali)
+  })
+  it('valori vicini al piano (P2 148 g → poke 150 g): rispettato', () => {
+    expect(esitoGiorno(lunedi, conPranzo({ testo: 'poke', kcal: 1050, cho: 150, proteine: 40 })).esito).toBe('rispettato')
+  })
+  it('CHO troppo bassi (120 g al posto di 148): non rispettato', () => {
+    expect(esitoGiorno(lunedi, conPranzo({ testo: 'insalata', kcal: 1030, cho: 120, proteine: 40 })).esito).toBe('nonRispettato')
+  })
+  it('senza valori (CHO ND): non rispettato', () => {
+    expect(esitoGiorno(lunedi, conPranzo({ testo: 'pizza' })).esito).toBe('nonRispettato')
+  })
+  // Piano 368 g + merenda media 57 = 425 g (tolleranza 404–446); 2755 + 368 = 3123 kcal.
+  it('merenda libera 60 g / 360 kcal (giornata 428 g, 3115 kcal): rispettato', () => {
+    const stato = { scelte: {}, consumati: tutti, liberi: { merenda: { testo: 'yogurt e miele', kcal: 360, cho: 60, proteine: 12 } } }
+    expect(esitoGiorno(lunedi, stato).esito).toBe('rispettato')
+  })
+  it('merenda libera 150 g / 900 kcal (giornata 518 g): non rispettato', () => {
+    const stato = { scelte: {}, consumati: tutti, liberi: { merenda: { testo: 'pasticceria', kcal: 900, cho: 150, proteine: 12 } } }
+    expect(esitoGiorno(lunedi, stato).esito).toBe('nonRispettato')
   })
 })
 

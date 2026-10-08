@@ -5,6 +5,7 @@ import App from './App.tsx'
 import { caricaPiano } from './piano'
 import { caricaObiettivi } from './obiettivo'
 import { caricaPastiUtente } from './pastiUtente'
+import { segnalaAvvioChiuso } from './avvio'
 
 // Chiede al browser di non cancellare i dati salvati (scelte, peso, settimane).
 void navigator.storage?.persist?.()
@@ -23,9 +24,13 @@ void Promise.all([caricaPiano(), caricaObiettivi(), caricaPastiUtente()]).finall
 function chiudiAvvio() {
   const DURATA_AVVIO_MS = 3600
   const avvio = document.getElementById('avvio')
-  if (!avvio) return
+  if (!avvio) {
+    segnalaAvvioChiuso()
+    return
+  }
   setTimeout(() => {
     avvio.classList.add('via')
+    segnalaAvvioChiuso()
     setTimeout(() => avvio.remove(), 400)
   }, Math.max(0, DURATA_AVVIO_MS - performance.now()))
 }

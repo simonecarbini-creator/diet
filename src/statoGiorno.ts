@@ -51,12 +51,13 @@ export function useStatoGiorno(data: string) {
 
   return {
     stato,
-    /** id null, o uguale a quello del piano, torna al piano. */
-    scegli(categoria: CategoriaConId, id: string | null, idPiano: string | null) {
+    /** id null, o uguale a quello del piano, torna al piano. Con `consumato` il pasto si spunta insieme. */
+    scegli(categoria: CategoriaConId, id: string | null, idPiano: string | null, consumato = false) {
       const scelte = { ...stato.scelte }
       if (id === null || id === idPiano) delete scelte[categoria]
       else scelte[categoria] = id
-      aggiorna({ ...stato, scelte })
+      const consumati = consumato ? [...stato.consumati.filter((c) => c !== categoria), categoria] : stato.consumati
+      aggiorna({ ...stato, scelte, consumati })
     },
     /** Spegnendo la giornata libera si perdono conferme e pasti liberi. */
     impostaSgarro(attivo: boolean) {
@@ -67,8 +68,9 @@ export function useStatoGiorno(data: string) {
       aggiorna({ ...stato, confermati })
     },
     /** testo '' = pasto tolto, in attesa di scrivere cosa si è mangiato. */
-    pastoLibero(categoria: CategoriaPasto, libero: PastoLibero) {
-      aggiorna({ ...stato, liberi: { ...stato.liberi, [categoria]: libero } })
+    pastoLibero(categoria: CategoriaPasto, libero: PastoLibero, consumato = false) {
+      const consumati = consumato ? [...stato.consumati.filter((c) => c !== categoria), categoria] : stato.consumati
+      aggiorna({ ...stato, liberi: { ...stato.liberi, [categoria]: libero }, consumati })
     },
     ripristinaPasto(categoria: CategoriaPasto) {
       const liberi = { ...stato.liberi }

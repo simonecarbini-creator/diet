@@ -5,10 +5,10 @@
 // "Altre versioni" quelle pensate per altri giorni (ridotte, maggiorate, altre colazioni).
 import { useEffect, useState } from 'react'
 import { dati, idAlternative, trovaPasto, type CategoriaConId, type PastoRisolto } from '../dati'
-import { formatDifferenzaCho, formatNumero } from '../formato'
-import { targetGiorno, valutaAlternativa, type VocePasto } from '../giornata'
+import { formatNumero, formatScarto } from '../formato'
+import { haValori, targetGiorno, valutaAlternativa, type PastoLibero, type TargetGiorno, type VocePasto } from '../giornata'
 import { RiassuntoAlimenti } from './Alimenti'
-import { DifferenzaKcal } from './DifferenzaKcal'
+import { bozzaDa, CampiPastoLibero, daBozza, type BozzaLibero } from './CampiPastoLibero'
 import { RigaScorrevole } from './RigaScorrevole'
 import { conteggiDelPasto, frazioneLimite, nomeVincolo, oltreMassimo, type ConteggioVincolo } from '../vincoli'
 
@@ -33,7 +33,14 @@ export type ContestoGiornata = {
   senzaQuesto: { cho: number; kcal: number }
   /** Il piano del giorno: il riferimento per la tolleranza. */
   piano: { cho: number; kcal: number }
+  /** Merenda non ancora scelta: negli altri pasti è stimata con la media. */
+  merendaStimata: boolean
+  /** Altri pasti liberi senza valori: non entrano nella somma. */
+  liberiSenzaValori: number
 }
+
+/** Selezione del pasto libero (non è un id di dati.json). */
+const LIBERO = '#libero'
 
 type Props = {
   categoria: CategoriaConId
@@ -46,7 +53,55 @@ type Props = {
   /** Per dire dove arriva la giornata con ogni alternativa. */
   giornata?: ContestoGiornata
   onScegli: (id: string | null) => void
+  /** Al posto del pasto, quello che si mangia davvero (come nella giornata libera). */
+  onLibero: (libero: PastoLibero) => void
   onChiudi: () => void
+}
+
+/** "La giornata con questa cena": CHO e kcal del giorno, in parole rispetto al piano. */
+function BoxGiornata({
+  titolo,
+  totale,
+  target,
+}: {
+  titolo: string
+  totale: ReturnType<typeof valutaAlternativa>
+  target: TargetGiorno
+}) {
+  const righe = [
+    { nome: 'CHO', valore: `${formatNumero(totale.cho)} g`, scarto: formatScarto(totale.cho - target.cho.piano, 'g'), dentro: totale.choDentro, piano: `${formatNumero(target.cho.piano)} g` },
+    { nome: 'kcal', valore: formatNumero(totale.kcal), scarto: formatScarto(totale.kcal - target.kcal.piano, 'kcal'), dentro: totale.kcalDentro, piano: formatNumero(target.kcal.piano) },
+  ]
+  const fuori = [
+    !totale.choDentro &&
+      (totale.cho < target.cho.da ? `CHO sotto il minimo di ${target.cho.da} g` : `CHO oltre il massimo di ${target.cho.a} g`),
+    !totale.kcalDentro &&
+      (totale.kcal < target.kcal.da
+        ? `kcal sotto il minimo di ${formatNumero(target.kcal.da)}`
+        : `kcal oltre il massimo di ${formatNumero(target.kcal.a)}`),
+  ].filter(Boolean)
+  return (
+    <div className={`mt-2 rounded-lg px-2.5 py-2 text-sm ${totale.nelTarget ? 'bg-ok/10' : 'bg-ko/10'}`}>
+      <div className="text-xs font-semibold uppercase opacity-70">{titolo}</div>
+      <ul className="mt-1 space-y-0.5">
+        {righe.map((r) => (
+          <li key={r.nome} className="flex items-baseline gap-2">
+            <span className={`w-4 shrink-0 font-bold ${r.dentro ? 'text-ok' : 'text-ko'}`}>{r.dentro ? '✓' : '✗'}</span>
+            <span>
+              <span className="font-bold tabular-nums">{r.valore}</span> {r.nome === 'kcal' ? 'kcal' : 'CHO'}:{' '}
+              <span className={r.dentro ? '' : 'font-semibold text-ko'}>
+                {r.scarto === 'uguale' ? 'come il piano' : `${r.scarto} del piano`}
+              </span>{' '}
+              <span className="opacity-70">({r.piano})</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div className={`mt-1 font-semibold ${totale.nelTarget ? 'text-ok' : 'text-ko'}`}>
+        {totale.nelTarget ? `Nel target: entro ±${target.margine}% del piano` : `Fuori target: ${fuori.join(', ')}`}
+      </div>
+    </div>
+  )
 }
 
 /**
@@ -71,8 +126,10 @@ export function PannelloScelta({
   conteggiAltri,
   giornata,
   onScegli,
+  onLibero,
   onChiudi,
 }: Props) {
+  const [bozzaLibero, setBozzaLibero] = useState<BozzaLibero>(bozzaDa())
   const [selezionato, setSelezionato] = useState<string | null>(voce.pasto?.id ?? null)
   const [filtri, setFiltri] = useState<string[]>([])
   // Alternative nascoste con lo swipe: solo finché il pannello è aperto.
@@ -119,12 +176,16 @@ export function PannelloScelta({
   const differenza = (pasto: PastoRisolto) => (riferimento ? pasto.cho - riferimento.cho : 0)
   const scelta = pasti.find((p) => p.id === selezionato)
   const daConfermare = scelta && scelta.id !== voce.pasto?.id
+  const liberoSelezionato = selezionato === LIBERO
+  const libero = daBozza(bozzaLibero)
 
   // Dove arriva la giornata con ogni alternativa: nel target se CHO e kcal restano entro
   // il margine di dati.json rispetto al piano di oggi.
   const target = giornata ? targetGiorno(giornata.piano) : null
   const valuta = (p: PastoRisolto) => (giornata && target ? valutaAlternativa(giornata.senzaQuesto, p, target) : null)
   const nelTarget = (p: PastoRisolto) => valuta(p)?.nelTarget ?? true
+  // Con il pasto del piano: spiega perché la giornata può essere già sopra o sotto il piano.
+  const conPiano = riferimento ? valuta(riferimento) : null
 
   const principali = visibili
     .filter((p) => adattaAOggi(p, piano, giornata))
@@ -152,17 +213,23 @@ export function PannelloScelta({
             setSelezionato(opzione.id)
             setInteragito(true)
           }}
-          className={`w-full rounded-xl border bg-superficie p-3 text-left disabled:opacity-40 ${
-            attivo ? 'border-cho outline-2 outline-cho' : 'border-bordo'
+          className={`w-full rounded-xl border-2 p-3 text-left disabled:opacity-40 ${
+            // Selezionata: bordo rosa spesso e fondo rosato pieno (sotto c'è il rosso di "Nascondi").
+            attivo ? 'border-cho bg-[color-mix(in_srgb,var(--cho)_9%,var(--superficie))]' : 'border-bordo bg-superficie'
           } ${secondaria && !attivo ? 'opacity-60' : ''}`}
         >
           <div className="flex items-start gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                {attivo && (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cho text-xs font-bold text-white" aria-hidden="true">
+                    ✓
+                  </span>
+                )}
                 <span className="rounded bg-bordo px-1.5 py-0.5 text-xs font-semibold">{opzione.id}</span>
                 {!opzione.composizione && <span className="font-semibold">{opzione.nome}</span>}
                 {opzione.id === voce.idPiano && (
-                  <span className="text-xs font-semibold uppercase opacity-70">nel piano</span>
+                  <span className="rounded-full border border-current px-2 py-0.5 text-xs font-semibold uppercase">nel piano</span>
                 )}
                 {sostituito && opzione.id === voce.pasto?.id && (
                   <span className="text-xs font-semibold uppercase text-cho">scelto per oggi</span>
@@ -172,9 +239,12 @@ export function PannelloScelta({
             </div>
             <div className="shrink-0 text-right text-cho">
               <div className="text-2xl font-bold leading-none tabular-nums">{formatNumero(opzione.cho)}</div>
-              <div className="text-xs font-semibold">
-                {riferimento && diff !== 0 ? formatDifferenzaCho(diff) : 'g CHO'}
-              </div>
+              <div className="text-xs font-semibold">g CHO</div>
+              {riferimento && opzione.id !== riferimento.id && (
+                <div className="mt-0.5 text-xs text-testo opacity-70">
+                  {diff === 0 ? `come ${riferimento.id}` : `${formatScarto(diff, 'g')} di ${riferimento.id}`}
+                </div>
+              )}
             </div>
           </div>
 
@@ -185,29 +255,7 @@ export function PannelloScelta({
           )}
           {opzione.notaVersione && <p className="mt-1 text-sm">{opzione.notaVersione}</p>}
           {target && totale && ammesso && (
-            <div className={`mt-2 rounded-lg px-2.5 py-2 text-sm ${totale.nelTarget ? 'bg-ok/10' : 'bg-ko/10'}`}>
-              <div className="text-xs font-semibold uppercase opacity-70">Giornata con {questo[categoria]}</div>
-              <div>
-                CHO <span className={`font-bold ${totale.choDentro ? '' : 'text-ko'}`}>{formatNumero(totale.cho)}</span> /{' '}
-                {formatNumero(target.cho.piano)} g del piano · kcal{' '}
-                <span className={`font-bold ${totale.kcalDentro ? '' : 'text-ko'}`}>{formatNumero(totale.kcal)}</span> /{' '}
-                {formatNumero(target.kcal.piano)}
-              </div>
-              <div className={`font-semibold ${totale.nelTarget ? 'text-ok' : 'text-ko'}`}>
-                {totale.nelTarget
-                  ? `✓ nel target (piano ±${target.margine}%)`
-                  : `✗ fuori target: ${[
-                      !totale.choDentro &&
-                        (totale.cho < target.cho.da ? `CHO sotto ${target.cho.da} g` : `CHO sopra ${target.cho.a} g`),
-                      !totale.kcalDentro &&
-                        (totale.kcal < target.kcal.da
-                          ? `kcal sotto ${formatNumero(target.kcal.da)}`
-                          : `kcal sopra ${formatNumero(target.kcal.a)}`),
-                    ]
-                      .filter(Boolean)
-                      .join(', ')}`}
-              </div>
-            </div>
+            <BoxGiornata titolo={`La giornata con ${questo[categoria]}`} totale={totale} target={target} />
           )}
           {conteggi.map((conteggio) => {
             const conQuesta = conteggio.volte + 1
@@ -226,8 +274,12 @@ export function PannelloScelta({
           <p className="mt-1 text-sm">
             <span className="opacity-70">
               {questo[categoria].charAt(0).toUpperCase() + questo[categoria].slice(1)}: {formatNumero(opzione.kcal)} kcal
+              {riferimento &&
+                opzione.id !== riferimento.id &&
+                (opzione.kcal === riferimento.kcal
+                  ? `, come ${riferimento.id}`
+                  : `, ${formatScarto(opzione.kcal - riferimento.kcal, 'kcal')} di ${riferimento.id}`)}
             </span>
-            {riferimento && <DifferenzaKcal differenza={opzione.kcal - riferimento.kcal} />}
             <span className="text-xs opacity-70">
               {opzione.tags && opzione.tags.length > 0 && ` · ${opzione.tags.map(etichettaTag).join(' · ')}`}
               {!ammesso && ` · solo nei giorni ${opzione.soloTipiGiornata?.join(' e ')}`}
@@ -269,12 +321,28 @@ export function PannelloScelta({
             <span className="font-bold text-cho">{formatNumero(riferimento.cho)} g CHO</span>
           </p>
         )}
-        {target && (
-          <p className="mt-1 text-xs opacity-70">
-            Piano di oggi: {formatNumero(target.cho.piano)} g CHO · {formatNumero(target.kcal.piano)} kcal. Nel target
-            (±{target.margine}%): {target.cho.da}–{target.cho.a} g CHO e {formatNumero(target.kcal.da)}–
-            {formatNumero(target.kcal.a)} kcal
-          </p>
+        {target && giornata && (
+          <div className="mt-1 space-y-0.5 text-xs">
+            <p className="opacity-70">
+              Piano di oggi: {formatNumero(target.cho.piano)} g CHO · {formatNumero(target.kcal.piano)} kcal. Nel target
+              (±{target.margine}%): {target.cho.da}–{target.cho.a} g CHO e {formatNumero(target.kcal.da)}–
+              {formatNumero(target.kcal.a)} kcal.
+            </p>
+            <p className="opacity-70">
+              Gli altri pasti di oggi fanno {formatNumero(giornata.senzaQuesto.cho)} g CHO e{' '}
+              {formatNumero(giornata.senzaQuesto.kcal)} kcal
+              {giornata.merendaStimata && ' (merenda non scelta: contata come media delle merende)'}
+              {giornata.liberiSenzaValori > 0 && ` (${giornata.liberiSenzaValori} pasto libero senza valori non contato)`}.
+            </p>
+            {conPiano && riferimento && (
+              <p className={conPiano.nelTarget ? 'opacity-70' : 'font-semibold text-ko'}>
+                Con {riferimento.id} del piano la giornata arriva a {formatNumero(conPiano.cho)} g CHO
+                {conPiano.nelTarget
+                  ? '.'
+                  : `: già fuori target per quello che è cambiato negli altri pasti (${formatScarto(conPiano.cho - target.cho.piano, 'g')} del piano).`}
+              </p>
+            )}
+          </div>
         )}
       </header>
 
@@ -326,6 +394,47 @@ export function PannelloScelta({
 
         <ul className="space-y-2">{principali.map((p) => rigaOpzione(p, false))}</ul>
 
+        {/* Pasto libero: come nella giornata libera, testo e (se si conoscono) kcal, CHO e proteine. */}
+        <div
+          className={`mt-2 rounded-xl border-2 border-dashed p-3 ${
+            liberoSelezionato ? 'border-cho bg-[color-mix(in_srgb,var(--cho)_9%,var(--superficie))]' : 'border-contorno bg-superficie'
+          }`}
+        >
+          <button
+            type="button"
+            aria-pressed={liberoSelezionato}
+            onClick={() => {
+              setSelezionato(LIBERO)
+              setInteragito(true)
+            }}
+            className="flex w-full items-center gap-2 text-left"
+          >
+            {liberoSelezionato && (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cho text-xs font-bold text-white" aria-hidden="true">
+                ✓
+              </span>
+            )}
+            <span className="font-semibold">Pasto libero</span>
+            <span className="text-sm opacity-70">scrivi cosa mangi</span>
+          </button>
+          {liberoSelezionato && (
+            <>
+              <CampiPastoLibero bozza={bozzaLibero} onCambia={setBozzaLibero} autoFocus />
+              {target && giornata && haValori(libero) ? (
+                <BoxGiornata
+                  titolo={`La giornata con ${questo[categoria]}`}
+                  totale={valutaAlternativa(giornata.senzaQuesto, { cho: libero.cho ?? 0, kcal: libero.kcal ?? 0 }, target)}
+                  target={target}
+                />
+              ) : (
+                <p className="mt-2 text-sm opacity-70">
+                  Senza kcal, CHO e proteine il pasto resta ND: non entra nei totali della giornata.
+                </p>
+              )}
+            </>
+          )}
+        </div>
+
         {altre.length > 0 && (
           <details className="mt-4">
             <summary className="py-2 text-sm font-semibold opacity-70">
@@ -345,19 +454,27 @@ export function PannelloScelta({
       </div>
 
       <footer className="shrink-0 space-y-2 border-t border-bordo bg-superficie px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
-        {daConfermare ? (
+        {liberoSelezionato ? (
+          <button
+            type="button"
+            disabled={libero.testo === ''}
+            onClick={() => onLibero(libero)}
+            className="w-full rounded-xl bg-cho p-4 text-lg font-bold text-white disabled:opacity-40"
+          >
+            {libero.testo === '' ? 'Scrivi cosa mangi' : 'Usa il pasto libero per oggi'}
+          </button>
+        ) : daConfermare ? (
           <button
             type="button"
             onClick={() => onScegli(scelta.id)}
             className="w-full rounded-xl bg-cho p-4 text-lg font-bold text-white"
           >
             {scelta.id === voce.idPiano ? `Torna al piano (${scelta.id})` : `Usa ${scelta.id} per oggi`}
-            {riferimento && differenza(scelta) !== 0 && ` · ${formatDifferenzaCho(differenza(scelta))}`}
           </button>
         ) : (
           <p className="py-2 text-center text-sm opacity-70">Tocca un'alternativa per selezionarla</p>
         )}
-        {sostituito && !daConfermare && (
+        {sostituito && !daConfermare && !liberoSelezionato && (
           <button
             type="button"
             onClick={() => onScegli(null)}

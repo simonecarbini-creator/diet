@@ -178,6 +178,11 @@ export function Calcoli() {
             totale resti entro ±{regole.giornataLibera.tolleranzaPercento}% da quello dei pasti del piano: allora conta
             come rispettata.
           </p>
+          <p className="mt-2">
+            Un pasto libero scelto in un giorno normale (dal pannello «Cambia») vale come pasto spuntato, con la stessa
+            regola: il giorno è rispettato solo se i totali restano entro ±{regole.giornataLibera.tolleranzaPercento}%.
+            Una merenda libera, dove il piano non ne indica una, si confronta con la media delle merende.
+          </p>
         </Sezione>
 
         <Sezione titolo="Vincoli della settimana">
