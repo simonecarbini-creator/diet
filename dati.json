@@ -2861,7 +2861,7 @@
         "id": "C3+", "kcal": 870, "cho": 99, "proteine": 42, "modifiche": "pane 140 g (40 g in piu') nei giorni ROSSO",
         "modificheGrammi": [{ "nome": "Pane", "grammi": 140 }]
       },
-      "note": "Ha 10 g di CHO in meno di C1: nei giorni ROSSO aggiungere 40 g di pane."
+      "note": "Ha 10 g di CHO in meno di C1: nei giorni ROSSO usa C3+ (40 g di pane in piu', 99 g di CHO)."
     },
     {
       "id": "C4",
@@ -3789,12 +3789,16 @@
 
   "merendaRidotta": {
     "id": "Mrid",
-    "kcal": 160,
+    "kcal": 155,
     "cho": 18,
-    "proteine": 12,
-    "composizione": "1 frutto + parmigiano 20 g, oppure yogurt greco + frutta secca",
+    "proteine": 7,
+    "composizione": "1 frutto + parmigiano 20 g",
     "usoSe": "tipo == GRIGIO",
-    "quando": { "var": "tipo", "==": "GRIGIO" }
+    "quando": { "var": "tipo", "==": "GRIGIO" },
+    "_nota": "2026-10-10: prima era 'oppure yogurt greco + frutta secca' nella stessa merenda, con 160 kcal e 12 g di proteine; divisa in due merende con i loro valori.",
+    "alternative": [
+      { "id": "Mrid-yogurt", "kcal": 190, "cho": 23, "proteine": 13, "composizione": "1 frutto + yogurt greco 0% 100 g + frutta secca 10 g" }
+    ]
   },
   "merendaNote": [
     "Le merende con tag pocheProteine (M4, M7, M11) vanno usate nei giorni con cena C1, C2 o C4.",
@@ -3965,9 +3969,9 @@
           "merenda": "Mrid",
           "spuntinoSerale": false,
           "gelCho": 0,
-          "kcal": 2635,
+          "kcal": 2630,
           "cho": 343,
-          "proteine": 134,
+          "proteine": 129,
           "note": "Riposo di ricarica: domenica c'e' il frazionato. Colazione STD e pranzo pieno, si tagliano solo merenda e cena."
         },
         {
@@ -4092,9 +4096,9 @@
           "merenda": "Mrid",
           "spuntinoSerale": false,
           "gelCho": 0,
-          "kcal": 2625,
+          "kcal": 2620,
           "cho": 346,
-          "proteine": 134,
+          "proteine": 129,
           "note": "Riposo di ricarica: domenica gara 10K dentro il frazionato. Colazione STD e pranzo pieno, si tagliano solo merenda e cena. Niente crucifere."
         },
         {

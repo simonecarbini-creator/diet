@@ -125,12 +125,12 @@ export type BlocchiSpuntinoSerale = {
     cho:         number;
     proteine:    number;
     alimenti:    ModificheGrammiElement[];
-    alternative: Alternative[];
+    alternative: SpuntinoSeraleAlternative[];
     consigli:    string[];
     note:        string;
 }
 
-export type Alternative = {
+export type SpuntinoSeraleAlternative = {
     id:       string;
     base:     string;
     nome:     string;
@@ -246,6 +246,16 @@ export type MerendaRidotta = {
     composizione: string;
     usoSe:        string;
     quando:       MerendaRidottaQuando;
+    _nota:        string;
+    alternative:  MerendaRidottaAlternative[];
+}
+
+export type MerendaRidottaAlternative = {
+    id:           string;
+    kcal:         number;
+    cho:          number;
+    proteine:     number;
+    composizione: string;
 }
 
 export type MerendaRidottaQuando = {

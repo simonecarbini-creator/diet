@@ -62,7 +62,8 @@ describe('valori dei pasti: quelli mostrati sono quelli di dati.json', () => {
     ['cena', 'C3', 79, 770],
     ['cena', 'C3+', 99, 870],
     ['merenda', 'M2', 62, 360],
-    ['merenda', 'Mrid', 18, 160],
+    ['merenda', 'Mrid', 18, 155],
+    ['merenda', 'Mrid-yogurt', 23, 190],
   ] as const)('%s %s: %i g CHO, %i kcal', (categoria, id, cho, kcal) => {
     const pasto = trovaPasto(categoria, id)
     expect(pasto?.cho).toBe(cho)
@@ -101,12 +102,13 @@ describe('totali della giornata', () => {
     expect(totali.kcal).toBe(3285)
   })
 
-  it('sabato 10 ottobre (GRIGIO): niente pre-corsa, 346 g CHO e 2625 kcal', () => {
+  // Mrid corretta a 155 kcal (era 160): la somma dei pasti scende a 2620.
+  it('sabato 10 ottobre (GRIGIO): niente pre-corsa, 346 g CHO e 2620 kcal', () => {
     const voci = vociDelGiorno(giorno('2026-10-10'))
     expect(voci.some((v) => v.categoria === 'preCorsa')).toBe(false)
     const totali = totaliPasti(voci)
     expect(totali.cho).toBe(346)
-    expect(totali.kcal).toBe(2625)
+    expect(totali.kcal).toBe(2620)
   })
 
   it('una merenda scelta entra nel totale', () => {
@@ -309,6 +311,17 @@ describe('proteine delle versioni ridotte e maggiorate', () => {
   })
 })
 
+describe('merenda ridotta', () => {
+  it('Mrid e Mrid-yogurt sono due merende, entrambe versioni ridotte', () => {
+    expect(idAlternative('merenda').slice(-2)).toEqual(['Mrid', 'Mrid-yogurt'])
+    expect(trovaPasto('merenda', 'Mrid')).toMatchObject({ proteine: 7, versione: 'ridotto' })
+    expect(trovaPasto('merenda', 'Mrid-yogurt')).toMatchObject({ kcal: 190, cho: 23, proteine: 13, versione: 'ridotto' })
+  })
+  it('sabato 10 con Mrid-yogurt: 5 g CHO in più (351 g)', () => {
+    expect(totaliPasti(vociDelGiorno(giorno('2026-10-10'), { merenda: 'Mrid-yogurt' })).cho).toBe(351)
+  })
+})
+
 describe('spuntino serale', () => {
   it('base (yogurt, 25 g) e 5 alternative, senza la ricotta', () => {
     expect(idAlternative('spuntinoSerale')).toEqual(['serale', 'SER-PB1', 'SER-PB2', 'SER-PB3', 'SER-PB4', 'SER-SAL'])
@@ -357,9 +370,10 @@ describe('proteine del piano nella vista settimanale', () => {
   it('5 ottobre (merenda da scegliere): 142 g', () => {
     expect(proteineDelPiano(giorno('2026-10-05'))).toBe(142)
   })
-  // 10 ottobre (GRIGIO, niente pre-corsa): STD 37 + solo frutto 1 + P1 38 + Mrid 12 + C1rid 46 = 134.
-  it('10 ottobre (merenda Mrid assegnata): 134 g', () => {
-    expect(proteineDelPiano(giorno('2026-10-10'))).toBe(134)
+  // 10 ottobre (GRIGIO, niente pre-corsa): STD 37 + solo frutto 1 + P1 38 + Mrid 7 + C1rid 46 = 129.
+  it('10 ottobre (merenda Mrid assegnata): 129 g, nel target GRIGIO 120-135', () => {
+    expect(proteineDelPiano(giorno('2026-10-10'))).toBe(129)
+    expect(confrontoProteine(129, 'GRIGIO')?.esito).toBe('dentro')
   })
 })
 

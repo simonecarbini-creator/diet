@@ -230,7 +230,8 @@ function trovaPastoDelPiano(categoria: CategoriaConId, id: string): PastoRisolto
       return alternativa ? { ...alternativa } : null
     }
     case 'merenda': {
-      const merenda = [...dati.merende, dati.merendaRidotta].find((m) => m.id === id)
+      const ridotte = [dati.merendaRidotta, ...dati.merendaRidotta.alternative]
+      const merenda = [...dati.merende, ...ridotte].find((m) => m.id === id)
       return merenda
         ? {
             id,
@@ -240,8 +241,8 @@ function trovaPastoDelPiano(categoria: CategoriaConId, id: string): PastoRisolto
             proteine: merenda.proteine,
             alimenti: [],
             composizione: merenda.composizione,
-            tags: 'tags' in merenda ? merenda.tags : [],
-            ...(merenda.id === dati.merendaRidotta.id ? { versione: 'ridotto' as const } : {}),
+            tags: 'tags' in merenda ? (merenda.tags as string[]) : [],
+            ...(ridotte.includes(merenda as (typeof ridotte)[number]) ? { versione: 'ridotto' as const } : {}),
           }
         : null
     }
@@ -291,7 +292,7 @@ export function idAlternative(categoria: CategoriaConId): string[] {
       return [...senzaBase(conVersioni(elenco)), ...sgarri]
     }
     case 'merenda':
-      return senzaBase([...dati.merende.map((m) => m.id), dati.merendaRidotta.id])
+      return senzaBase([...dati.merende.map((m) => m.id), dati.merendaRidotta.id, ...dati.merendaRidotta.alternative.map((m) => m.id)])
     case 'spuntinoSerale':
       return senzaBase([dati.blocchi.spuntinoSerale.id, ...dati.blocchi.spuntinoSerale.alternative.map((a) => a.id)])
   }
