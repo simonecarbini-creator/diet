@@ -179,6 +179,7 @@ export type Cene = {
     maggiorato?:                  RidottoClass;
     soloTipiGiornata?:            string[];
     incompatibileCon?:            string[];
+    varianti?:                    CeneVarianti[];
     categoria?:                   string;
     grassi?:                      number;
     tags?:                        string[];
@@ -200,6 +201,22 @@ export type RidottoClass = {
     proteine:        number;
     modifiche:       string;
     modificheGrammi: ModificheGrammiElement[];
+}
+
+export type CeneVarianti = {
+    id:       string;
+    nome:     string;
+    kcal:     number;
+    cho:      number;
+    proteine: number;
+    alimenti: DolciAlimenti[];
+    note:     string;
+}
+
+export type DolciAlimenti = {
+    nome:   string;
+    grammi: number;
+    note?:  string;
 }
 
 export type Controlli = {
@@ -230,12 +247,6 @@ export type Dolci = {
     alimenti: DolciAlimenti[];
     note:     string;
     tags:     string[];
-}
-
-export type DolciAlimenti = {
-    nome:   string;
-    grammi: number;
-    note?:  string;
 }
 
 export type MerendaRidotta = {
@@ -291,7 +302,7 @@ export type Pranzi = {
     cho:                          number;
     proteine:                     number;
     alimenti:                     PranziAlimenti[];
-    varianti?:                    Varianti[];
+    varianti?:                    PranziVarianti[];
     ridotto?:                     Ridotto;
     note:                         string;
     tags?:                        string[];
@@ -317,7 +328,8 @@ export type PranziMaggiorato = {
     proteine:        number;
     modifiche:       string;
     modificheGrammi: ModificheGrammiElement[];
-    nota:            string;
+    nota?:           string;
+    aggiunte?:       ModificheGrammiElement[];
 }
 
 export type Ridotto = {
@@ -330,7 +342,7 @@ export type Ridotto = {
     rimozioni?:      string[];
 }
 
-export type Varianti = {
+export type PranziVarianti = {
     id:       string;
     nome:     string;
     kcal:     number;

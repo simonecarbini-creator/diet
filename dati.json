@@ -263,17 +263,16 @@
             "nome": "Yogurt greco 0%",
             "grammi": 200,
             "sostituibileCon": [
-              "Ricotta 200 g",
-              "Latte o bevanda di soia 300 ml + fonte proteica"
+              "Ricotta 200 g"
             ]
           },
           {
             "nome": "Avena (fiocchi)",
             "grammi": 70,
             "sostituibileCon": [
-              "Fiocchi d'orzo 70 g",
-              "Fiocchi di farro 70 g",
-              "Muesli senza zuccheri aggiunti 65 g"
+              "Fiocchi d'orzo 65 g",
+              "Fiocchi di farro 65 g",
+              "Muesli senza zuccheri aggiunti 70 g"
             ]
           },
           {
@@ -364,7 +363,7 @@
             "nome": "Fiocchi d'orzo",
             "grammi": 75,
             "sostituibileCon": [
-              "Fiocchi d'avena 75 g",
+              "Fiocchi d'avena 80 g",
               "Fiocchi di farro 75 g"
             ]
           },
@@ -377,8 +376,8 @@
             "nome": "Proteine in polvere",
             "grammi": 15,
             "sostituibileCon": [
-              "Yogurt greco 0% 150 g",
-              "Fiocchi di latte 130 g"
+              "Yogurt greco 0% 100 g",
+              "Fiocchi di latte 100 g"
             ]
           },
           {
@@ -698,7 +697,7 @@
             "nome": "Proteine in polvere",
             "grammi": 15,
             "sostituibileCon": [
-              "Yogurt greco 0% 150 g"
+              "Yogurt greco 0% 100 g"
             ]
           },
           {
@@ -749,7 +748,7 @@
             "nome": "Proteine in polvere",
             "grammi": 15,
             "sostituibileCon": [
-              "Yogurt greco 0% 150 g"
+              "Yogurt greco 0% 100 g"
             ]
           },
           {
@@ -793,17 +792,16 @@
             "nome": "Yogurt greco 0%",
             "grammi": 200,
             "sostituibileCon": [
-              "Ricotta 200 g",
-              "Latte o bevanda di soia 300 ml + fonte proteica"
+              "Ricotta 200 g"
             ]
           },
           {
             "nome": "Avena (fiocchi)",
             "grammi": 70,
             "sostituibileCon": [
-              "Fiocchi d'orzo 70 g",
-              "Fiocchi di farro 70 g",
-              "Muesli senza zuccheri aggiunti 65 g"
+              "Fiocchi d'orzo 65 g",
+              "Fiocchi di farro 65 g",
+              "Muesli senza zuccheri aggiunti 70 g"
             ]
           },
           {
@@ -903,7 +901,7 @@
             "nome": "Fiocchi d'orzo",
             "grammi": 75,
             "sostituibileCon": [
-              "Fiocchi d'avena 75 g",
+              "Fiocchi d'avena 80 g",
               "Fiocchi di farro 75 g"
             ]
           },
@@ -916,8 +914,8 @@
             "nome": "Proteine in polvere",
             "grammi": 15,
             "sostituibileCon": [
-              "Yogurt greco 0% 150 g",
-              "Fiocchi di latte 130 g"
+              "Yogurt greco 0% 100 g",
+              "Fiocchi di latte 100 g"
             ]
           },
           {
@@ -1268,7 +1266,7 @@
             "nome": "Proteine in polvere",
             "grammi": 15,
             "sostituibileCon": [
-              "Yogurt greco 0% 150 g"
+              "Yogurt greco 0% 100 g"
             ]
           },
           {
@@ -1320,7 +1318,7 @@
             "nome": "Proteine in polvere",
             "grammi": 15,
             "sostituibileCon": [
-              "Yogurt greco 0% 150 g"
+              "Yogurt greco 0% 100 g"
             ]
           },
           {
@@ -1368,17 +1366,16 @@
             "nome": "Yogurt greco 0%",
             "grammi": 200,
             "sostituibileCon": [
-              "Ricotta 200 g",
-              "Latte o bevanda di soia 300 ml + fonte proteica"
+              "Ricotta 200 g"
             ]
           },
           {
             "nome": "Avena (fiocchi)",
             "grammi": 70,
             "sostituibileCon": [
-              "Fiocchi d'orzo 70 g",
-              "Fiocchi di farro 70 g",
-              "Muesli senza zuccheri aggiunti 65 g"
+              "Fiocchi d'orzo 65 g",
+              "Fiocchi di farro 65 g",
+              "Muesli senza zuccheri aggiunti 70 g"
             ]
           },
           {
@@ -1458,7 +1455,7 @@
             "nome": "Fiocchi d'orzo",
             "grammi": 75,
             "sostituibileCon": [
-              "Fiocchi d'avena 75 g",
+              "Fiocchi d'avena 80 g",
               "Fiocchi di farro 75 g"
             ]
           },
@@ -1471,8 +1468,8 @@
             "nome": "Proteine in polvere",
             "grammi": 15,
             "sostituibileCon": [
-              "Yogurt greco 0% 150 g",
-              "Fiocchi di latte 130 g"
+              "Yogurt greco 0% 100 g",
+              "Fiocchi di latte 100 g"
             ]
           },
           {
@@ -1684,7 +1681,7 @@
             "nome": "Miele",
             "grammi": 10,
             "sostituibileCon": [
-              "Composta di frutta 50 g"
+              "Composta di frutta 20 g"
             ]
           },
           {
@@ -1772,14 +1769,14 @@
             "nome": "Fiocchi di farro",
             "grammi": 60,
             "sostituibileCon": [
-              "Fiocchi d'orzo 75 g"
+              "Fiocchi d'orzo 60 g"
             ]
           },
           {
             "nome": "Proteine in polvere",
             "grammi": 15,
             "sostituibileCon": [
-              "Yogurt greco 0% 150 g"
+              "Yogurt greco 0% 100 g"
             ]
           },
           {
@@ -1827,7 +1824,7 @@
             "nome": "Proteine in polvere",
             "grammi": 15,
             "sostituibileCon": [
-              "Yogurt greco 0% 150 g"
+              "Yogurt greco 0% 100 g"
             ]
           },
           {
@@ -1863,7 +1860,7 @@
           {
             "nome": "Cornetto semplice da bar",
             "grammi": 60,
-            "note": "alla crema o al cioccolato: circa +55 kcal e +9 g CHO"
+            "note": "alla crema o al cioccolato: scegli COL-SG-crema"
           },
           {
             "nome": "Cappuccino (latte parzialmente scremato)",
@@ -1914,6 +1911,351 @@
           "bar"
         ],
         "tipoColazione": "STD"
+      },
+      {
+        "id": "STD-latte",
+        "base": "STD",
+        "nome": "Yogurt greco, avena e fette biscottate (con latte)",
+        "kcal": 780,
+        "cho": 98,
+        "proteine": 39,
+        "alimenti": [
+          {
+            "nome": "Latte parzialmente scremato",
+            "grammi": 300,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 70,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 65 g",
+              "Fiocchi di farro 65 g",
+              "Muesli senza zuccheri aggiunti 70 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Gocce di cioccolato fondente",
+            "grammi": 5
+          },
+          {
+            "nome": "Frutta disidratata",
+            "grammi": 10
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 3
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 40
+          }
+        ],
+        "note": "Latte e proteine in polvere al posto dello yogurt greco: il latte porta 15 g di CHO contro gli 8 dello yogurt, quindi +8 g.",
+        "tags": [
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "STD"
+      },
+      {
+        "id": "STD-soia",
+        "base": "STD",
+        "nome": "Yogurt greco, avena e fette biscottate (con bevanda di soia)",
+        "kcal": 740,
+        "cho": 84,
+        "proteine": 39,
+        "alimenti": [
+          {
+            "nome": "Bevanda di soia non zuccherata",
+            "grammi": 300,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 70,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 65 g",
+              "Fiocchi di farro 65 g",
+              "Muesli senza zuccheri aggiunti 70 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Gocce di cioccolato fondente",
+            "grammi": 5
+          },
+          {
+            "nome": "Frutta disidratata",
+            "grammi": 10
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 3
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 40
+          }
+        ],
+        "note": "Bevanda di soia e proteine in polvere al posto dello yogurt greco. Valori per la soia NON zuccherata (circa 0,5 g di CHO per 100 ml): con quella zuccherata i CHO salgono di circa 6 g, controlla l'etichetta.",
+        "tags": [
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "STD"
+      },
+      {
+        "id": "MAGG-latte",
+        "base": "STD",
+        "nome": "Yogurt greco, avena e fette biscottate (con latte)",
+        "kcal": 920,
+        "cho": 129,
+        "proteine": 41,
+        "alimenti": [
+          {
+            "nome": "Latte parzialmente scremato",
+            "grammi": 300,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 70,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 65 g",
+              "Fiocchi di farro 65 g",
+              "Muesli senza zuccheri aggiunti 70 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Gocce di cioccolato fondente",
+            "grammi": 5
+          },
+          {
+            "nome": "Frutta disidratata",
+            "grammi": 10
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 4
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 40
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          }
+        ],
+        "note": "Latte e proteine in polvere al posto dello yogurt greco: il latte porta 15 g di CHO contro gli 8 dello yogurt, quindi +8 g.",
+        "tags": [
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "MAGG",
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale"
+      },
+      {
+        "id": "MAGG-soia",
+        "base": "STD",
+        "nome": "Yogurt greco, avena e fette biscottate (con bevanda di soia)",
+        "kcal": 880,
+        "cho": 115,
+        "proteine": 41,
+        "alimenti": [
+          {
+            "nome": "Bevanda di soia non zuccherata",
+            "grammi": 300,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 70,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 65 g",
+              "Fiocchi di farro 65 g",
+              "Muesli senza zuccheri aggiunti 70 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Gocce di cioccolato fondente",
+            "grammi": 5
+          },
+          {
+            "nome": "Frutta disidratata",
+            "grammi": 10
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 4
+          },
+          {
+            "nome": "Composta di frutta",
+            "grammi": 40
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          }
+        ],
+        "note": "Bevanda di soia e proteine in polvere al posto dello yogurt greco. Valori per la soia NON zuccherata (circa 0,5 g di CHO per 100 ml): con quella zuccherata i CHO salgono di circa 6 g, controlla l'etichetta.",
+        "tags": [
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "MAGG",
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale"
+      },
+      {
+        "id": "RID-latte",
+        "base": "STD",
+        "nome": "Yogurt greco, avena e fette biscottate (con latte)",
+        "kcal": 670,
+        "cho": 70,
+        "proteine": 35,
+        "alimenti": [
+          {
+            "nome": "Latte parzialmente scremato",
+            "grammi": 300,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 70,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 65 g",
+              "Fiocchi di farro 65 g",
+              "Muesli senza zuccheri aggiunti 70 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Gocce di cioccolato fondente",
+            "grammi": 5
+          },
+          {
+            "nome": "Frutta disidratata",
+            "grammi": 10
+          }
+        ],
+        "note": "Latte e proteine in polvere al posto dello yogurt greco: il latte porta 15 g di CHO contro gli 8 dello yogurt, quindi +8 g.",
+        "tags": [
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "RID",
+        "modifiche": "Niente fette biscottate, niente composta"
+      },
+      {
+        "id": "RID-soia",
+        "base": "STD",
+        "nome": "Yogurt greco, avena e fette biscottate (con bevanda di soia)",
+        "kcal": 630,
+        "cho": 56,
+        "proteine": 35,
+        "alimenti": [
+          {
+            "nome": "Bevanda di soia non zuccherata",
+            "grammi": 300,
+            "note": "ml"
+          },
+          {
+            "nome": "Proteine in polvere",
+            "grammi": 15
+          },
+          {
+            "nome": "Avena (fiocchi)",
+            "grammi": 70,
+            "sostituibileCon": [
+              "Fiocchi d'orzo 65 g",
+              "Fiocchi di farro 65 g",
+              "Muesli senza zuccheri aggiunti 70 g"
+            ]
+          },
+          {
+            "nome": "Frutta secca",
+            "grammi": 20
+          },
+          {
+            "nome": "Gocce di cioccolato fondente",
+            "grammi": 5
+          },
+          {
+            "nome": "Frutta disidratata",
+            "grammi": 10
+          }
+        ],
+        "note": "Bevanda di soia e proteine in polvere al posto dello yogurt greco. Valori per la soia NON zuccherata (circa 0,5 g di CHO per 100 ml): con quella zuccherata i CHO salgono di circa 6 g, controlla l'etichetta.",
+        "tags": [
+          "veloce",
+          "freddo"
+        ],
+        "tipoColazione": "RID",
+        "modifiche": "Niente fette biscottate, niente composta"
+      },
+      {
+        "id": "COL-SG-crema",
+        "base": "COL-SG",
+        "nome": "Cornetto farcito e cappuccino",
+        "kcal": 370,
+        "cho": 43,
+        "proteine": 9,
+        "alimenti": [
+          {
+            "nome": "Cornetto alla crema o al cioccolato da bar",
+            "grammi": 75
+          },
+          {
+            "nome": "Cappuccino (latte parzialmente scremato)",
+            "grammi": 180,
+            "note": "ml"
+          }
+        ],
+        "note": "Il cornetto farcito pesa di piu' di quello semplice (75 g contro 60): da li' vengono i 9 g di CHO in piu'. Come COL-SG, non e' una colazione post-allenamento.",
+        "tags": [
+          "sgarro",
+          "bar"
+        ],
+        "tipoColazione": "RID"
       }
     ],
 
@@ -2138,11 +2480,27 @@
       "cho": 154,
       "proteine": 38,
       "alimenti": [
-        { "nome": "Pasta", "grammi": 120 },
-        { "nome": "Legumi lessati (ceci, lenticchie, fagioli)", "grammi": 230, "note": "una confezione intera" },
-        { "nome": "Verdure", "grammi": 200 },
-        { "nome": "Olio EVO", "grammi": 20 },
-        { "nome": "Pane", "grammi": 40 }
+        {
+          "nome": "Pasta",
+          "grammi": 120
+        },
+        {
+          "nome": "Legumi lessati (ceci, lenticchie, fagioli)",
+          "grammi": 230,
+          "note": "una confezione intera"
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 20
+        },
+        {
+          "nome": "Pane",
+          "grammi": 40
+        }
       ],
       "varianti": [
         {
@@ -2152,20 +2510,78 @@
           "cho": 129,
           "proteine": 48,
           "alimenti": [
-            { "nome": "Pasta", "grammi": 160 },
-            { "nome": "Fiocchi di latte", "grammi": 210 },
-            { "nome": "Verdure", "grammi": 200 },
-            { "nome": "Olio EVO", "grammi": 20 }
+            {
+              "nome": "Pasta",
+              "grammi": 160
+            },
+            {
+              "nome": "Fiocchi di latte",
+              "grammi": 210
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 20
+            }
           ],
           "note": "I fiocchi di latte hanno ottime proteine ma zero carboidrati: ogni volta che sostituiscono i legumi, alzare la pasta di 40 g e togliere il pane."
+        },
+        {
+          "id": "P1-passata",
+          "nome": "Con 200 g di passata di pomodoro",
+          "kcal": 1090,
+          "cho": 166,
+          "proteine": 41,
+          "alimenti": [
+            {
+              "nome": "Pasta",
+              "grammi": 120
+            },
+            {
+              "nome": "Legumi lessati (ceci, lenticchie, fagioli)",
+              "grammi": 230,
+              "note": "una confezione intera"
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 20
+            },
+            {
+              "nome": "Pane",
+              "grammi": 40
+            },
+            {
+              "nome": "Passata di pomodoro",
+              "grammi": 200
+            }
+          ],
+          "note": "Passata 200 g: 60 kcal e 12 g di CHO in piu' rispetto a P1."
         }
       ],
       "ridotto": {
-        "id": "P1rid", "kcal": 790, "cho": 104, "proteine": 30, "modifiche": "pasta 80 g, niente pane",
-        "modificheGrammi": [{ "nome": "Pasta", "grammi": 80 }],
-        "rimozioni": ["Pane"]
+        "id": "P1rid",
+        "kcal": 780,
+        "cho": 104,
+        "proteine": 30,
+        "modifiche": "pasta 80 g, niente pane",
+        "modificheGrammi": [
+          {
+            "nome": "Pasta",
+            "grammi": 80
+          }
+        ],
+        "rimozioni": [
+          "Pane"
+        ]
       },
-      "note": "Indice glicemico contenuto e ottimo profilo aminoacidico. La passata di pomodoro si puo' aggiungere liberamente (200 g = 60 kcal, 12 g CHO) e aiuta l'assorbimento del ferro."
+      "note": "Indice glicemico contenuto e ottimo profilo aminoacidico. Con 200 g di passata di pomodoro (aiuta l'assorbimento del ferro) scegli P1-passata: 12 g di CHO in piu'."
     },
     {
       "id": "P2",
@@ -2241,7 +2657,6 @@
           "nome": "Primo sale o mozzarella",
           "grammi": 100,
           "sostituibileCon": [
-            "Ricotta vaccina 180 g",
             "Feta 80 g"
           ]
         },
@@ -2258,6 +2673,42 @@
       "tags": [
         "veloce",
         "formaggio"
+      ],
+      "varianti": [
+        {
+          "id": "P4-ricotta",
+          "nome": "Con ricotta vaccina al posto del formaggio fresco",
+          "kcal": 1040,
+          "cho": 131,
+          "proteine": 44,
+          "alimenti": [
+            {
+              "nome": "Pasta",
+              "grammi": 120
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 10
+            },
+            {
+              "nome": "Parmigiano",
+              "grammi": 15
+            },
+            {
+              "nome": "Ricotta vaccina",
+              "grammi": 180
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 60
+            }
+          ],
+          "note": "La ricotta ha circa 3,5 g di CHO per 100 g: su 180 g sono 6 g, contro 1 g della mozzarella."
+        }
       ]
     },
     {
@@ -2696,9 +3147,61 @@
           "grammi": 150
         }
       ],
-      "note": "Con le sottilette le proteine si dimezzano: meglio formaggi stagionati a fette. Nei giorni ROSSO aggiungi 1 frutto o 40 g di pane.",
+      "note": "Con le sottilette le proteine si dimezzano: meglio formaggi stagionati a fette. Nei giorni ROSSO usa P14+ (1 frutto in piu') o P14+pane (40 g di pane in piu').",
       "tags": [
         "ufficio"
+      ],
+      "maggiorato": {
+        "id": "P14+",
+        "kcal": 1100,
+        "cho": 149,
+        "proteine": 40,
+        "modifiche": "1 frutto in piu' (150 g)",
+        "modificheGrammi": [],
+        "aggiunte": [
+          {
+            "nome": "Frutto",
+            "grammi": 150
+          }
+        ]
+      },
+      "varianti": [
+        {
+          "id": "P14+pane",
+          "nome": "Con 40 g di pane in piu' (giorni ROSSO)",
+          "kcal": 1140,
+          "cho": 153,
+          "proteine": 42,
+          "alimenti": [
+            {
+              "nome": "Piadina classica",
+              "grammi": 220,
+              "note": "2 piadine"
+            },
+            {
+              "nome": "Formaggio a fette (Emmental, Edamer, Fontal)",
+              "grammi": 50
+            },
+            {
+              "nome": "Spinaci",
+              "grammi": 200,
+              "note": "saltati in padella"
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 5
+            },
+            {
+              "nome": "Frutto",
+              "grammi": 150
+            },
+            {
+              "nome": "Pane",
+              "grammi": 40
+            }
+          ],
+          "note": "Alternativa a P14+ nei giorni ROSSO: 22 g di CHO in piu' invece dei 18 del frutto."
+        }
       ]
     },
     {
@@ -2811,7 +3314,20 @@
           "grammi": 100
         }
       ],
-      "note": "Come P3 ha meno CHO delle opzioni a base di pasta: nei giorni ROSSO porta il pane a 130 g. Valori del burger variabili tra marche: cerca almeno 15 g di proteine per 100 g."
+      "note": "Come P3 ha meno CHO delle opzioni a base di pasta: nei giorni ROSSO usa P17+ (pane 130 g). Valori del burger variabili tra marche: cerca almeno 15 g di proteine per 100 g.",
+      "maggiorato": {
+        "id": "P17+",
+        "kcal": 1100,
+        "cho": 146,
+        "proteine": 49,
+        "modifiche": "pane 130 g",
+        "modificheGrammi": [
+          {
+            "nome": "Pane",
+            "grammi": 130
+          }
+        ]
+      }
     }
   ],
 
@@ -2823,15 +3339,44 @@
       "cho": 89,
       "proteine": 50,
       "alimenti": [
-        { "nome": "Pesce bianco (merluzzo, orata, branzino)", "grammi": 200, "note": "a crudo" },
-        { "nome": "Patate", "grammi": 300 },
-        { "nome": "Verdure", "grammi": 200 },
-        { "nome": "Olio EVO", "grammi": 15 },
-        { "nome": "Pane", "grammi": 60 }
+        {
+          "nome": "Pesce bianco (merluzzo, orata, branzino)",
+          "grammi": 200,
+          "note": "a crudo"
+        },
+        {
+          "nome": "Patate",
+          "grammi": 300
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 15
+        },
+        {
+          "nome": "Pane",
+          "grammi": 60
+        }
       ],
       "ridotto": {
-        "id": "C1rid", "kcal": 640, "cho": 64, "proteine": 46, "modifiche": "patate 200 g, pane 40 g",
-        "modificheGrammi": [{ "nome": "Patate", "grammi": 200 }, { "nome": "Pane", "grammi": 40 }]
+        "id": "C1rid",
+        "kcal": 680,
+        "cho": 64,
+        "proteine": 46,
+        "modifiche": "patate 200 g, pane 40 g",
+        "modificheGrammi": [
+          {
+            "nome": "Patate",
+            "grammi": 200
+          },
+          {
+            "nome": "Pane",
+            "grammi": 40
+          }
+        ]
       }
     },
     {
@@ -2842,15 +3387,44 @@
       "proteine": 47,
       "contaComeOmega3": true,
       "alimenti": [
-        { "nome": "Salmone, sgombro, sardine o alici", "grammi": 180, "note": "a crudo o al naturale; 130-140 g se sott'olio sgocciolato" },
-        { "nome": "Patate", "grammi": 250 },
-        { "nome": "Verdure", "grammi": 200 },
-        { "nome": "Olio EVO", "grammi": 10 },
-        { "nome": "Pane", "grammi": 50 }
+        {
+          "nome": "Salmone, sgombro, sardine o alici",
+          "grammi": 180,
+          "note": "a crudo o al naturale; 130-140 g se sott'olio sgocciolato"
+        },
+        {
+          "nome": "Patate",
+          "grammi": 250
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 10
+        },
+        {
+          "nome": "Pane",
+          "grammi": 50
+        }
       ],
       "ridotto": {
-        "id": "C2rid", "kcal": 620, "cho": 50, "proteine": 43, "modifiche": "patate 170 g, pane 30 g",
-        "modificheGrammi": [{ "nome": "Patate", "grammi": 170 }, { "nome": "Pane", "grammi": 30 }]
+        "id": "C2rid",
+        "kcal": 670,
+        "cho": 50,
+        "proteine": 43,
+        "modifiche": "patate 170 g, pane 30 g",
+        "modificheGrammi": [
+          {
+            "nome": "Patate",
+            "grammi": 170
+          },
+          {
+            "nome": "Pane",
+            "grammi": 30
+          }
+        ]
       },
       "note": "Omega-3 per il recupero. Preferire il vasetto in vetro alla latta, filetti interi e non pezzi."
     },
@@ -2880,16 +3454,101 @@
       "kcal": 820,
       "cho": 85,
       "proteine": 39,
-      "soloTipiGiornata": ["VERDE", "GRIGIO"],
-      "incompatibileCon": ["C2"],
-      "alimenti": [
-        { "nome": "Mozzarella o primo sale", "grammi": 130, "sostituibileCon": ["Ricotta vaccina 250 g", "Ricotta di pecora 180-200 g"] },
-        { "nome": "Patate", "grammi": 280 },
-        { "nome": "Verdure", "grammi": 200 },
-        { "nome": "Olio EVO", "grammi": 8, "note": "meno del solito: il grasso lo porta gia' il formaggio" },
-        { "nome": "Pane", "grammi": 70 }
+      "soloTipiGiornata": [
+        "VERDE",
+        "GRIGIO"
       ],
-      "note": "Il pasto grasso sposta la curva glicemica in avanti di 3-5 ore. La mozzarella la accentua piu' della ricotta: le prime volte guardare il Libre a 4-5 ore da cena."
+      "incompatibileCon": [
+        "C2"
+      ],
+      "alimenti": [
+        {
+          "nome": "Mozzarella o primo sale",
+          "grammi": 130
+        },
+        {
+          "nome": "Patate",
+          "grammi": 280
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 8,
+          "note": "meno del solito: il grasso lo porta gia' il formaggio"
+        },
+        {
+          "nome": "Pane",
+          "grammi": 70
+        }
+      ],
+      "note": "Il pasto grasso sposta la curva glicemica in avanti di 3-5 ore. La mozzarella la accentua piu' della ricotta: le prime volte guardare il Libre a 4-5 ore da cena.",
+      "varianti": [
+        {
+          "id": "C4-ricotta",
+          "nome": "Con ricotta vaccina",
+          "kcal": 860,
+          "cho": 93,
+          "proteine": 37,
+          "alimenti": [
+            {
+              "nome": "Ricotta vaccina",
+              "grammi": 250
+            },
+            {
+              "nome": "Patate",
+              "grammi": 280
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 8,
+              "note": "meno del solito: il grasso lo porta gia' il formaggio"
+            },
+            {
+              "nome": "Pane",
+              "grammi": 70
+            }
+          ],
+          "note": "8 g di CHO in piu' di C4: la ricotta ha circa 3,5 g di CHO per 100 g, la mozzarella quasi zero."
+        },
+        {
+          "id": "C4-pecora",
+          "nome": "Con ricotta di pecora",
+          "kcal": 790,
+          "cho": 92,
+          "proteine": 33,
+          "alimenti": [
+            {
+              "nome": "Ricotta di pecora",
+              "grammi": 190
+            },
+            {
+              "nome": "Patate",
+              "grammi": 280
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 8,
+              "note": "meno del solito: il grasso lo porta gia' il formaggio"
+            },
+            {
+              "nome": "Pane",
+              "grammi": 70
+            }
+          ],
+          "note": "7 g di CHO in piu' di C4."
+        }
+      ]
     },
     {
       "id": "C5",
@@ -2922,12 +3581,41 @@
           "grammi": 80
         }
       ],
-      "note": "Con la zuppa pronta in lattina (500 g) togliere l'olio, che e' gia' dentro. Abbina sempre pomodoro o un filo di limone: la vitamina C sblocca il ferro dei legumi.",
+      "note": "Con la zuppa di ceci Pam in lattina scegli C5-zuppa (niente olio, e' gia' dentro). Abbina sempre pomodoro o un filo di limone: la vitamina C sblocca il ferro dei legumi.",
       "tags": [
         "legumi",
         "caldo",
         "veloce",
         "fibraAlta"
+      ],
+      "varianti": [
+        {
+          "id": "C5-zuppa",
+          "nome": "Con zuppa di ceci Pam",
+          "kcal": 870,
+          "cho": 85,
+          "proteine": 38,
+          "alimenti": [
+            {
+              "nome": "Zuppa di ceci Pam",
+              "grammi": 500,
+              "note": "una lattina intera: contiene gia' l'olio, non aggiungerne"
+            },
+            {
+              "nome": "Parmigiano",
+              "grammi": 20
+            },
+            {
+              "nome": "Verdure nella zuppa",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 80
+            }
+          ],
+          "note": "Zuppa per 100 g: 102 kcal, 7,4 g CHO, 4,1 g proteine. Rispetto ai 300 g di legumi lessati: 17 g di CHO in meno. Valori validi solo per la zuppa di ceci Pam: con un'altra zuppa pronta servono i valori della sua etichetta."
+        }
       ]
     },
     {
@@ -3490,7 +4178,7 @@
 
   "merende": [
     { "id": "M1", "kcal": 350, "cho": 62, "proteine": 22, "composizione": "Pane 60 g + miele 30 g + yogurt greco 170 g", "tags": [] },
-    { "id": "M2", "kcal": 360, "cho": 62, "proteine": 21, "composizione": "Yogurt greco 170 g + banana 150 g + 4 gallette di mais o 5 fette biscottate integrali", "tags": ["ufficio"] },
+    { "id": "M2", "kcal": 360, "cho": 62, "proteine": 21, "composizione": "Yogurt greco 170 g + banana 150 g + 4 gallette di mais o 4 fette biscottate integrali", "tags": ["ufficio"]},
     { "id": "M3", "kcal": 370, "cho": 56, "proteine": 14, "composizione": "Pane 70 g + ricotta 80 g + 1 mela o pera 130 g", "tags": [] },
     { "id": "M4", "kcal": 375, "cho": 54, "proteine": 7, "composizione": "Banana 150 g + mela 180 g + mandorle 25 g", "tags": ["ufficio", "senzaYogurt", "senzaCucchiaio", "pocheProteine"] },
     { "id": "M5", "kcal": 350, "cho": 58, "proteine": 25, "composizione": "Pane 80 g + bresaola o salmone affumicato 60 g + pomodorini + 1 frutto", "tags": ["salata", "senzaYogurt"] },
@@ -3657,7 +4345,47 @@
           "grammi": 60
         }
       ],
-      "note": "Sgarro: al posto del pranzo o della cena, non in aggiunta. Il riso del sushi e' condito con zucchero e aceto: curva rapida. Ogni 2 pezzi in piu' circa +90 kcal e +13 g CHO; i pezzi fritti (tempura, crunch) circa il doppio dei grassi. Il salmone porta omega-3.",
+      "note": "Sgarro: al posto del pranzo o della cena, non in aggiunta. Il riso del sushi e' condito con zucchero e aceto: curva rapida. Con 2 uramaki in piu' scegli S4+; i pezzi fritti (tempura, crunch) circa il doppio dei grassi. Il salmone porta omega-3.",
+      "tags": [
+        "sgarro",
+        "pesce"
+      ]
+    },
+    {
+      "id": "S4+",
+      "base": "S4",
+      "nome": "Sushi + 2 pezzi",
+      "momento": [
+        "pranzo",
+        "cena"
+      ],
+      "kcal": 1100,
+      "cho": 125,
+      "proteine": 63,
+      "alimenti": [
+        {
+          "nome": "Nigiri",
+          "pezzi": 8
+        },
+        {
+          "nome": "Uramaki",
+          "pezzi": 10
+        },
+        {
+          "nome": "Sashimi di salmone",
+          "grammi": 90,
+          "note": "6 fette"
+        },
+        {
+          "nome": "Zuppa di miso",
+          "grammi": 200
+        },
+        {
+          "nome": "Edamame (sgusciati)",
+          "grammi": 60
+        }
+      ],
+      "note": "Come S4 con 2 uramaki in piu': 12 g di CHO e circa 90 kcal in piu'.",
       "tags": [
         "sgarro",
         "pesce"
@@ -3980,7 +4708,7 @@
           "merenda": "Mrid",
           "spuntinoSerale": false,
           "gelCho": 0,
-          "kcal": 2630,
+          "kcal": 2670,
           "cho": 343,
           "proteine": 129,
           "note": "Riposo di ricarica: domenica c'e' il frazionato. Colazione STD e pranzo pieno, si tagliano solo merenda e cena."
@@ -4107,7 +4835,7 @@
           "merenda": "Mrid",
           "spuntinoSerale": false,
           "gelCho": 0,
-          "kcal": 2620,
+          "kcal": 2660,
           "cho": 346,
           "proteine": 129,
           "note": "Riposo di ricarica: domenica gara 10K dentro il frazionato. Colazione STD e pranzo pieno, si tagliano solo merenda e cena. Niente crucifere."

@@ -79,6 +79,8 @@ type Versione = {
   proteine?: number
   modificheGrammi: { nome: string; grammi: number }[]
   rimozioni?: string[]
+  /** Alimenti in piu' rispetto al pasto base (es. P14+: un frutto). */
+  aggiunte?: Alimento[]
   nota?: string
 }
 
@@ -141,12 +143,14 @@ function cercaConVersioni(elenco: ConVersioni[], id: string): PastoRisolto | nul
           versione: etichetta,
           base: pasto.id,
           note: pasto.note,
+          // Versioni e varianti valgono negli stessi tipi di giornata del pasto base (es. C4).
+          soloTipiGiornata: pasto.soloTipiGiornata,
         }
       }
     }
     const variante = pasto.varianti?.find((v) => v.id === id)
     if (variante) {
-      return { ...variante, base: pasto.id }
+      return { soloTipiGiornata: pasto.soloTipiGiornata, ...variante, base: pasto.id }
     }
   }
   return null

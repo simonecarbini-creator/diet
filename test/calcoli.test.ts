@@ -55,14 +55,15 @@ describe('valori dei pasti: quelli mostrati sono quelli di dati.json', () => {
     ['colazione', 'B1+', 125, 822],
     ['colazione', 'B1rid', 71, 562],
     ['pranzo', 'P1', 154, 1030],
-    ['pranzo', 'P1rid', 104, 790],
+    ['pranzo', 'P1rid', 104, 780],
     // P3+ corretto il 2026-10-10: +100 g di patate = +16 g CHO su P3 (108), non +25.
     ['pranzo', 'P3+', 124, 1110],
     ['pranzo', 'P2rid', 84, 730],
     ['pranzo', 'P3rid', 70, 850],
     ['pranzo', 'P8-zuppa', 167, 1130],
     ['pranzo', 'P8-fiocchi', 150, 1090],
-    ['cena', 'C1rid', 64, 640],
+    ['cena', 'C1rid', 64, 680],
+    ['cena', 'C2rid', 50, 670],
     ['cena', 'C3', 79, 770],
     ['cena', 'C3+', 99, 870],
     ['merenda', 'M2', 62, 360],
@@ -106,13 +107,13 @@ describe('totali della giornata', () => {
     expect(totali.kcal).toBe(3285)
   })
 
-  // Mrid corretta a 155 kcal (era 160): la somma dei pasti scende a 2620.
-  it('sabato 10 ottobre (GRIGIO): niente pre-corsa, 346 g CHO e 2620 kcal', () => {
+  // Mrid 155 kcal (era 160) e C1rid 680 kcal (era 640): 2625 - 5 + 40 = 2660.
+  it('sabato 10 ottobre (GRIGIO): niente pre-corsa, 346 g CHO e 2660 kcal', () => {
     const voci = vociDelGiorno(giorno('2026-10-10'))
     expect(voci.some((v) => v.categoria === 'preCorsa')).toBe(false)
     const totali = totaliPasti(voci)
     expect(totali.cho).toBe(346)
-    expect(totali.kcal).toBe(2620)
+    expect(totali.kcal).toBe(2660)
   })
 
   it('una merenda scelta entra nel totale', () => {
@@ -323,6 +324,46 @@ describe('correzioni del 10 ottobre', () => {
   it('P8-zuppa senza olio aggiunto e P8-fiocchi senza la nota della zuppa', () => {
     expect(trovaPasto('pranzo', 'P8-zuppa')?.alimenti.map((a) => a.nome)).not.toContain('Olio EVO')
     expect(trovaPasto('pranzo', 'P8-fiocchi')?.alimenti.some((a) => a.note?.includes('zuppa di ceci pronta'))).toBe(false)
+  })
+})
+
+describe('versioni calcolate il 10 ottobre (prima solo nel testo)', () => {
+  it.each([
+    ['pranzo', 'P14+', 1100, 149, 40],
+    ['pranzo', 'P14+pane', 1140, 153, 42],
+    ['pranzo', 'P17+', 1100, 146, 49],
+    ['pranzo', 'P1-passata', 1090, 166, 41],
+    ['pranzo', 'P4-ricotta', 1040, 131, 44],
+    ['cena', 'C4-ricotta', 860, 93, 37],
+    ['cena', 'C4-pecora', 790, 92, 33],
+    ['cena', 'C5-zuppa', 870, 85, 38],
+    ['cena', 'S4+', 1100, 125, 63],
+    ['colazione', 'COL-SG-crema', 370, 43, 9],
+    ['colazione', 'STD-latte', 780, 98, 39],
+    ['colazione', 'STD-soia', 740, 84, 39],
+    ['colazione', 'MAGG-latte', 920, 129, 41],
+    ['colazione', 'MAGG-soia', 880, 115, 41],
+    ['colazione', 'RID-latte', 670, 70, 35],
+    ['colazione', 'RID-soia', 630, 56, 35],
+  ] as const)('%s %s: %i kcal, %i g CHO, %i g pro', (categoria, id, kcal, cho, proteine) => {
+    expect(idAlternative(categoria)).toContain(id)
+    expect(trovaPasto(categoria, id)).toMatchObject({ kcal, cho, proteine })
+  })
+  it('P14+ ha il frutto in piu\' tra gli alimenti, P17+ il pane a 130 g', () => {
+    expect(trovaPasto('pranzo', 'P14+')?.alimenti.filter((a) => a.nome === 'Frutto')).toHaveLength(2)
+    expect(trovaPasto('pranzo', 'P17+')?.alimenti.find((a) => a.nome === 'Pane')).toMatchObject({ grammi: 130, grammiBase: 100 })
+  })
+  it('le varianti di C4 e P4 valgono solo nei giorni VERDE e GRIGIO, come il pasto base', () => {
+    expect(trovaPasto('cena', 'C4-ricotta')?.soloTipiGiornata).toEqual(['VERDE', 'GRIGIO'])
+    expect(trovaPasto('pranzo', 'P4-ricotta')?.soloTipiGiornata).toEqual(['VERDE', 'GRIGIO'])
+  })
+  it('le versioni di STD e RID restano nella loro famiglia di colazioni', () => {
+    expect(trovaPasto('colazione', 'STD-latte')?.tipoColazione).toBe('STD')
+    expect(trovaPasto('colazione', 'RID-soia')?.tipoColazione).toBe('RID')
+  })
+  it('nessuna sostituzione "fonte proteica" senza quantita\' rimasta nelle colazioni', () => {
+    const testi = dati.blocchi.colazioni.flatMap((c) => c.alimenti.flatMap((a) => ('sostituibileCon' in a ? (a.sostituibileCon ?? []) : [])))
+    expect(testi.some((t) => t.includes('fonte proteica'))).toBe(false)
   })
 })
 

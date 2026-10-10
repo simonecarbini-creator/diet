@@ -19,7 +19,12 @@ export function verificaDati(dati: Dati, idExtra: string[] = []): string[] {
     ]).concat(idExtra),
   )
   const idCene = new Set([
-    ...dati.cene.flatMap((c) => [c.id, ...(c.ridotto ? [c.ridotto.id] : []), ...('maggiorato' in c && c.maggiorato ? [c.maggiorato.id] : [])]),
+    ...dati.cene.flatMap((c) => [
+      c.id,
+      ...(c.ridotto ? [c.ridotto.id] : []),
+      ...('maggiorato' in c && c.maggiorato ? [c.maggiorato.id] : []),
+      ...('varianti' in c && c.varianti ? c.varianti.map((v) => v.id) : []),
+    ]),
     ...idExtra,
   ])
   const idMerende = new Set([...dati.merende.map((m) => m.id), dati.merendaRidotta.id, ...dati.merendaRidotta.alternative.map((m) => m.id), ...idExtra])
