@@ -24,8 +24,10 @@
   },
 
   "target": {
-    "proteineGrammiDie": 130,
-    "proteineNota": "fisse tutti i giorni, riposo incluso",
+    "proteineGrammiDie": 135,
+    "proteineGrammiPerKgMin": 1.6,
+    "proteineGrammiPerKgMax": 2.0,
+    "proteineNota": "variano per tipo di giornata (vedi tipiGiornata): 1,6-1,8 g/kg nei giorni VERDE e GRIGIO, 1,8-2,0 g/kg nei ROSSO. Oltre 2 g/kg non serve. Conta anche la distribuzione: almeno 25 g entro un'ora dalla corsa, 35-50 g a pranzo e cena, 15-25 g la sera dopo qualita' e lungo.",
     "grassiGrammiDieMin": 80,
     "grassiGrammiDieMax": 90,
     "carboidratiGrammiPerKgMin": 6,
@@ -43,21 +45,27 @@
       "colore": "#2e8b57",
       "kcalTarget": 3100,
       "choTargetMin": 400,
-      "choTargetMax": 425
+      "choTargetMax": 425,
+      "proteineTargetMin": 120,
+      "proteineTargetMax": 135
     },
     "ROSSO": {
       "etichetta": "Qualita' o lungo",
       "colore": "#d13b2e",
       "kcalTarget": 3600,
       "choTargetMin": 450,
-      "choTargetMax": 495
+      "choTargetMax": 495,
+      "proteineTargetMin": 135,
+      "proteineTargetMax": 150
     },
     "GRIGIO": {
       "etichetta": "Riposo",
       "colore": "#9aa7b4",
       "kcalTarget": 2300,
       "choTargetMin": 250,
-      "choTargetMax": 270
+      "choTargetMax": 270,
+      "proteineTargetMin": 120,
+      "proteineTargetMax": 135
     }
   },
 
@@ -192,7 +200,7 @@
       "nota": "Una giornata libera conta come rispettata se tutti i pasti liberi hanno kcal, CHO e proteine e il totale del giorno resta entro questa percentuale da quello dei pasti del piano. Decisione dell'utente del 2026-10-02."
     },
 
-    "regolaSabato": "Si tagliano SOLO i cereali. Proteine (130 g) e grassi (90 g) restano identici agli altri giorni. Nessun pre-corsa, nessuno spuntino serale.",
+    "regolaSabato": "Si tagliano SOLO i cereali. Proteine (120-135 g) e grassi (90 g) NON si tagliano: la riparazione muscolare avviene proprio nel giorno di riposo. Nessun pre-corsa, nessuno spuntino serale.",
 
     "assegnazionePasti": {
       "_nota": "Proposta automatica di pranzi e cene per una nuova settimana; tutto resta modificabile a mano prima di salvare.",
@@ -3876,7 +3884,8 @@
           "spuntinoSerale": false,
           "gelCho": 0,
           "kcal": 3110,
-          "cho": 426
+          "cho": 426,
+          "proteine": 142
         },
         {
           "data": "2026-09-29",
@@ -3891,7 +3900,8 @@
           "spuntinoSerale": false,
           "gelCho": 30,
           "kcal": 3180,
-          "cho": 422
+          "cho": 422,
+          "proteine": 146
         },
         {
           "data": "2026-09-30",
@@ -3907,6 +3917,7 @@
           "gelCho": 90,
           "kcal": 3700,
           "cho": 494,
+          "proteine": 174,
           "note": "La qualita' piu' lunga del blocco: oltre un'ora sopra il ritmo medio. Si comporta in modo ibrido sulla glicemia (l'intensita' la fa salire, la durata la fa scendere): guardare il Libre dal quinto 1000 in poi."
         },
         {
@@ -3922,7 +3933,8 @@
           "spuntinoSerale": false,
           "gelCho": 0,
           "kcal": 3240,
-          "cho": 403
+          "cho": 403,
+          "proteine": 168
         },
         {
           "data": "2026-10-02",
@@ -3937,7 +3949,8 @@
           "spuntinoSerale": true,
           "gelCho": 30,
           "kcal": 3500,
-          "cho": 439
+          "cho": 439,
+          "proteine": 160
         },
         {
           "data": "2026-10-03",
@@ -3954,6 +3967,7 @@
           "gelCho": 0,
           "kcal": 2635,
           "cho": 343,
+          "proteine": 134,
           "note": "Riposo di ricarica: domenica c'e' il frazionato. Colazione STD e pranzo pieno, si tagliano solo merenda e cena."
         },
         {
@@ -3971,6 +3985,7 @@
           "gelCho": 150,
           "kcal": 3700,
           "cho": 494,
+          "proteine": 171,
           "note": "Prova di gara: stesso protocollo gel di Firenze, glicemie annotate prima, durante e dopo."
         }
       ]
@@ -3994,7 +4009,8 @@
           "spuntinoSerale": false,
           "gelCho": 0,
           "kcal": 3110,
-          "cho": 426
+          "cho": 426,
+          "proteine": 142
         },
         {
           "data": "2026-10-06",
@@ -4010,6 +4026,7 @@
           "gelCho": 30,
           "kcal": 3240,
           "cho": 424,
+          "proteine": 146,
           "note": "Progressiva sotto i 18 km: resta VERDE, ma con spuntino intero e pranzo P1 perche' domani ci sono i 4x2000. Niente crucifere a cena."
         },
         {
@@ -4026,6 +4043,7 @@
           "gelCho": 30,
           "kcal": 3560,
           "cho": 463,
+          "proteine": 172,
           "note": "Circa 32 minuti sopra il ritmo medio: colazione STD, non MAGG. Recupero da fermo: la glicemia tende a salire tra una prova e l'altra."
         },
         {
@@ -4041,7 +4059,8 @@
           "spuntinoSerale": false,
           "gelCho": 0,
           "kcal": 3240,
-          "cho": 418
+          "cho": 418,
+          "proteine": 156
         },
         {
           "data": "2026-10-09",
@@ -4057,6 +4076,7 @@
           "gelCho": 0,
           "kcal": 3620,
           "cho": 473,
+          "proteine": 164,
           "note": "Qualita' breve: cena C3 con 40 g di pane in piu' (gia' contati)."
         },
         {
@@ -4074,6 +4094,7 @@
           "gelCho": 0,
           "kcal": 2625,
           "cho": 346,
+          "proteine": 134,
           "note": "Riposo di ricarica: domenica gara 10K dentro il frazionato. Colazione STD e pranzo pieno, si tagliano solo merenda e cena. Niente crucifere."
         },
         {
@@ -4091,6 +4112,7 @@
           "gelCho": 160,
           "kcal": 3680,
           "cho": 480,
+          "proteine": 171,
           "note": "Il lungo piu' lungo finora, con gara dentro: protocollo gel di Firenze, glicemie annotate prima, durante e dopo. Spuntino serale obbligatorio. Orari dei pasti da adattare all'ora di partenza della gara."
         }
       ]

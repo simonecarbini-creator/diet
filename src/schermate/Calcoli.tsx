@@ -172,6 +172,22 @@ export function Calcoli() {
           </p>
         </Sezione>
 
+        <Sezione titolo="Proteine">
+          <ul className="space-y-1">
+            {Object.entries(dati.tipiGiornata).map(([tipo, info]) => (
+              <li key={tipo}>
+                <Tipo tipo={tipo} /> {info.proteineTargetMin}–{info.proteineTargetMax} g al giorno
+              </li>
+            ))}
+          </ul>
+          <p>
+            Le proteine del giorno sono quelle del piano (calendario); per le settimane create nell'app, la somma dei pasti
+            con la merenda media ({media.proteine} g) se non è scelta. Nella Settimana: ✓ dentro il target, ▲ sopra, ▼ sotto.
+          </p>
+          <Nota>{dati.target.proteineNota.charAt(0).toUpperCase() + dati.target.proteineNota.slice(1)}</Nota>
+          <Nota>Sabato: {regole.regolaSabato}</Nota>
+        </Sezione>
+
         <Sezione titolo="Giornata libera">
           <p>
             Il riepilogo del giorno è pollice verso, a meno che tutti i pasti liberi abbiano kcal, CHO e proteine e il

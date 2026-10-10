@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { dati, idAlternative, isTipoGiornata, type Giorno, type Settimana } from '../dati'
 import { formatDataBreve, formatGiornoMese, formatNumero } from '../formato'
-import { aggiungiGiorni, giornoDellaSettimana, totaleDelPiano } from '../giornata'
+import { aggiungiGiorni, confrontoProteine, giornoDellaSettimana, totaleDelPiano } from '../giornata'
+import { NumeroProteine } from '../componenti/NumeriPasto'
 import { effettiLungoDomenicale, proponiSettimana, type GiornoInserito, type GiornoProposto, type Proposta } from '../motore'
 import { link } from '../navigazione'
 import { salvaSettimana, settimane, settimaneSovrapposte } from '../piano'
@@ -213,6 +214,7 @@ function GiornoDellaProposta({
         <div className="shrink-0 text-right text-cho">
           <div className="text-2xl font-bold leading-none tabular-nums">{formatNumero(totale.cho)}</div>
           <div className="text-xs font-semibold">g CHO</div>
+          <NumeroProteine proteine={totale.proteine} confronto={confrontoProteine(totale.proteine, giorno.tipo)} />
           <div className="text-xs text-testo opacity-70">{formatNumero(totale.kcal)} kcal</div>
         </div>
       </div>

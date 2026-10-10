@@ -3,6 +3,7 @@ import { valutaCondizione } from './condizioni'
 import { settimane } from './piano'
 import {
   dati,
+  isTipoGiornata,
   preCorsa,
   trovaDolce,
   trovaPasto,
@@ -245,16 +246,30 @@ export function merendaMedia(): { kcal: number; cho: number; proteine: number } 
  * del piano, più la merenda media se la merenda non è assegnata.
  */
 export function proteineDelPiano(giorno: Giorno): number {
+  // Il calendario le riporta (come kcal e CHO); le settimane create prima di questo campo no.
+  if (typeof giorno.proteine === 'number') return giorno.proteine
   const voci = vociDelGiorno(giorno)
   const merendaDaStimare = voci.some((v) => v.categoria === 'merenda' && !v.pasto)
   return totaliPasti(voci).proteine + (merendaDaStimare ? merendaMedia().proteine : 0)
 }
 
+export type ConfrontoProteine = { min: number; max: number; scarto: number; esito: 'sotto' | 'dentro' | 'sopra' }
+
+/** Proteine del giorno rispetto al target del tipo di giornata (dati.json → tipiGiornata). */
+export function confrontoProteine(proteine: number, tipo: string): ConfrontoProteine | null {
+  const info = isTipoGiornata(tipo) ? dati.tipiGiornata[tipo] : null
+  if (!info) return null
+  const { proteineTargetMin: min, proteineTargetMax: max } = info
+  if (proteine < min) return { min, max, scarto: proteine - min, esito: 'sotto' }
+  if (proteine > max) return { min, max, scarto: proteine - max, esito: 'sopra' }
+  return { min, max, scarto: 0, esito: 'dentro' }
+}
+
 /** Totale del piano per un giorno creato nell'app: somma dei pasti, più la merenda media se non è assegnata. */
-export function totaleDelPiano(giorno: Omit<Giorno, 'kcal' | 'cho'>): { kcal: number; cho: number } {
-  const totali = totaliPasti(vociDelGiorno({ ...giorno, kcal: 0, cho: 0 }))
-  const stima = giorno.merenda === null ? merendaMedia() : { kcal: 0, cho: 0 }
-  return { kcal: totali.kcal + stima.kcal, cho: totali.cho + stima.cho }
+export function totaleDelPiano(giorno: Omit<Giorno, 'kcal' | 'cho' | 'proteine'>): { kcal: number; cho: number; proteine: number } {
+  const totali = totaliPasti(vociDelGiorno({ ...giorno, kcal: 0, cho: 0, proteine: 0 }))
+  const stima = giorno.merenda === null ? merendaMedia() : { kcal: 0, cho: 0, proteine: 0 }
+  return { kcal: totali.kcal + stima.kcal, cho: totali.cho + stima.cho, proteine: totali.proteine + stima.proteine }
 }
 
 /** "2026-10-05" + 2 → "2026-10-07" */

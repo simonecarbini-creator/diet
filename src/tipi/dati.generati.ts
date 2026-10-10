@@ -553,6 +553,7 @@ export type Giorni = {
     gelCho:           number;
     kcal:             number;
     cho:              number;
+    proteine:         number;
     note?:            string;
     ricarica?:        boolean;
     lungoDomenicale?: boolean;
@@ -605,6 +606,8 @@ export type ProteicheEquivalenti = {
 
 export type Target = {
     proteineGrammiDie:         number;
+    proteineGrammiPerKgMin:    number;
+    proteineGrammiPerKgMax:    number;
     proteineNota:              string;
     grassiGrammiDieMin:        number;
     grassiGrammiDieMax:        number;
@@ -624,11 +627,13 @@ export type TipiGiornata = {
 }
 
 export type Grigio = {
-    etichetta:    string;
-    colore:       string;
-    kcalTarget:   number;
-    choTargetMin: number;
-    choTargetMax: number;
+    etichetta:         string;
+    colore:            string;
+    kcalTarget:        number;
+    choTargetMin:      number;
+    choTargetMax:      number;
+    proteineTargetMin: number;
+    proteineTargetMax: number;
 }
 
 export type Verdure = {

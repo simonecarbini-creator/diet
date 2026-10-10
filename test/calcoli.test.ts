@@ -9,6 +9,7 @@ import {
   giornataEquivalente,
   merendaMedia,
   proteineDelPiano,
+  confrontoProteine,
   targetGiorno,
   totaliPasti,
   totaliSenza,
@@ -335,6 +336,23 @@ describe('spuntino serale', () => {
 })
 
 describe('proteine del piano nella vista settimanale', () => {
+  it('dal calendario quando le riporta: 9 ottobre 164 g', () => {
+    expect(proteineDelPiano(giorno('2026-10-09'))).toBe(164)
+  })
+  it('settimana creata nell\'app senza il campo: somma dei pasti (9 ottobre: 165 g con SER-PB2)', () => {
+    const { proteine: _p, ...senza } = giorno('2026-10-09')
+    expect(proteineDelPiano(senza as ReturnType<typeof giorno>)).toBe(165)
+  })
+  it.each([
+    [142, 'VERDE', 'sopra', 7],
+    [130, 'VERDE', 'dentro', 0],
+    [164, 'ROSSO', 'sopra', 14],
+    [134, 'GRIGIO', 'dentro', 0],
+    [118, 'GRIGIO', 'sotto', -2],
+  ] as const)('%i g in un giorno %s: %s (scarto %i)', (proteine, tipo, esito, scarto) => {
+    expect(confrontoProteine(proteine, tipo)).toMatchObject({ esito, scarto })
+  })
+
   // 5 ottobre: pre-corsa 1 + STD 37 + solo frutto 1 + P2 48 + C4 39 = 126, + merenda media 16 = 142.
   it('5 ottobre (merenda da scegliere): 142 g', () => {
     expect(proteineDelPiano(giorno('2026-10-05'))).toBe(142)

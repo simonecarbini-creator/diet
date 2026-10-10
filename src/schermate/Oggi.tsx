@@ -6,7 +6,7 @@ import { CardPastoLibero } from '../componenti/CardPastoLibero'
 import { Conferma } from '../componenti/Conferma'
 import { etichettePasti } from '../etichette'
 import { formatData, formatNumero } from '../formato'
-import { cercaGiorno, giornataEquivalente, proteineDelPiano, giornoDopo, indicePastoCorrente, totaliPasti, totaliSenza, vociDelGiorno } from '../giornata'
+import { cercaGiorno, confrontoProteine, giornataEquivalente, proteineDelPiano, giornoDopo, indicePastoCorrente, totaliPasti, totaliSenza, vociDelGiorno } from '../giornata'
 import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
 import { settimane } from '../piano'
 import { conteggiVincoli, vincoliSeraPrima, type PastiDelGiorno } from '../vincoli'
@@ -61,6 +61,7 @@ export function Oggi({ data, ora, passato = false }: Props) {
 
   const { giorno } = trovato
   const tipo = isTipoGiornata(giorno.tipo) ? dati.tipiGiornata[giorno.tipo] : null
+  const confronto = confrontoProteine(proteineDelPiano(giorno), giorno.tipo)
   // Solo i pasti spuntati: cresce in tempo reale man mano che si mangia.
   const consumati = totaliPasti(voci.filter((v) => stato.consumati.includes(v.categoria)))
 
@@ -119,6 +120,16 @@ export function Oggi({ data, ora, passato = false }: Props) {
             <span className="opacity-70">{formatNumero(giorno.kcal)} kcal · </span>
             <span className="font-semibold text-pro">{formatNumero(proteineDelPiano(giorno))} g pro</span>
           </div>
+          {confronto && (
+            <div className="mt-0.5 text-xs">
+              <span className="opacity-70">target pro {confronto.min}–{confronto.max} g · </span>
+              <span className={`whitespace-nowrap font-semibold ${confronto.esito === 'dentro' ? 'text-ok' : ''}`}>
+                {confronto.esito === 'dentro'
+                  ? 'nel target'
+                  : `${formatNumero(Math.abs(confronto.scarto))} g ${confronto.esito === 'sopra' ? 'sopra' : 'sotto'}`}
+              </span>
+            </div>
+          )}
         </div>
         <div className="rounded-xl border border-bordo bg-superficie p-3">
           <div className="text-xs font-semibold uppercase opacity-70">Consumati finora</div>
