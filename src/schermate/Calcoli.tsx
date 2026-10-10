@@ -185,8 +185,8 @@ export function Calcoli() {
           </p>
           <p className="mt-2">
             Lo stesso vale per uno sgarro (pizza, sushi, cornetto al bar…) scelto al posto di un pasto: il confronto è con
-            la giornata del piano senza lo sgarro. I dolci per ora sono solo da consultare in «Pasti e alternative» e non
-            entrano nei totali.
+            la giornata del piano senza lo sgarro. Un dolce aggiunto a pranzo o cena si somma ai totali del giorno
+            (CHO, kcal, proteine) e conta allo stesso modo: il giorno è rispettato solo se resta entro la tolleranza.
           </p>
         </Sezione>
 

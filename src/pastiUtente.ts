@@ -38,6 +38,7 @@ const prefissi: Record<CategoriaConId, string> = {
   pranzo: 'P',
   cena: 'C',
   merenda: 'M',
+  spuntinoSerale: 'SER',
 }
 
 /** Primo codice libero: "P1-u1", "P1-u2"… oppure "M-u1" per le categorie senza pasto base. */

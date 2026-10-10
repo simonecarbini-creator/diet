@@ -117,23 +117,34 @@ export type ModificheGrammiElement = {
 }
 
 export type BlocchiSpuntinoSerale = {
-    id:       string;
-    nome:     string;
-    kcal:     number;
-    cho:      number;
-    proteine: number;
-    alimenti: ModificheGrammiElement[];
-    varianti: SpuntinoSeraleVarianti[];
-    note:     string;
+    id:          string;
+    nome:        string;
+    kcal:        number;
+    cho:         number;
+    proteine:    number;
+    alimenti:    ModificheGrammiElement[];
+    alternative: Alternative[];
+    consigli:    string[];
+    note:        string;
 }
 
-export type SpuntinoSeraleVarianti = {
+export type Alternative = {
+    id:       string;
+    base:     string;
     nome:     string;
     kcal:     number;
     cho:      number;
     proteine: number;
-    alimenti: ModificheGrammiElement[];
+    alimenti: AlternativeAlimenti[];
     note:     string;
+    tags:     string[];
+}
+
+export type AlternativeAlimenti = {
+    nome:    string;
+    pezzi?:  number;
+    grammi?: number;
+    note?:   string;
 }
 
 export type TipiColazione = {
@@ -268,7 +279,7 @@ export type Pranzi = {
     cho:                          number;
     proteine:                     number;
     alimenti:                     PranziAlimenti[];
-    varianti?:                    PranziVarianti[];
+    varianti?:                    Varianti[];
     ridotto?:                     Ridotto;
     note:                         string;
     tags?:                        string[];
@@ -307,7 +318,7 @@ export type Ridotto = {
     rimozioni?:      string[];
 }
 
-export type PranziVarianti = {
+export type Varianti = {
     id:       string;
     nome:     string;
     kcal:     number;
@@ -552,17 +563,10 @@ export type Sgarri = {
     kcal:     number;
     cho:      number;
     proteine: number;
-    alimenti: SgarriAlimenti[];
+    alimenti: AlternativeAlimenti[];
     note:     string;
     tags:     string[];
     base?:    string;
-}
-
-export type SgarriAlimenti = {
-    nome:    string;
-    grammi?: number;
-    note?:   string;
-    pezzi?:  number;
 }
 
 export type Sostituzioni = {

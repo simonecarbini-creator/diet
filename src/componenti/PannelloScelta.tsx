@@ -20,6 +20,7 @@ const questo: Record<CategoriaConId, string> = {
   pranzo: 'questo pranzo',
   merenda: 'questa merenda',
   cena: 'questa cena',
+  spuntinoSerale: 'questo spuntino serale',
 }
 
 /** "senzaYogurt" → "senza yogurt" */
@@ -60,7 +61,7 @@ type Props = {
 }
 
 /** "La giornata con questa cena": CHO e kcal del giorno, in parole rispetto al piano. */
-function BoxGiornata({
+export function BoxGiornata({
   titolo,
   totale,
   target,
@@ -460,6 +461,13 @@ export function PannelloScelta({
           </details>
         )}
 
+        {categoria === 'spuntinoSerale' && (
+          <ul className="mt-4 list-disc space-y-1 pl-5 text-sm opacity-70">
+            {dati.blocchi.spuntinoSerale.consigli.map((consiglio) => (
+              <li key={consiglio}>{consiglio}</li>
+            ))}
+          </ul>
+        )}
         {categoria === 'merenda' && (
           <ul className="mt-4 list-disc space-y-1 pl-5 text-sm opacity-70">
             {dati.merendaNote.map((nota) => (

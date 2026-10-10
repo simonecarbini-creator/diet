@@ -17,13 +17,14 @@ const categorie: { id: CategoriaConId; titolo: string }[] = [
   { id: 'pranzo', titolo: 'Pranzi' },
   { id: 'merenda', titolo: 'Merende' },
   { id: 'cena', titolo: 'Cene' },
+  { id: 'spuntinoSerale', titolo: 'Spuntino serale' },
 ]
 
 /** Fuori dal piano: sgarri (al posto di un pasto) e dolci (in aggiunta). Solo da consultare qui. */
 type Scheda = CategoriaConId | 'sgarri' | 'dolci'
 const schedeExtra: { id: Scheda; titolo: string; nota: string }[] = [
   { id: 'sgarri', titolo: 'Sgarri', nota: 'Al posto di un pasto, non in aggiunta: si scelgono da «Cambia» sul pranzo, sulla cena o sulla colazione.' },
-  { id: 'dolci', titolo: 'Dolci', nota: 'Si aggiungono a un pasto, non lo sostituiscono. I loro CHO non entrano nei totali del giorno.' },
+  { id: 'dolci', titolo: 'Dolci', nota: 'Si aggiungono a un pasto, non lo sostituiscono: «+ Aggiungi un dolce» sul pranzo o sulla cena, e i loro CHO si sommano alla giornata.' },
 ]
 
 function pastiExtra(scheda: 'sgarri' | 'dolci'): PastoRisolto[] {

@@ -7,6 +7,7 @@ import { ElencoAlimenti } from './Alimenti'
 import { NumeriPasto } from './NumeriPasto'
 import { etichettePasti } from '../etichette'
 import { PannelloScelta, type ContestoGiornata } from './PannelloScelta'
+import { SceltaDolce } from './SceltaDolce'
 import { ContatoreSettimana, PromemoriaSera } from './Vincoli'
 import { conteggiDelPasto, frazioneLimite, idBase, type ConteggioVincolo } from '../vincoli'
 
@@ -36,6 +37,8 @@ type Props = {
   onAnnota: (testo: string) => void
   /** Per il pannello di scelta: dove arriva la giornata con ogni alternativa. */
   giornata?: ContestoGiornata
+  /** Pranzo e cena: aggiunge (id) o toglie (null) un dolce. */
+  onDolce?: (id: string | null) => void
   /** Giornata libera, pasto ancora da decidere: si conferma (✓) o si toglie (✕). */
   sgarro?: { onConferma: () => void; onElimina: () => void }
 }
@@ -53,7 +56,10 @@ export function CardPasto({
   onConsumato,
   onScegli,
   onLibero,
+  onDolce,
 }: Props) {
+  const [sceltaDolce, setSceltaDolce] = useState(false)
+  const dolce = voce.dolce
   const diario = useDiario()
   const [aperto, setAperto] = useState(false)
   const [pannello, setPannello] = useState(false)
@@ -176,6 +182,30 @@ export function CardPasto({
         </div>
       )}
 
+      {/* Il dolce aggiunto resta sempre in vista, con i suoi CHO e il totale con il pasto. */}
+      {dolce && (
+        <div className="mx-4 mb-3 flex items-center gap-3 rounded-lg bg-sfondo px-3 py-2">
+          <div className="min-w-0 flex-1 text-sm">
+            <div className="font-semibold">+ {dolce.nome}</div>
+            <div className="opacity-70">
+              {formatNumero(dolce.kcal)} kcal
+              {pasto && ` · con il pasto ${formatNumero(pasto.cho + dolce.cho)} g CHO`}
+            </div>
+          </div>
+          <NumeriPasto cho={dolce.cho} proteine={dolce.proteine} />
+          {onDolce && !sgarro && (
+            <button
+              type="button"
+              onClick={() => onDolce(null)}
+              aria-label={`Togli ${dolce.nome}`}
+              className="-mr-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full opacity-50"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      )}
+
       {pasto && (contatori.length > 0 || (settimana && settimana.promemoriaSera.length > 0)) && (
         <div className="space-y-2 px-4 pb-3">
           {contatori.map((c) => (
@@ -263,7 +293,38 @@ export function CardPasto({
               )}
             </div>
           )}
+          {onDolce && (
+            <button
+              type="button"
+              onClick={() => setSceltaDolce(true)}
+              className="w-full rounded-xl border border-dashed border-cho p-3 font-semibold text-cho"
+            >
+              {dolce ? 'Cambia il dolce' : '+ Aggiungi un dolce'}
+            </button>
+          )}
         </div>
+      )}
+
+      {sceltaDolce && onDolce && (
+        <SceltaDolce
+          nomePasto={etichetta.toLowerCase()}
+          giornata={giornata}
+          // La giornata con questo pasto ma senza il suo dolce (senzaQuesto comprende il dolce).
+          giornataSenzaDolce={
+            giornata && pasto
+              ? {
+                  cho: giornata.senzaQuesto.cho - (dolce?.cho ?? 0) + pasto.cho,
+                  kcal: giornata.senzaQuesto.kcal - (dolce?.kcal ?? 0) + pasto.kcal,
+                }
+              : undefined
+          }
+          attuale={dolce?.id}
+          onChiudi={() => setSceltaDolce(false)}
+          onScegli={(id) => {
+            onDolce(id)
+            setSceltaDolce(false)
+          }}
+        />
       )}
 
       {pannello && sceglibile && (

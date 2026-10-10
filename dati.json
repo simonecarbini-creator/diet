@@ -1961,7 +1961,160 @@
         { "nome": "Avena", "grammi": 30 },
         { "nome": "Noci", "grammi": 15 }
       ],
-      "varianti": [{"nome": "Con ricotta", "kcal": 400, "cho": 32, "proteine": 20, "alimenti": [{"nome": "Ricotta vaccina", "grammi": 180}, {"nome": "Avena (fiocchi)", "grammi": 30}, {"nome": "Miele", "grammi": 10}], "note": "Con 180 g di ricotta e' circa 100 kcal piu' ricco della versione con yogurt. Per pareggiarlo: ricotta 120 g."}],
+      "alternative": [
+        {
+          "id": "SER-PB1",
+          "base": "serale",
+          "nome": "Fette biscottate, burro d'arachidi e latte",
+          "kcal": 310,
+          "cho": 29,
+          "proteine": 15,
+          "alimenti": [
+            {
+              "nome": "Fette biscottate integrali",
+              "pezzi": 2
+            },
+            {
+              "nome": "Burro d'arachidi (100% arachidi)",
+              "grammi": 20
+            },
+            {
+              "nome": "Latte parzialmente scremato",
+              "grammi": 250,
+              "note": "ml"
+            }
+          ],
+          "note": "La versione base: carboidrati delle fette, grassi e proteine che rallentano la curva. Il latte si puo' bere freddo o tiepido.",
+          "tags": [
+            "burroArachidi",
+            "veloce"
+          ]
+        },
+        {
+          "id": "SER-PB2",
+          "base": "serale",
+          "nome": "Fette biscottate, burro d'arachidi e latte proteico",
+          "kcal": 320,
+          "cho": 27,
+          "proteine": 24,
+          "alimenti": [
+            {
+              "nome": "Fette biscottate integrali",
+              "pezzi": 2
+            },
+            {
+              "nome": "Burro d'arachidi (100% arachidi)",
+              "grammi": 15
+            },
+            {
+              "nome": "Latte parzialmente scremato",
+              "grammi": 200,
+              "note": "ml"
+            },
+            {
+              "nome": "Proteine in polvere",
+              "grammi": 15,
+              "note": "sciolte nel latte"
+            }
+          ],
+          "note": "La piu' vicina allo spuntino originale per proteine: da preferire dopo il lungo.",
+          "tags": [
+            "burroArachidi",
+            "proteineAlte"
+          ]
+        },
+        {
+          "id": "SER-PB3",
+          "base": "serale",
+          "nome": "Avena nel latte con burro d'arachidi",
+          "kcal": 290,
+          "cho": 30,
+          "proteine": 14,
+          "alimenti": [
+            {
+              "nome": "Avena (fiocchi)",
+              "grammi": 30
+            },
+            {
+              "nome": "Latte parzialmente scremato",
+              "grammi": 200,
+              "note": "ml"
+            },
+            {
+              "nome": "Burro d'arachidi (100% arachidi)",
+              "grammi": 15
+            }
+          ],
+          "note": "Si puo' preparare la sera prima in frigo, oppure scaldare 2 minuti. L'avena e' il carboidrato con la curva piu' dolce: la piu' adatta a coprire la notte.",
+          "tags": [
+            "burroArachidi",
+            "curvaDolce"
+          ]
+        },
+        {
+          "id": "SER-PB4",
+          "base": "serale",
+          "nome": "Pane integrale, burro d'arachidi e mela",
+          "kcal": 280,
+          "cho": 34,
+          "proteine": 9,
+          "alimenti": [
+            {
+              "nome": "Pane integrale",
+              "grammi": 40
+            },
+            {
+              "nome": "Burro d'arachidi (100% arachidi)",
+              "grammi": 20
+            },
+            {
+              "nome": "Mela",
+              "grammi": 120
+            }
+          ],
+          "note": "Senza latte. Poche proteine: va bene, con il piano attuale la quota giornaliera e' gia' coperta.",
+          "tags": [
+            "burroArachidi",
+            "senzaLatte",
+            "pocheProteine"
+          ]
+        },
+        {
+          "id": "SER-SAL",
+          "base": "serale",
+          "nome": "Pane integrale, parmigiano e noci",
+          "kcal": 260,
+          "cho": 17,
+          "proteine": 13,
+          "alimenti": [
+            {
+              "nome": "Pane integrale",
+              "grammi": 40
+            },
+            {
+              "nome": "Parmigiano",
+              "grammi": 25
+            },
+            {
+              "nome": "Noci",
+              "grammi": 10
+            }
+          ],
+          "note": "Alternativa salata, senza latte.",
+          "tags": [
+            "salata",
+            "senzaLatte"
+          ]
+        }
+      ],
+      "consigli": [
+        "Dopo il lungo: SER-PB2 o SER-PB3. SER-PB2 e' l'unica che arriva alle proteine dello spuntino con lo yogurt; SER-PB3 ha l'avena, il carboidrato con la curva piu' dolce (si prepara la sera prima in frigo o si scalda 2 minuti).",
+        "Dopo la qualita' breve va bene qualsiasi alternativa: SER-PB1 e' la piu' semplice.",
+        "Che quelle senza latte abbiano poche proteine non e' un problema: con il piano attuale la quota giornaliera e' gia' coperta (circa 140-150 g).",
+        "SER-SAL ha meno carboidrati (17 g): usala quando la freccia del Libre prima di dormire e' stabile, non quando scende.",
+        "Burro d'arachidi 100% arachidi, senza zuccheri ne' oli aggiunti. Pesalo le prime volte: un cucchiaio pieno e' facilmente 25-30 g invece di 15-20.",
+        "I grassi del burro d'arachidi rallentano l'assorbimento dei carboidrati: copre bene la notte."
+      ],
       "note": "E' l'anti-ipoglicemia notturna dopo qualita' e lungo. Prima di dormire guarda la FRECCIA del Libre, non solo il valore."
     }
   },
@@ -3512,22 +3665,20 @@
     },
     {
       "id": "D2",
-      "nome": "Coppa Malu'",
-      "kcal": 320,
-      "cho": 36,
-      "proteine": 5,
+      "nome": "Coppa al cacao con panna (Milk)",
+      "kcal": 93,
+      "cho": 16,
+      "proteine": 1,
       "alimenti": [
         {
-          "nome": "Gelato in coppa con panna e cialda",
-          "grammi": 130,
-          "note": "stima"
+          "nome": "Coppa al cacao con panna",
+          "grammi": 100
         }
       ],
-      "note": "Dolce: si aggiunge al pasto. Nei giorni ROSSO meglio dopo pranzo; la sera prima di dormire guarda la freccia del Libre. Valori stimati come coppa gelato con panna: correggili con quelli dell'etichetta.",
+      "note": "Valori dell'etichetta per 100 g (93 kcal, CHO 16,4 g di cui zuccheri 3 g, grassi 2,5 g, proteine 1,3 g). Se la coppa pesa di piu', i valori salgono in proporzione. Dolce: si aggiunge al pasto. Nei giorni ROSSO meglio dopo pranzo; la sera prima di dormire guarda la freccia del Libre.",
       "tags": [
         "sgarro",
-        "dolce",
-        "daVerificare"
+        "dolce"
       ]
     },
     {

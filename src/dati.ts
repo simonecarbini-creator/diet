@@ -18,7 +18,7 @@ export type Vincolo = Dati['regole']['vincoliSettimanali'][number]
 export type CategoriaPasto = Exclude<keyof Dati['orariPasti'], '_nota'>
 
 /** Le categorie che il calendario assegna per id (es. "pranzo": "P1"). */
-export type CategoriaConId = 'colazione' | 'spuntino' | 'pranzo' | 'cena' | 'merenda'
+export type CategoriaConId = 'colazione' | 'spuntino' | 'pranzo' | 'cena' | 'merenda' | 'spuntinoSerale'
 
 export type Alimento = {
   nome: string
@@ -224,6 +224,11 @@ function trovaPastoDelPiano(categoria: CategoriaConId, id: string): PastoRisolto
       return cercaConVersioni(dati.pranzi, id) ?? trovaSgarro('pranzo', id)
     case 'cena':
       return cercaConVersioni(dati.cene, id) ?? trovaSgarro('cena', id)
+    case 'spuntinoSerale': {
+      if (id === dati.blocchi.spuntinoSerale.id) return spuntinoSerale()
+      const alternativa = dati.blocchi.spuntinoSerale.alternative.find((a) => a.id === id)
+      return alternativa ? { ...alternativa } : null
+    }
     case 'merenda': {
       const merenda = [...dati.merende, dati.merendaRidotta].find((m) => m.id === id)
       return merenda
@@ -247,8 +252,16 @@ export function preCorsa(): PastoRisolto {
   return { ...dati.blocchi.preCorsa }
 }
 
+/** Lo spuntino serale del piano (senza l'elenco delle alternative e i consigli). */
 export function spuntinoSerale(): PastoRisolto {
-  return { ...dati.blocchi.spuntinoSerale }
+  const { alternative: _a, consigli: _c, ...base } = dati.blocchi.spuntinoSerale
+  return base
+}
+
+/** Un dolce di dati.json: si aggiunge a un pasto, non lo sostituisce. */
+export function trovaDolce(id: string): PastoRisolto | null {
+  const dolce = dati.dolci.find((d) => d.id === id)
+  return dolce ? { ...dolce } : null
 }
 
 /**
@@ -279,9 +292,11 @@ export function idAlternative(categoria: CategoriaConId): string[] {
     }
     case 'merenda':
       return senzaBase([...dati.merende.map((m) => m.id), dati.merendaRidotta.id])
+    case 'spuntinoSerale':
+      return senzaBase([dati.blocchi.spuntinoSerale.id, ...dati.blocchi.spuntinoSerale.alternative.map((a) => a.id)])
   }
 }
 
 export function isCategoriaConId(categoria: CategoriaPasto): categoria is CategoriaConId {
-  return ['colazione', 'spuntino', 'pranzo', 'cena', 'merenda'].includes(categoria)
+  return ['colazione', 'spuntino', 'pranzo', 'cena', 'merenda', 'spuntinoSerale'].includes(categoria)
 }

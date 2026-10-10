@@ -17,6 +17,8 @@ export type StatoGiorno = {
   confermati?: CategoriaPasto[]
   /** Giornata libera: pasti sostituiti da ciò che si è mangiato (testo '' = ancora da scrivere). */
   liberi?: Partial<Record<CategoriaPasto, string | PastoLibero>>
+  /** Dolce aggiunto a pranzo o cena (id di dati.json → dolci). */
+  dolci?: Partial<Record<CategoriaPasto, string>>
 }
 
 const statoVuoto: StatoGiorno = { scelte: {}, consumati: [] }
@@ -70,12 +72,22 @@ export function useStatoGiorno(data: string) {
     /** testo '' = pasto tolto, in attesa di scrivere cosa si è mangiato. */
     pastoLibero(categoria: CategoriaPasto, libero: PastoLibero, consumato = false) {
       const consumati = consumato ? [...stato.consumati.filter((c) => c !== categoria), categoria] : stato.consumati
-      aggiorna({ ...stato, liberi: { ...stato.liberi, [categoria]: libero }, consumati })
+      // Il pasto libero descrive tutto quello che si è mangiato: un dolce aggiunto prima si toglie.
+      const dolci = { ...stato.dolci }
+      delete dolci[categoria]
+      aggiorna({ ...stato, liberi: { ...stato.liberi, [categoria]: libero }, consumati, dolci })
     },
     ripristinaPasto(categoria: CategoriaPasto) {
       const liberi = { ...stato.liberi }
       delete liberi[categoria]
       aggiorna({ ...stato, liberi, confermati: (stato.confermati ?? []).filter((c) => c !== categoria) })
+    },
+    /** id null toglie il dolce. */
+    dolce(categoria: CategoriaPasto, id: string | null) {
+      const dolci = { ...stato.dolci }
+      if (id) dolci[categoria] = id
+      else delete dolci[categoria]
+      aggiorna({ ...stato, dolci })
     },
     annota(categoria: CategoriaPasto, testo: string) {
       const note = { ...stato.note }

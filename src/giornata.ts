@@ -4,7 +4,7 @@ import { settimane } from './piano'
 import {
   dati,
   preCorsa,
-  spuntinoSerale,
+  trovaDolce,
   trovaPasto,
   type CategoriaConId,
   type CategoriaPasto,
@@ -36,12 +36,15 @@ export type VocePasto = {
   idPiano: string | null
   /** Giornata libera: cosa si è mangiato al posto del pasto (testo '' = ancora da scrivere). */
   libero?: PastoLibero
+  /** Dolce aggiunto al pasto (pranzo o cena): i suoi valori entrano nei totali. */
+  dolce?: PastoRisolto
 }
 
 export function vociDelGiorno(
   giorno: Giorno,
   scelte: Partial<Record<CategoriaConId, string>> = {},
   liberi: Partial<Record<CategoriaPasto, string | PastoLibero>> = {},
+  dolci: Partial<Record<CategoriaPasto, string>> = {},
 ): VocePasto[] {
   const orari = dati.orariPasti
   const voci: VocePasto[] = []
@@ -66,18 +69,13 @@ export function vociDelGiorno(
     voce('merenda', giorno.merenda),
     voce('cena', giorno.cena),
   )
-  if (giorno.spuntinoSerale) {
-    voci.push({
-      categoria: 'spuntinoSerale',
-      orario: orari.spuntinoSerale,
-      pasto: spuntinoSerale(),
-      idPiano: null,
-    })
-  }
+  if (giorno.spuntinoSerale) voci.push(voce('spuntinoSerale', dati.blocchi.spuntinoSerale.id))
 
   for (const voce of voci) {
     const libero = liberi[voce.categoria]
     if (libero !== undefined) voce.libero = comeLibero(libero)
+    const dolce = dolci[voce.categoria]
+    if (dolce) voce.dolce = trovaDolce(dolce) ?? undefined
   }
   return voci.sort((a, b) => a.orario.localeCompare(b.orario))
 }
@@ -98,7 +96,12 @@ export type TotaliPasti = {
 /** Somma dei pasti assegnati. Il gel in corsa non è un pasto e non entra mai qui. */
 export function totaliPasti(voci: VocePasto[]): TotaliPasti {
   const totali: TotaliPasti = { kcal: 0, cho: 0, proteine: 0, senzaProteine: [], pastiMancanti: [], pastiLiberi: [] }
-  for (const { categoria, pasto, libero } of voci) {
+  for (const { categoria, pasto, libero, dolce } of voci) {
+    if (dolce) {
+      totali.kcal += dolce.kcal
+      totali.cho += dolce.cho
+      totali.proteine += dolce.proteine ?? 0
+    }
     if (libero !== undefined) {
       if (haValori(libero)) {
         totali.kcal += libero.kcal ?? 0
@@ -156,6 +159,7 @@ type StatoPerEsito = {
   consumati: CategoriaPasto[]
   sgarro?: boolean
   liberi?: Partial<Record<CategoriaPasto, string | PastoLibero>>
+  dolci?: Partial<Record<CategoriaPasto, string>>
 }
 
 /**
@@ -175,7 +179,7 @@ function conSgarri(scelte: Partial<Record<CategoriaConId, string>>): boolean {
 
 export function giornataEquivalente(giorno: Giorno, stato: StatoPerEsito): boolean {
   const piano = totaliPasti(vociDelGiorno(giorno, senzaSgarri(stato.scelte)))
-  const reale = totaliPasti(vociDelGiorno(giorno, stato.scelte, stato.liberi ?? {}))
+  const reale = totaliPasti(vociDelGiorno(giorno, stato.scelte, stato.liberi ?? {}, stato.dolci ?? {}))
   if (reale.pastiLiberi.length > 0) return false
   // Merenda libera dove il piano non ne ha scelta una: si confronta con la merenda media
   // (kcal e CHO; la media non ha le proteine, quindi le proteine non si confrontano).
@@ -206,7 +210,9 @@ export function esitoGiorno(
   const voci = vociDelGiorno(giorno, stato.scelte, liberi)
   const fatti = voci.filter((v) => (v.pasto || v.libero) && stato.consumati.includes(v.categoria)).length
   const tuttiFatti = fatti === voci.length
-  const fuoriPiano = Object.keys(liberi).length > 0 || conSgarri(stato.scelte)
+  // Fuori dal piano: pasti liberi, sgarri e dolci.
+  const fuoriPiano =
+    Object.keys(liberi).length > 0 || conSgarri(stato.scelte) || Object.values(stato.dolci ?? {}).some(Boolean)
   // Giornata libera: rispettata solo se i totali restano equivalenti al piano.
   const esito = stato.sgarro
     ? giornataEquivalente(giorno, stato) ? 'rispettato' : 'nonRispettato'
@@ -261,7 +267,9 @@ export function totaliSenza(voci: VocePasto[], categoria: CategoriaPasto): { cho
   const merendaDaStimare = altri.some((v) => v.categoria === 'merenda' && !v.pasto && v.libero === undefined)
   const totali = totaliPasti(altri)
   const stima = merendaDaStimare ? merendaMedia() : { cho: 0, kcal: 0 }
-  return { cho: totali.cho + stima.cho, kcal: totali.kcal + stima.kcal }
+  // Il dolce resta anche cambiando il pasto a cui è aggiunto.
+  const dolce = voci.find((v) => v.categoria === categoria)?.dolce
+  return { cho: totali.cho + stima.cho + (dolce?.cho ?? 0), kcal: totali.kcal + stima.kcal + (dolce?.kcal ?? 0) }
 }
 
 export type TargetGiorno = {

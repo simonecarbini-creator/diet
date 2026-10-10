@@ -23,13 +23,13 @@ type Props = {
 
 export function Oggi({ data, ora, passato = false }: Props) {
   const trovato = cercaGiorno(data)
-  const { stato, scegli, segnaConsumato, annota, impostaSgarro, confermaPasto, pastoLibero, ripristinaPasto } =
+  const { stato, scegli, segnaConsumato, annota, impostaSgarro, confermaPasto, pastoLibero, ripristinaPasto, dolce } =
     useStatoGiorno(data)
   const [daTogliere, setDaTogliere] = useState<CategoriaPasto | null>(null)
   const [chiudiLibera, setChiudiLibera] = useState(false)
   const giorniSettimana = trovato?.settimana.giorni ?? []
   const statiAltri = useStatiGiorni(giorniSettimana.map((g) => g.data).filter((d) => d !== data))
-  const voci = trovato ? vociDelGiorno(trovato.giorno, stato.scelte, stato.liberi) : []
+  const voci = trovato ? vociDelGiorno(trovato.giorno, stato.scelte, stato.liberi, stato.dolci) : []
   const corrente = ora !== null && voci.length > 0 ? indicePastoCorrente(voci, ora) : null
   // Scegliere un pasto lo spunta come consumato, ma non nei giorni futuri (lì si sta solo pianificando).
   const futuro = ora === null && !passato
@@ -228,6 +228,7 @@ export function Oggi({ data, ora, passato = false }: Props) {
               if (isCategoriaConId(voce.categoria)) scegli(voce.categoria, id, voce.idPiano, id !== null && !futuro)
             }}
             onLibero={(libero) => pastoLibero(voce.categoria, libero, !futuro)}
+            onDolce={voce.categoria === 'pranzo' || voce.categoria === 'cena' ? (id) => dolce(voce.categoria, id) : undefined}
             sgarro={
               stato.sgarro && !(stato.confermati ?? []).includes(voce.categoria)
                 ? { onConferma: () => confermaPasto(voce.categoria), onElimina: () => setDaTogliere(voce.categoria) }

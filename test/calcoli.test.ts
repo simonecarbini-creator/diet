@@ -2,7 +2,7 @@
 // Girano dentro `npm run build`: se uno fallisce, l'app non viene pubblicata.
 // I valori attesi sono ricavati a mano da dati.json, non copiati dall'output dell'app.
 import { describe, expect, it } from 'vitest'
-import { dati, idAlternative, trovaPasto, type CategoriaConId } from '../src/dati'
+import { dati, dolci, idAlternative, trovaPasto, type CategoriaConId } from '../src/dati'
 import {
   cercaGiorno,
   esitoGiorno,
@@ -299,9 +299,52 @@ describe('proteine delle versioni ridotte e maggiorate', () => {
     expect(trovaPasto(categoria, id)?.proteine).toBe(proteine)
   })
   it('nessun pasto del piano senza proteine', () => {
-    const categorie: CategoriaConId[] = ['colazione', 'spuntino', 'pranzo', 'merenda', 'cena']
+    const categorie: CategoriaConId[] = ['colazione', 'spuntino', 'pranzo', 'merenda', 'cena', 'spuntinoSerale']
     const senza = categorie.flatMap((c) => idAlternative(c).filter((id) => trovaPasto(c, id)?.proteine == null))
     expect(senza).toEqual([])
+  })
+})
+
+describe('spuntino serale', () => {
+  it('base (yogurt, 25 g) e 5 alternative, senza la ricotta', () => {
+    expect(idAlternative('spuntinoSerale')).toEqual(['serale', 'SER-PB1', 'SER-PB2', 'SER-PB3', 'SER-PB4', 'SER-SAL'])
+  })
+  it.each([
+    ['SER-PB1', 29, 310, 15],
+    ['SER-PB2', 27, 320, 24],
+    ['SER-PB3', 30, 290, 14],
+    ['SER-PB4', 34, 280, 9],
+    ['SER-SAL', 17, 260, 13],
+  ] as const)('%s: %i g CHO, %i kcal, %i g pro', (id, cho, kcal, proteine) => {
+    expect(trovaPasto('spuntinoSerale', id)).toMatchObject({ cho, kcal, proteine })
+  })
+  // 9 ottobre (ROSSO, con spuntino serale): pasti 415 g. Con SER-SAL (17 g al posto di 25): 407 g.
+  it('scelto al posto del piano cambia i totali del giorno (9 ottobre: 415 → 407 g)', () => {
+    const venerdi = giorno('2026-10-09')
+    expect(totaliPasti(vociDelGiorno(venerdi)).cho).toBe(415)
+    expect(totaliPasti(vociDelGiorno(venerdi, { spuntinoSerale: 'SER-SAL' })).cho).toBe(407)
+  })
+})
+
+describe('dolci aggiunti a un pasto (5 ottobre, merenda M2: piano 430 g CHO, 3115 kcal)', () => {
+  const lunedi = giorno('2026-10-05')
+  const tutti = vociDelGiorno(lunedi).map((v) => v.categoria)
+
+  it('la coppa al cacao con panna Milk: valori per 100 g dall\'etichetta', () => {
+    expect(dolci().find((d) => d.id === 'D2')).toMatchObject({ kcal: 93, cho: 16, proteine: 1 })
+  })
+  it('tiramisu a cena (32 g, 350 kcal): la giornata sale a 462 g e 3465 kcal', () => {
+    const totali = totaliPasti(vociDelGiorno(lunedi, { merenda: 'M2' }, {}, { cena: 'D1' }))
+    expect([totali.cho, totali.kcal]).toEqual([462, 3465])
+  })
+  it('cambiando la cena il dolce resta: senza C4 (85 g) ma con il tiramisu, 377 g', () => {
+    expect(totaliSenza(vociDelGiorno(lunedi, { merenda: 'M2' }, {}, { cena: 'D1' }), 'cena').cho).toBe(377)
+  })
+  it('tiramisu, tutto spuntato: non rispettato (462 g, oltre 452)', () => {
+    expect(esitoGiorno(lunedi, { scelte: { merenda: 'M2' }, consumati: tutti, dolci: { cena: 'D1' } }).esito).toBe('nonRispettato')
+  })
+  it('coppa Milk (16 g, 93 kcal), tutto spuntato: rispettato (446 g, 3208 kcal)', () => {
+    expect(esitoGiorno(lunedi, { scelte: { merenda: 'M2' }, consumati: tutti, dolci: { cena: 'D2' } }).esito).toBe('rispettato')
   })
 })
 
