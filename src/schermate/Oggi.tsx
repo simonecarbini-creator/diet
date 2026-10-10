@@ -6,7 +6,7 @@ import { CardPastoLibero } from '../componenti/CardPastoLibero'
 import { Conferma } from '../componenti/Conferma'
 import { etichettePasti } from '../etichette'
 import { formatData, formatNumero } from '../formato'
-import { cercaGiorno, giornataEquivalente, giornoDopo, indicePastoCorrente, totaliPasti, totaliSenza, vociDelGiorno } from '../giornata'
+import { cercaGiorno, giornataEquivalente, proteineDelPiano, giornoDopo, indicePastoCorrente, totaliPasti, totaliSenza, vociDelGiorno } from '../giornata'
 import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
 import { settimane } from '../piano'
 import { conteggiVincoli, vincoliSeraPrima, type PastiDelGiorno } from '../vincoli'
@@ -115,7 +115,10 @@ export function Oggi({ data, ora, passato = false }: Props) {
             {formatNumero(giorno.cho)}
             <span className="ml-1 text-base">g CHO</span>
           </div>
-          <div className="text-sm opacity-70">{formatNumero(giorno.kcal)} kcal</div>
+          <div className="text-sm">
+            <span className="opacity-70">{formatNumero(giorno.kcal)} kcal · </span>
+            <span className="font-semibold text-pro">{formatNumero(proteineDelPiano(giorno))} g pro</span>
+          </div>
         </div>
         <div className="rounded-xl border border-bordo bg-superficie p-3">
           <div className="text-xs font-semibold uppercase opacity-70">Consumati finora</div>
@@ -123,8 +126,8 @@ export function Oggi({ data, ora, passato = false }: Props) {
             {formatNumero(consumati.cho)}
             <span className="ml-1 text-base">g CHO</span>
           </div>
-          <div className="text-sm opacity-70">
-            {formatNumero(consumati.kcal)} kcal · {formatNumero(consumati.proteine)} g pro
+          <div className="text-sm">
+            <span className="opacity-70">{formatNumero(consumati.kcal)} kcal · </span><span className="font-semibold text-pro">{formatNumero(consumati.proteine)} g pro</span>
           </div>
           {consumati.pastiLiberi.length > 0 && (
             <div className="mt-1 text-xs font-semibold text-ko">
