@@ -174,8 +174,13 @@ describe('giornata libera', () => {
   const lunedi = giorno('2026-10-05')
   const libera = (pranzo: object) => ({ scelte: {}, consumati: [], sgarro: true, liberi: { pranzo } })
 
-  it('pasto libero con valori vicini al piano: equivalente', () => {
-    expect(giornataEquivalente(lunedi, libera({ testo: 'poke', kcal: 1050, cho: 150, proteine: 40 }))).toBe(true)
+  // Proteine del 5 ottobre: pre-corsa 1 + STD 37 + solo frutto 1 + P2 48 + C4 39 = 126 g (±5% = ±6,3 g).
+  it('pasto libero con valori vicini al piano (P2: 1030 kcal, 148 g CHO, 48 g pro): equivalente', () => {
+    expect(giornataEquivalente(lunedi, libera({ testo: 'poke', kcal: 1050, cho: 150, proteine: 48 }))).toBe(true)
+  })
+
+  it('pasto libero con 8 g di proteine in meno di P2 (118 g su 126): non equivalente', () => {
+    expect(giornataEquivalente(lunedi, libera({ testo: 'poke', kcal: 1050, cho: 150, proteine: 40 }))).toBe(false)
   })
 
   it('pasto libero con troppi pochi CHO: non equivalente', () => {
@@ -234,11 +239,11 @@ describe('pasto libero scelto in un giorno normale (5 ottobre)', () => {
   const conPranzo = (pranzo: object) => ({ scelte: { merenda: 'M2' }, consumati: tutti, liberi: { pranzo } })
 
   it('conta come pasto spuntato', () => {
-    const r = esitoGiorno(lunedi, conPranzo({ testo: 'poke', kcal: 1050, cho: 150, proteine: 40 }))
+    const r = esitoGiorno(lunedi, conPranzo({ testo: 'poke', kcal: 1050, cho: 150, proteine: 48 }))
     expect(r.fatti).toBe(r.totali)
   })
   it('valori vicini al piano (P2 148 g → poke 150 g): rispettato', () => {
-    expect(esitoGiorno(lunedi, conPranzo({ testo: 'poke', kcal: 1050, cho: 150, proteine: 40 })).esito).toBe('rispettato')
+    expect(esitoGiorno(lunedi, conPranzo({ testo: 'poke', kcal: 1050, cho: 150, proteine: 48 })).esito).toBe('rispettato')
   })
   it('CHO troppo bassi (120 g al posto di 148): non rispettato', () => {
     expect(esitoGiorno(lunedi, conPranzo({ testo: 'insalata', kcal: 1030, cho: 120, proteine: 40 })).esito).toBe('nonRispettato')
@@ -254,6 +259,49 @@ describe('pasto libero scelto in un giorno normale (5 ottobre)', () => {
   it('merenda libera 150 g / 900 kcal (giornata 518 g): non rispettato', () => {
     const stato = { scelte: {}, consumati: tutti, liberi: { merenda: { testo: 'pasticceria', kcal: 900, cho: 150, proteine: 12 } } }
     expect(esitoGiorno(lunedi, stato).esito).toBe('nonRispettato')
+  })
+})
+
+describe('sgarri (al posto di pranzo o cena)', () => {
+  const lunedi = giorno('2026-10-05')
+  const tutti = vociDelGiorno(lunedi).map((v) => v.categoria)
+
+  it('S1 pizza + 1 birra si sceglie a cena: 117 g CHO, 1010 kcal, 35 g pro', () => {
+    expect(idAlternative('cena')).toContain('S1')
+    expect(trovaPasto('cena', 'S1')).toMatchObject({ cho: 117, kcal: 1010, proteine: 35, daSgarro: true })
+  })
+  it('i dolci non sono alternative di un pasto', () => {
+    expect(idAlternative('cena')).not.toContain('D1')
+    expect(idAlternative('pranzo')).not.toContain('D1')
+  })
+  // Piano con M2: 430 g CHO, 3115 kcal. Con S1 al posto di C4 (85 g, 820 kcal): 462 g e 3305 kcal,
+  // oltre il 5% (tolleranza 409–452 g e 2959–3271 kcal).
+  it('pizza a cena al posto di C4, tutto spuntato: non rispettato (462 g su 430)', () => {
+    const r = valutaAlternativa(totaliSenza(vociDelGiorno(lunedi, { merenda: 'M2' }), 'cena'), trovaPasto('cena', 'S1')!, targetGiorno({ cho: 430, kcal: 3115 }))
+    expect(r).toMatchObject({ cho: 462, kcal: 3305 })
+    expect(esitoGiorno(lunedi, { scelte: { merenda: 'M2', cena: 'S1' }, consumati: tutti }).esito).toBe('nonRispettato')
+  })
+  it('una sostituzione normale (C10 al posto di C4), tutto spuntato: resta rispettato', () => {
+    expect(esitoGiorno(lunedi, { scelte: { merenda: 'M2', cena: 'C10' }, consumati: tutti }).esito).toBe('rispettato')
+  })
+})
+
+describe('proteine delle versioni ridotte e maggiorate', () => {
+  it.each([
+    ['pranzo', 'P1rid', 30],
+    ['pranzo', 'P2rid', 40],
+    ['pranzo', 'P3rid', 53],
+    ['pranzo', 'P3+', 60],
+    ['cena', 'C1rid', 46],
+    ['cena', 'C2rid', 43],
+    ['cena', 'C3+', 42],
+  ] as const)('%s %s: %i g', (categoria, id, proteine) => {
+    expect(trovaPasto(categoria, id)?.proteine).toBe(proteine)
+  })
+  it('nessun pasto del piano senza proteine', () => {
+    const categorie: CategoriaConId[] = ['colazione', 'spuntino', 'pranzo', 'merenda', 'cena']
+    const senza = categorie.flatMap((c) => idAlternative(c).filter((id) => trovaPasto(c, id)?.proteine == null))
+    expect(senza).toEqual([])
   })
 })
 

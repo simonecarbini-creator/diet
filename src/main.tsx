@@ -5,13 +5,14 @@ import App from './App.tsx'
 import { caricaPiano } from './piano'
 import { caricaObiettivi } from './obiettivo'
 import { caricaPastiUtente } from './pastiUtente'
+import { caricaDiario } from './diario'
 import { segnalaAvvioChiuso } from './avvio'
 
 // Chiede al browser di non cancellare i dati salvati (scelte, peso, settimane).
 void navigator.storage?.persist?.()
 
 // Prima del primo render si leggono le settimane salvate sul telefono.
-void Promise.all([caricaPiano(), caricaObiettivi(), caricaPastiUtente()]).finally(() => {
+void Promise.all([caricaPiano(), caricaObiettivi(), caricaPastiUtente(), caricaDiario()]).finally(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <App />

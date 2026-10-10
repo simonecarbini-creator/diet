@@ -1,6 +1,7 @@
 // Menu laterale: si apre da destra con il pulsante ad hamburger, che diventa una X.
 // Animazioni brevi, disattivate con "Riduci movimento" del telefono.
 import { useEffect } from 'react'
+import { impostaDiario, useDiario } from '../diario'
 import { link } from '../navigazione'
 
 type Props = {
@@ -10,7 +11,7 @@ type Props = {
 }
 
 const voci = [
-  { href: link.registro, titolo: 'Registro', descrizione: 'Peso, diario dei pasti ed export' },
+  { href: link.registro, titolo: 'Registro', descrizione: 'Peso, diario dei pasti ed export', soloDiario: true },
   { href: link.nuova, titolo: 'Nuova settimana', descrizione: 'Inserisci la scheda e prepara il piano' },
   { href: link.pasti, titolo: 'Pasti e alternative', descrizione: 'Tutti i pasti, aggiungi le tue alternative' },
   { href: link.piano, titolo: 'Cambia piano', descrizione: 'Obiettivo attivo, nuova gara o mantenimento' },
@@ -39,6 +40,7 @@ export function PulsanteMenu({ aperto, onApri, onChiudi }: Props) {
 }
 
 export function Menu({ aperto, onChiudi }: Props) {
+  const diario = useDiario()
   useEffect(() => {
     if (!aperto) return
     const chiudiConEsc = (e: KeyboardEvent) => e.key === 'Escape' && onChiudi()
@@ -68,7 +70,7 @@ export function Menu({ aperto, onChiudi }: Props) {
         }`}
       >
         <ul className="divide-y divide-bordo border-b border-bordo">
-          {voci.map((voce) => (
+          {voci.filter((voce) => diario || !('soloDiario' in voce)).map((voce) => (
             <li key={voce.href}>
               <a href={voce.href} onClick={onChiudi} className="block px-5 py-4">
                 <span className="block text-lg font-semibold">{voce.titolo}</span>
@@ -77,6 +79,22 @@ export function Menu({ aperto, onChiudi }: Props) {
             </li>
           ))}
         </ul>
+        {/* Il diario è facoltativo: l'app nasce per leggere il piano, non per registrare. */}
+        <label className="flex items-start gap-3 border-b border-bordo px-5 py-4">
+          <span className="min-w-0 flex-1">
+            <span className="block text-lg font-semibold">Diario</span>
+            <span className="block text-sm opacity-70">
+              Vista Mese, Registro, esito dei giorni e note sui pasti. Spento nasconde soltanto: i dati restano.
+            </span>
+          </span>
+          <input
+            type="checkbox"
+            role="switch"
+            checked={diario}
+            onChange={(e) => void impostaDiario(e.target.checked)}
+            className="mt-1 h-6 w-6 shrink-0 accent-[var(--cho)]"
+          />
+        </label>
       </nav>
     </>
   )

@@ -12,6 +12,8 @@ export type Dati = {
     pranzi:                Pranzi[];
     cene:                  Cene[];
     merende:               Merende[];
+    sgarri:                Sgarri[];
+    dolci:                 Dolci[];
     noteColazioni:         string[];
     notePasti:             string[];
     merendaRidotta:        MerendaRidotta;
@@ -60,11 +62,11 @@ export type Colazioni = {
     id:            string;
     base:          string;
     nome:          string;
-    categoria:     string;
+    categoria?:    string;
     kcal:          number;
     cho:           number;
     proteine:      number;
-    grassi:        number;
+    grassi?:       number;
     alimenti:      ColazioniAlimenti[];
     note:          string;
     tags:          string[];
@@ -127,7 +129,11 @@ export type BlocchiSpuntinoSerale = {
 
 export type SpuntinoSeraleVarianti = {
     nome:     string;
+    kcal:     number;
+    cho:      number;
+    proteine: number;
     alimenti: ModificheGrammiElement[];
+    note:     string;
 }
 
 export type TipiColazione = {
@@ -178,6 +184,7 @@ export type RidottoClass = {
     id:              string;
     kcal:            number;
     cho:             number;
+    proteine:        number;
     modifiche:       string;
     modificheGrammi: ModificheGrammiElement[];
 }
@@ -199,6 +206,23 @@ export type Voci = {
     alimento: string;
     crudo:    number;
     cotto:    number;
+}
+
+export type Dolci = {
+    id:       string;
+    nome:     string;
+    kcal:     number;
+    cho:      number;
+    proteine: number;
+    alimenti: DolciAlimenti[];
+    note:     string;
+    tags:     string[];
+}
+
+export type DolciAlimenti = {
+    nome:   string;
+    grammi: number;
+    note?:  string;
 }
 
 export type MerendaRidotta = {
@@ -267,6 +291,7 @@ export type PranziMaggiorato = {
     id:              string;
     kcal:            number;
     cho:             number;
+    proteine:        number;
     modifiche:       string;
     modificheGrammi: ModificheGrammiElement[];
     nota:            string;
@@ -276,6 +301,7 @@ export type Ridotto = {
     id:              string;
     kcal:            number;
     cho:             number;
+    proteine:        number;
     modifiche:       string;
     modificheGrammi: ModificheGrammiElement[];
     rimozioni?:      string[];
@@ -517,6 +543,26 @@ export type Giorni = {
     note?:            string;
     ricarica?:        boolean;
     lungoDomenicale?: boolean;
+}
+
+export type Sgarri = {
+    id:       string;
+    nome:     string;
+    momento:  string[];
+    kcal:     number;
+    cho:      number;
+    proteine: number;
+    alimenti: SgarriAlimenti[];
+    note:     string;
+    tags:     string[];
+    base?:    string;
+}
+
+export type SgarriAlimenti = {
+    nome:    string;
+    grammi?: number;
+    note?:   string;
+    pezzi?:  number;
 }
 
 export type Sostituzioni = {

@@ -162,8 +162,19 @@ type StatoPerEsito = {
  * Giornata libera "equivalente": tutti i pasti liberi hanno i valori e kcal, CHO e proteine
  * del giorno restano entro la tolleranza di dati.json rispetto ai pasti del piano.
  */
+/** Le scelte del giorno senza gli sgarri (pizza, sushi…): il piano con cui confrontarli. */
+function senzaSgarri(scelte: Partial<Record<CategoriaConId, string>>): Partial<Record<CategoriaConId, string>> {
+  return Object.fromEntries(
+    Object.entries(scelte).filter(([categoria, id]) => !trovaPasto(categoria as CategoriaConId, id)?.daSgarro),
+  )
+}
+
+function conSgarri(scelte: Partial<Record<CategoriaConId, string>>): boolean {
+  return Object.keys(senzaSgarri(scelte)).length < Object.keys(scelte).length
+}
+
 export function giornataEquivalente(giorno: Giorno, stato: StatoPerEsito): boolean {
-  const piano = totaliPasti(vociDelGiorno(giorno, stato.scelte))
+  const piano = totaliPasti(vociDelGiorno(giorno, senzaSgarri(stato.scelte)))
   const reale = totaliPasti(vociDelGiorno(giorno, stato.scelte, stato.liberi ?? {}))
   if (reale.pastiLiberi.length > 0) return false
   // Merenda libera dove il piano non ne ha scelta una: si confronta con la merenda media
@@ -184,8 +195,8 @@ export function giornataEquivalente(giorno: Giorno, stato: StatoPerEsito): boole
 /**
  * Riepilogo del giorno dai pasti spuntati: tutti → rispettato, nessuno → non dichiarato,
  * solo alcuni → non rispettato. La merenda non scelta conta come non consumata.
- * Un pasto libero scelto in un giorno normale conta come spuntato, ma il giorno è rispettato
- * solo se i totali restano equivalenti al piano (come nella giornata libera).
+ * Un pasto libero o uno sgarro scelti in un giorno normale contano come spuntati, ma il giorno
+ * è rispettato solo se i totali restano equivalenti al piano (come nella giornata libera).
  */
 export function esitoGiorno(
   giorno: Giorno,
@@ -195,13 +206,13 @@ export function esitoGiorno(
   const voci = vociDelGiorno(giorno, stato.scelte, liberi)
   const fatti = voci.filter((v) => (v.pasto || v.libero) && stato.consumati.includes(v.categoria)).length
   const tuttiFatti = fatti === voci.length
-  const conLiberi = Object.keys(liberi).length > 0
+  const fuoriPiano = Object.keys(liberi).length > 0 || conSgarri(stato.scelte)
   // Giornata libera: rispettata solo se i totali restano equivalenti al piano.
   const esito = stato.sgarro
     ? giornataEquivalente(giorno, stato) ? 'rispettato' : 'nonRispettato'
     : fatti === 0
       ? 'nonDichiarato'
-      : tuttiFatti && (!conLiberi || giornataEquivalente(giorno, stato))
+      : tuttiFatti && (!fuoriPiano || giornataEquivalente(giorno, stato))
         ? 'rispettato'
         : 'nonRispettato'
   return { esito, fatti, totali: voci.length }

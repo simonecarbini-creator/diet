@@ -58,6 +58,20 @@ export function verificaDati(dati: Dati, idExtra: string[] = []): string[] {
     }
   }
 
+  // Sgarri: prendono il posto di un pranzo o di una cena, quindi i codici non devono
+  // coincidere con quelli dei pranzi e delle cene (si cercherebbe il pasto sbagliato).
+  for (const sgarro of dati.sgarri) {
+    for (const momento of sgarro.momento) {
+      if (momento !== 'pranzo' && momento !== 'cena') errori.push(`sgarro ${sgarro.id}: momento "${momento}" non valido`)
+    }
+    if (idPranzi.has(sgarro.id) || idCene.has(sgarro.id)) errori.push(`sgarro ${sgarro.id}: codice gia' usato da un pranzo o da una cena`)
+    if (sgarro.base && !dati.sgarri.some((s) => s.id === sgarro.base)) errori.push(`sgarro ${sgarro.id}: base "${sgarro.base}" non trovata`)
+  }
+  const codici = [...idPranzi, ...idCene, ...dati.sgarri.map((s) => s.id), ...dati.dolci.map((d) => d.id)]
+  for (const id of new Set(codici.filter((id, i) => codici.indexOf(id) !== i && !idExtra.includes(id)))) {
+    errori.push(`codice "${id}" usato piu' di una volta tra pranzi, cene, sgarri e dolci`)
+  }
+
   // Le condizioni delle regole devono essere leggibili dall'app.
   const { regole } = dati
   errori.push(

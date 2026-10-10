@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { useDiario } from '../diario'
 import { isCategoriaConId, type Vincolo } from '../dati'
 import type { PastoLibero, VocePasto } from '../giornata'
 import { formatNumero, formatScarto } from '../formato'
 import { ElencoAlimenti } from './Alimenti'
+import { NumeriPasto } from './NumeriPasto'
 import { etichettePasti } from '../etichette'
 import { PannelloScelta, type ContestoGiornata } from './PannelloScelta'
 import { ContatoreSettimana, PromemoriaSera } from './Vincoli'
@@ -52,6 +54,7 @@ export function CardPasto({
   onScegli,
   onLibero,
 }: Props) {
+  const diario = useDiario()
   const [aperto, setAperto] = useState(false)
   const [pannello, setPannello] = useState(false)
   const [bozzaNota, setBozzaNota] = useState<string | null>(null)
@@ -116,7 +119,7 @@ export function CardPasto({
               {etichetta}
               {corrente && <span className="text-cho"> · adesso</span>}
               {consumato && ' · consumato'}
-              {nota && <span className="text-cho"> · nota</span>}
+              {diario && nota && <span className="text-cho"> · nota</span>}
             </div>
             {pasto ? (
               <>
@@ -130,9 +133,6 @@ export function CardPasto({
                 </div>
                 <div className="text-sm">
                   <span className="opacity-70">{formatNumero(pasto.kcal)} kcal</span>
-                  {pasto.proteine !== null && (
-                    <span className="opacity-70"> · {formatNumero(pasto.proteine)} g proteine</span>
-                  )}
                 </div>
                 {sostituito && (
                   <div className="text-sm font-semibold text-cho">
@@ -151,12 +151,7 @@ export function CardPasto({
               </div>
             )}
           </div>
-          <div className="shrink-0 text-right text-cho">
-            <div className="text-3xl font-bold leading-none tabular-nums">
-              {pasto ? formatNumero(pasto.cho) : '—'}
-            </div>
-            <div className="text-xs font-semibold">g CHO</div>
-          </div>
+          <NumeriPasto cho={pasto?.cho ?? null} proteine={pasto?.proteine ?? null} grande />
         </button>
       </div>
 
@@ -207,14 +202,21 @@ export function CardPasto({
           {pasto.alimenti.length > 0 && <ElencoAlimenti alimenti={pasto.alimenti} />}
           {pasto.varianti?.map((variante) => (
             <div key={variante.nome}>
-              <div className="text-xs font-semibold uppercase opacity-70">
-                Variante: {variante.nome}
+              <div className="flex items-end justify-between gap-3">
+                <div className="text-xs font-semibold uppercase opacity-70">
+                  Variante: {variante.nome}
+                  {variante.kcal !== undefined && <span className="normal-case"> · {formatNumero(variante.kcal)} kcal</span>}
+                </div>
+                {/* Con valori propri (es. spuntino serale con ricotta) i CHO si vedono subito. */}
+                {variante.cho !== undefined && <NumeriPasto cho={variante.cho} proteine={variante.proteine ?? null} />}
               </div>
               <ElencoAlimenti alimenti={variante.alimenti} />
+              {variante.note && <p className="text-sm opacity-70">{variante.note}</p>}
             </div>
           ))}
           {pasto.note && <p className="text-sm opacity-70">{pasto.note}</p>}
 
+          {diario && (
           <div className="border-t border-bordo pt-3">
             <label className="block">
               <span className="text-xs font-semibold uppercase opacity-70">Diario: cosa ho mangiato davvero</span>
@@ -239,6 +241,7 @@ export function CardPasto({
               </button>
             )}
           </div>
+          )}
 
           {sceglibile && (
             <div className="flex gap-2 pt-1">

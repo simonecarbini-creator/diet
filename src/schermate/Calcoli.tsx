@@ -183,6 +183,11 @@ export function Calcoli() {
             regola: il giorno è rispettato solo se i totali restano entro ±{regole.giornataLibera.tolleranzaPercento}%.
             Una merenda libera, dove il piano non ne indica una, si confronta con la media delle merende.
           </p>
+          <p className="mt-2">
+            Lo stesso vale per uno sgarro (pizza, sushi, cornetto al bar…) scelto al posto di un pasto: il confronto è con
+            la giornata del piano senza lo sgarro. I dolci per ora sono solo da consultare in «Pasti e alternative» e non
+            entrano nei totali.
+          </p>
         </Sezione>
 
         <Sezione titolo="Vincoli della settimana">

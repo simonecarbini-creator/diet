@@ -52,7 +52,8 @@ export type PastoRisolto = {
   /** Indicazione testuale di quando consumarlo (es. colazione "al rientro…"). */
   quando?: string
   note?: string
-  varianti?: { nome: string; alimenti: Alimento[] }[]
+  /** Spuntino serale: varianti, eventualmente con valori propri (kcal, CHO, proteine). */
+  varianti?: { nome: string; alimenti: Alimento[]; kcal?: number; cho?: number; proteine?: number; note?: string }[]
   /** Merende: tag per filtrare (ufficio, salata…). */
   tags?: string[]
   /** Cene: tipi giornata in cui il pasto è ammesso (es. C4 solo VERDE e GRIGIO). */
@@ -63,6 +64,8 @@ export type PastoRisolto = {
   versione?: 'ridotto' | 'maggiorato'
   /** Colazioni: STD, MAGG o RID (la famiglia a cui appartiene l'alternativa). */
   tipoColazione?: string
+  /** Sgarro (pizza, sushi, cornetto al bar…): al posto del pasto, fuori dal piano. */
+  daSgarro?: boolean
 }
 
 export function isTipoGiornata(tipo: string): tipo is TipoGiornata {
@@ -73,6 +76,7 @@ type Versione = {
   id: string
   kcal: number
   cho: number
+  proteine?: number
   modificheGrammi: { nome: string; grammi: number }[]
   rimozioni?: string[]
   nota?: string
@@ -131,7 +135,7 @@ function cercaConVersioni(elenco: ConVersioni[], id: string): PastoRisolto | nul
           nome: `${pasto.nome} (${etichetta})`,
           kcal: versione.kcal,
           cho: versione.cho,
-          proteine: null,
+          proteine: versione.proteine ?? null,
           alimenti: applicaModifiche(pasto.alimenti, versione),
           notaVersione: versione.nota,
           versione: etichetta,
@@ -168,7 +172,22 @@ function trovaColazione(id: string): PastoRisolto | null {
     note: colazione.note ?? base?.note,
     notaVersione: 'modifiche' in colazione ? colazione.modifiche : undefined,
     tipoColazione: colazione.tipoColazione,
+    tags: colazione.tags,
+    daSgarro: colazione.tags.includes('sgarro') || undefined,
   }
+}
+
+/** Sgarri di dati.json che possono prendere il posto di un pranzo o di una cena. */
+function trovaSgarro(categoria: 'pranzo' | 'cena', id: string): PastoRisolto | null {
+  const sgarro = dati.sgarri.find((s) => s.id === id && s.momento.includes(categoria))
+  if (!sgarro) return null
+  const { momento: _m, base, ...resto } = sgarro
+  return { ...resto, base, daSgarro: true }
+}
+
+/** I dolci si aggiungono a un pasto, non lo sostituiscono: per ora solo da consultare. */
+export function dolci(): PastoRisolto[] {
+  return dati.dolci.map((d) => ({ ...d }))
 }
 
 export function trovaPasto(categoria: CategoriaConId, id: string): PastoRisolto | null {
@@ -202,9 +221,9 @@ function trovaPastoDelPiano(categoria: CategoriaConId, id: string): PastoRisolto
       return spuntino ? { ...spuntino } : null
     }
     case 'pranzo':
-      return cercaConVersioni(dati.pranzi, id)
+      return cercaConVersioni(dati.pranzi, id) ?? trovaSgarro('pranzo', id)
     case 'cena':
-      return cercaConVersioni(dati.cene, id)
+      return cercaConVersioni(dati.cene, id) ?? trovaSgarro('cena', id)
     case 'merenda': {
       const merenda = [...dati.merende, dati.merendaRidotta].find((m) => m.id === id)
       return merenda
@@ -253,9 +272,11 @@ export function idAlternative(categoria: CategoriaConId): string[] {
     case 'spuntino':
       return senzaBase(dati.blocchi.spuntini.map((s) => s.id))
     case 'pranzo':
-      return senzaBase(conVersioni(dati.pranzi))
-    case 'cena':
-      return senzaBase(conVersioni(dati.cene))
+    case 'cena': {
+      const elenco = categoria === 'pranzo' ? dati.pranzi : dati.cene
+      const sgarri = dati.sgarri.filter((s) => s.momento.includes(categoria)).map((s) => s.id)
+      return [...senzaBase(conVersioni(elenco)), ...sgarri]
+    }
     case 'merenda':
       return senzaBase([...dati.merende.map((m) => m.id), dati.merendaRidotta.id])
   }

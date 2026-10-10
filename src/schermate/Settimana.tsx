@@ -1,6 +1,7 @@
 // Schermata Settimana (SPEC.md §3.2): il calendario a colpo d'occhio e i vincoli settimanali.
 import { useEffect, useState } from 'react'
 import { avvioChiuso } from '../avvio'
+import { useDiario } from '../diario'
 import { dati, isTipoGiornata, type Giorno, type Settimana as TipoSettimana } from '../dati'
 import { formatDataBreve, formatGiornoMese, formatNumero } from '../formato'
 import { link } from '../navigazione'
@@ -60,6 +61,7 @@ function RigaGiorno({
   oggi: string
   riflettore: boolean
 }) {
+  const diario = useDiario()
   const tipo = isTipoGiornata(giorno.tipo) ? dati.tipiGiornata[giorno.tipo] : null
   const scelte = stato?.scelte ?? {}
   const pasti = [
@@ -70,7 +72,14 @@ function RigaGiorno({
   const merenda = scelte.merenda ?? giorno.merenda
 
   return (
-    <li className={riflettore ? (giorno.data === oggi ? 'illumina' : 'spegni') : ''}>
+    <li
+      id={giorno.data === oggi ? 'giorno-oggi' : undefined}
+      className={`scroll-mt-[calc(5rem+env(safe-area-inset-top))] ${riflettore ? (giorno.data === oggi ? 'illumina' : 'spegni') : ''}`}
+      // Finito l'effetto, oggi sale in cima: da venerdì in poi altrimenti resta in fondo.
+      onAnimationEnd={(e) => {
+        if (e.animationName === 'illumina') e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }}
+    >
       <a
         href={link.giorno(giorno.data)}
         className={`flex gap-3 rounded-xl border bg-superficie p-3 ${
@@ -111,9 +120,11 @@ function RigaGiorno({
           <div className="text-2xl font-bold leading-none tabular-nums">{formatNumero(giorno.cho)}</div>
           <div className="text-xs font-semibold">g CHO</div>
           <div className="mt-1 text-xs text-testo opacity-70">{formatNumero(giorno.kcal)} kcal</div>
-          <div className="mt-2 flex justify-end">
-            <Riepilogo giorno={giorno} stato={stato} oggi={oggi} />
-          </div>
+          {diario && (
+            <div className="mt-2 flex justify-end">
+              <Riepilogo giorno={giorno} stato={stato} oggi={oggi} />
+            </div>
+          )}
         </div>
       </a>
     </li>
@@ -129,13 +140,17 @@ export function Settimana({ numero, oggi }: Props) {
   const settimana = scegliSettimana(numero, oggi)
   const giorni = settimana?.giorni ?? []
   const stati = useStatiGiorni(giorni.map((g) => g.data))
+  const diario = useDiario()
   const contieneOggi = giorni.some((g) => g.data === oggi)
   const [riflettore, setRiflettore] = useState(false)
   useEffect(() => {
     if (!contieneOggi) return
     let annullato = false
     void avvioChiuso.then(() => {
-      if (!annullato) setRiflettore(true)
+      if (annullato) return
+      // Con "Riduci movimento" niente effetto: oggi va direttamente in cima.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.getElementById('giorno-oggi')?.scrollIntoView({ block: 'start' })
+      else setRiflettore(true)
     })
     return () => {
       annullato = true
@@ -194,8 +209,8 @@ export function Settimana({ numero, oggi }: Props) {
       </ul>
       <p className="mt-2 text-xs opacity-70">
         Codici: colazione · pranzo · cena · merenda, poi spuntino serale e gel se previsti. CHO
-        e kcal sono quelli del piano.{cambiamenti && ' * = cambiato per quel giorno.'} Pollice
-        su: tutti i pasti spuntati · pollice giù: solo alcuni · ND: nessuno.
+        e kcal sono quelli del piano.{cambiamenti && ' * = cambiato per quel giorno.'}
+        {diario && ' Pollice su: tutti i pasti spuntati · pollice giù: solo alcuni · ND: nessuno.'}
       </p>
 
       {!successiva && (

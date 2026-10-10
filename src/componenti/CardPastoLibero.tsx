@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { CategoriaPasto } from '../dati'
 import { formatNumero } from '../formato'
 import { haValori, type PastoLibero, type VocePasto } from '../giornata'
+import { NumeriPasto } from './NumeriPasto'
 import { bozzaDa, CampiPastoLibero, daBozza, type BozzaLibero } from './CampiPastoLibero'
 
 type Props = {
@@ -87,16 +88,16 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
             <div className="font-semibold leading-snug">{libero.testo}</div>
             <div className="text-sm opacity-70">
               {conValori
-                ? `${formatNumero(libero.kcal ?? 0)} kcal · ${formatNumero(libero.proteine ?? 0)} g pro`
+                ? `${formatNumero(libero.kcal ?? 0)} kcal`
                 : `al posto di ${voce.pasto?.id ?? 'del pasto del piano'}`}
             </div>
           </div>
-          <div className="shrink-0 text-right text-cho">
-            <div className="text-3xl font-bold leading-none tabular-nums">
-              {conValori ? formatNumero(libero.cho ?? 0) : 'ND'}
-            </div>
-            <div className="text-xs font-semibold">g CHO</div>
-          </div>
+          <NumeriPasto
+            cho={conValori ? (libero.cho ?? 0) : null}
+            proteine={conValori ? (libero.proteine ?? 0) : null}
+            mancante="ND"
+            grande
+          />
         </button>
       </div>
       {aperto && (

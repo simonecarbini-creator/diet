@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { RiassuntoAlimenti } from '../componenti/Alimenti'
 import { Conferma } from '../componenti/Conferma'
-import { dati, idAlternative, trovaPasto, type CategoriaConId, type PastoRisolto } from '../dati'
+import { NumeriPasto } from '../componenti/NumeriPasto'
+import { dati, dolci, idAlternative, trovaPasto, type CategoriaConId, type PastoRisolto } from '../dati'
 import { condividiFile } from '../esporta'
 import { formatNumero } from '../formato'
 import { Evidenzia } from '../componenti/Evidenzia'
@@ -17,6 +18,20 @@ const categorie: { id: CategoriaConId; titolo: string }[] = [
   { id: 'merenda', titolo: 'Merende' },
   { id: 'cena', titolo: 'Cene' },
 ]
+
+/** Fuori dal piano: sgarri (al posto di un pasto) e dolci (in aggiunta). Solo da consultare qui. */
+type Scheda = CategoriaConId | 'sgarri' | 'dolci'
+const schedeExtra: { id: Scheda; titolo: string; nota: string }[] = [
+  { id: 'sgarri', titolo: 'Sgarri', nota: 'Al posto di un pasto, non in aggiunta: si scelgono da «Cambia» sul pranzo, sulla cena o sulla colazione.' },
+  { id: 'dolci', titolo: 'Dolci', nota: 'Si aggiungono a un pasto, non lo sostituiscono. I loro CHO non entrano nei totali del giorno.' },
+]
+
+function pastiExtra(scheda: 'sgarri' | 'dolci'): PastoRisolto[] {
+  if (scheda === 'dolci') return dolci()
+  const colazioni = idAlternative('colazione').map((id) => trovaPasto('colazione', id))
+  const altri = dati.sgarri.map((s) => trovaPasto(s.momento.includes('pranzo') ? 'pranzo' : 'cena', s.id))
+  return [...colazioni, ...altri].filter((p): p is PastoRisolto => !!p?.daSgarro)
+}
 
 /** Per pranzi e cene: i pasti principali a cui si possono aggiungere alternative. */
 function pastiBase(categoria: CategoriaConId): { id: string; nome: string }[] {
@@ -68,15 +83,9 @@ function RigaPasto({
               ))}
             </div>
           )}
-          <div className="text-sm opacity-70">
-            {formatNumero(pasto.kcal)} kcal
-            {pasto.proteine !== null && ` · ${formatNumero(pasto.proteine)} g proteine`}
-          </div>
+          <div className="text-sm opacity-70">{formatNumero(pasto.kcal)} kcal</div>
         </div>
-        <div className="shrink-0 text-right text-cho">
-          <div className="text-2xl font-bold leading-none tabular-nums">{formatNumero(pasto.cho)}</div>
-          <div className="text-xs font-semibold">g CHO</div>
-        </div>
+        <NumeriPasto cho={pasto.cho} proteine={pasto.proteine} />
       </button>
       {aperto && (
         <div className="space-y-2 border-t border-bordo px-3 pb-3 pt-2">
@@ -221,7 +230,9 @@ function NuovaAlternativa({ categoria, onFatto }: { categoria: CategoriaConId; o
 
 export function Pasti() {
   const tue = usePastiUtente()
-  const [categoria, setCategoria] = useState<CategoriaConId>('pranzo')
+  const [scheda, setScheda] = useState<Scheda>('pranzo')
+  const extra = scheda === 'sgarri' || scheda === 'dolci' ? scheda : null
+  const categoria: CategoriaConId = extra ? 'pranzo' : (scheda as CategoriaConId)
   const [nuova, setNuova] = useState(false)
   const [daEliminare, setDaEliminare] = useState<PastoUtente | null>(null)
   const [cerca, setCerca] = useState('')
@@ -239,6 +250,10 @@ export function Pasti() {
               p.alimenti.some((a) => [a.nome, ...(a.sostituibileCon ?? [])].some((nome) => contiene(nome, cerca))),
           )
           .map((p) => ({ pasto: p, categoria: c.titolo })),
+      ).concat(
+        dolci()
+          .filter((p) => contiene(p.id, cerca) || contiene(p.nome, cerca) || p.alimenti.some((a) => contiene(a.nome, cerca)))
+          .map((p) => ({ pasto: p, categoria: 'Dolci' })),
       )
     : []
 
@@ -322,17 +337,17 @@ export function Pasti() {
       ) : (
       <>
       <div className="mt-3 flex flex-wrap gap-2">
-        {categorie.map((c) => (
+        {[...categorie, ...schedeExtra].map((c) => (
           <button
             key={c.id}
             type="button"
-            aria-pressed={categoria === c.id}
+            aria-pressed={scheda === c.id}
             onClick={() => {
-              setCategoria(c.id)
+              setScheda(c.id)
               setNuova(false)
             }}
             className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${
-              categoria === c.id ? 'border-cho bg-cho text-white' : 'border-bordo bg-superficie'
+              scheda === c.id ? 'border-cho bg-cho text-white' : 'border-bordo bg-superficie'
             }`}
           >
             {c.titolo}
@@ -340,6 +355,17 @@ export function Pasti() {
         ))}
       </div>
 
+      {extra ? (
+        <>
+          <p className="mt-4 rounded-xl bg-superficie p-3 text-sm">{schedeExtra.find((e) => e.id === extra)?.nota}</p>
+          <ul className="mt-4 space-y-2">
+            {pastiExtra(extra).map((p) => (
+              <RigaPasto key={p.id} pasto={p} />
+            ))}
+          </ul>
+        </>
+      ) : (
+      <>
       <div className="mt-4">
         {nuova ? (
           <NuovaAlternativa categoria={categoria} onFatto={() => setNuova(false)} />
@@ -377,6 +403,8 @@ export function Pasti() {
           </section>
         ))}
       </div>
+      </>
+      )}
       </>
       )}
 

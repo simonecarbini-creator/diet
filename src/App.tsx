@@ -18,11 +18,13 @@ import { PiePagina } from './componenti/PiePagina'
 import { FinestraPeso, PulsantePeso } from './componenti/Peso'
 import { promemoriaPesata, usePesi } from './peso'
 import { usePiano } from './piano'
+import { useDiario } from './diario'
 
 function App() {
   const errori = verificaDati(dati)
   const { rotta, provenienza } = useRotta()
   usePiano()
+  const diario = useDiario()
   const [adesso, setAdesso] = useState(() => new Date())
 
   // Aggiorna l'ora ogni minuto: il pasto corrente cambia anche ad app aperta.
@@ -38,9 +40,11 @@ function App() {
   const promemoria = promemoriaPesata(oggi, oraLocale(adesso), pesate)
 
   // Nel dettaglio di un giorno resta attiva la scheda da cui si è arrivati.
-  const schedaAttiva = rotta.schermata === 'giorno' ? provenienza.schermata : rotta.schermata
+  // Senza diario, Mese e Registro non ci sono: i loro link portano alla Settimana.
+  const schermata = !diario && (rotta.schermata === 'mese' || rotta.schermata === 'registro') ? 'settimana' : rotta.schermata
+  const schedaAttiva = schermata === 'giorno' ? provenienza.schermata : schermata
   const schede = [
-    { href: link.mese(), etichetta: 'Mese', attiva: schedaAttiva === 'mese' },
+    ...(diario ? [{ href: link.mese(), etichetta: 'Mese', attiva: schedaAttiva === 'mese' }] : []),
     { href: link.settimana(), etichetta: 'Settimana', attiva: schedaAttiva === 'settimana' },
     { href: link.oggi, etichetta: 'Oggi', attiva: schedaAttiva === 'oggi' },
   ]
@@ -73,18 +77,18 @@ function App() {
         )}
 
         {rotta.schermata === 'oggi' && <Oggi key={oggi} data={oggi} ora={oraLocale(adesso)} />}
-        {rotta.schermata === 'mese' && <Mese mese={rotta.mese} oggi={oggi} />}
+        {schermata === 'mese' && rotta.schermata === 'mese' && <Mese mese={rotta.mese} oggi={oggi} />}
         {rotta.schermata === 'nuova' && <NuovaSettimana />}
         {rotta.schermata === 'calcoli' && <Calcoli />}
         {rotta.schermata === 'piano' && <CambiaPiano oggi={oggi} />}
         {rotta.schermata === 'backup' && <Backup oggi={oggi} />}
         {rotta.schermata === 'pasti' && <Pasti />}
-        {rotta.schermata === 'registro' && <Registro pesate={pesate} onApriPeso={() => setFinestraPeso(true)} />}
-        {rotta.schermata === 'settimana' && <Settimana numero={rotta.numero} oggi={oggi} />}
+        {schermata === 'registro' && <Registro pesate={pesate} onApriPeso={() => setFinestraPeso(true)} />}
+        {schermata === 'settimana' && <Settimana numero={rotta.schermata === 'settimana' ? rotta.numero : null} oggi={oggi} />}
         {rotta.schermata === 'giorno' && (
           <>
-            <a href={provenienza.href} className="mb-3 inline-block py-1 font-medium text-cho">
-              ‹ {provenienza.schermata === 'mese' ? 'Mese' : 'Settimana'}
+            <a href={provenienza.schermata === 'mese' && !diario ? link.settimana() : provenienza.href} className="mb-3 inline-block py-1 font-medium text-cho">
+              ‹ {provenienza.schermata === 'mese' && diario ? 'Mese' : 'Settimana'}
             </a>
             <Oggi
               key={rotta.data}

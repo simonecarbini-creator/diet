@@ -1,7 +1,7 @@
 {
   "$schema": "./dati.schema.json",
   "versione": "1.0.0",
-  "aggiornato": "2026-10-05",
+  "aggiornato": "2026-10-10",
   "_nota": "Fonte di verita' unica del piano alimentare. kcal e CHO sono valori calcolati; le proteine sono stime arrotondate. Tutti i grammi degli alimenti sono A CRUDO, tranne i legumi che sono indicati lessati e sgocciolati.",
 
   "atleta": {
@@ -248,7 +248,7 @@
         "categoria": "latticini",
         "kcal": 700,
         "cho": 90,
-        "proteine": 33,
+        "proteine": 37,
         "grassi": 20,
         "alimenti": [
           {
@@ -777,7 +777,7 @@
         "categoria": "latticini",
         "kcal": 840,
         "cho": 121,
-        "proteine": 34,
+        "proteine": 39,
         "grassi": 21,
         "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
         "alimenti": [
@@ -1843,6 +1843,69 @@
           "fibraAlta"
         ],
         "tipoColazione": "RID"
+      },
+      {
+        "id": "COL-SG",
+        "base": "COL-SG",
+        "nome": "Cornetto e cappuccino",
+        "kcal": 320,
+        "cho": 34,
+        "proteine": 9,
+        "alimenti": [
+          {
+            "nome": "Cornetto semplice da bar",
+            "grammi": 60,
+            "note": "alla crema o al cioccolato: circa +55 kcal e +9 g CHO"
+          },
+          {
+            "nome": "Cappuccino (latte parzialmente scremato)",
+            "grammi": 180,
+            "note": "ml"
+          }
+        ],
+        "note": "Sgarro. NON e' una colazione post-allenamento: rispetto alla STD mancano circa 55 g di CHO e 25 g di proteine. Va bene nei giorni GRIGIO; nei giorni con allenamento usa COL-SG+.",
+        "tags": [
+          "sgarro",
+          "bar"
+        ],
+        "tipoColazione": "RID"
+      },
+      {
+        "id": "COL-SG+",
+        "base": "COL-SG",
+        "nome": "Cornetto e cappuccino + integrazione",
+        "kcal": 600,
+        "cho": 80,
+        "proteine": 30,
+        "alimenti": [
+          {
+            "nome": "Cornetto semplice da bar",
+            "grammi": 60
+          },
+          {
+            "nome": "Cappuccino (latte parzialmente scremato)",
+            "grammi": 180,
+            "note": "ml"
+          },
+          {
+            "nome": "Yogurt greco 0%",
+            "grammi": 170
+          },
+          {
+            "nome": "Banana",
+            "grammi": 120
+          },
+          {
+            "nome": "Fette biscottate integrali",
+            "pezzi": 2
+          }
+        ],
+        "note": "Versione da giorno di allenamento: al bar cornetto e cappuccino, il resto a casa o in ufficio. Si avvicina alla RID.",
+        "tags": [
+          "sgarro",
+          "bar"
+        ],
+        "tipoColazione": "STD"
       }
     ],
 
@@ -1892,22 +1955,13 @@
       "nome": "Spuntino serale",
       "kcal": 300,
       "cho": 25,
-      "proteine": 20,
+      "proteine": 23,
       "alimenti": [
         { "nome": "Yogurt greco", "grammi": 170 },
         { "nome": "Avena", "grammi": 30 },
         { "nome": "Noci", "grammi": 15 }
       ],
-      "varianti": [
-        {
-          "nome": "Con ricotta",
-          "alimenti": [
-            { "nome": "Ricotta", "grammi": 180 },
-            { "nome": "Avena", "grammi": 30 },
-            { "nome": "Miele", "grammi": 10 }
-          ]
-        }
-      ],
+      "varianti": [{"nome": "Con ricotta", "kcal": 400, "cho": 32, "proteine": 20, "alimenti": [{"nome": "Ricotta vaccina", "grammi": 180}, {"nome": "Avena (fiocchi)", "grammi": 30}, {"nome": "Miele", "grammi": 10}], "note": "Con 180 g di ricotta e' circa 100 kcal piu' ricco della versione con yogurt. Per pareggiarlo: ricotta 120 g."}],
       "note": "E' l'anti-ipoglicemia notturna dopo qualita' e lungo. Prima di dormire guarda la FRECCIA del Libre, non solo il valore."
     }
   },
@@ -1933,7 +1987,7 @@
           "nome": "Con fiocchi di latte al posto dei legumi",
           "kcal": 970,
           "cho": 129,
-          "proteine": 35,
+          "proteine": 48,
           "alimenti": [
             { "nome": "Pasta", "grammi": 160 },
             { "nome": "Fiocchi di latte", "grammi": 210 },
@@ -1944,7 +1998,7 @@
         }
       ],
       "ridotto": {
-        "id": "P1rid", "kcal": 790, "cho": 104, "modifiche": "pasta 80 g, niente pane",
+        "id": "P1rid", "kcal": 790, "cho": 104, "proteine": 30, "modifiche": "pasta 80 g, niente pane",
         "modificheGrammi": [{ "nome": "Pasta", "grammi": 80 }],
         "rimozioni": ["Pane"]
       },
@@ -1955,7 +2009,7 @@
       "nome": "Cereale e pesce",
       "kcal": 1030,
       "cho": 148,
-      "proteine": 40,
+      "proteine": 48,
       "alimenti": [
         { "nome": "Riso o farro", "grammi": 140 },
         { "nome": "Tonno al naturale", "grammi": 120, "sostituibileCon": ["Salmone 130 g", "Salmone affumicato 120 g (togliere l'olio)"] },
@@ -1964,7 +2018,7 @@
         { "nome": "Pane", "grammi": 60 }
       ],
       "ridotto": {
-        "id": "P2rid", "kcal": 750, "cho": 100, "modifiche": "cereale 100 g, niente pane",
+        "id": "P2rid", "kcal": 750, "cho": 100, "proteine": 40, "modifiche": "cereale 100 g, niente pane",
         "modificheGrammi": [{ "nome": "Riso o farro", "grammi": 100 }],
         "rimozioni": ["Pane"]
       },
@@ -1976,7 +2030,7 @@
       "nome": "Pollo ai ferri",
       "kcal": 1030,
       "cho": 108,
-      "proteine": 45,
+      "proteine": 58,
       "alimenti": [
         { "nome": "Pollo ai ferri", "grammi": 180 },
         { "nome": "Patate", "grammi": 350 },
@@ -1985,12 +2039,12 @@
         { "nome": "Pane", "grammi": 80 }
       ],
       "maggiorato": {
-        "id": "P3+", "kcal": 1130, "cho": 133, "modifiche": "patate 450 g oppure pane 110 g",
+        "id": "P3+", "kcal": 1130, "cho": 133, "proteine": 60, "modifiche": "patate 450 g oppure pane 110 g",
         "modificheGrammi": [{ "nome": "Patate", "grammi": 450 }],
         "nota": "Si maggiora uno solo dei due: patate 450 g (pane resta 80 g) OPPURE pane 110 g (patate restano 350 g)."
       },
       "ridotto": {
-        "id": "P3rid", "kcal": 750, "cho": 85, "modifiche": "patate 250 g, pane 40 g",
+        "id": "P3rid", "kcal": 750, "cho": 85, "proteine": 53, "modifiche": "patate 250 g, pane 40 g",
         "modificheGrammi": [{ "nome": "Patate", "grammi": 250 }, { "nome": "Pane", "grammi": 40 }]
       },
       "note": "Ha meno CHO delle altre due opzioni: nei giorni ROSSO usare la versione maggiorata."
@@ -2200,7 +2254,7 @@
           "nome": "Con fiocchi di latte",
           "kcal": 1090,
           "cho": 150,
-          "proteine": 43,
+          "proteine": 47,
           "alimenti": [
             {
               "nome": "Riso basmati",
@@ -2437,6 +2491,153 @@
       "tags": [
         "carne"
       ]
+    },
+    {
+      "id": "P14",
+      "nome": "Piadina con spinaci e formaggio a fette",
+      "kcal": 1030,
+      "cho": 131,
+      "proteine": 39,
+      "alimenti": [
+        {
+          "nome": "Piadina classica",
+          "grammi": 220,
+          "note": "2 piadine"
+        },
+        {
+          "nome": "Formaggio a fette (Emmental, Edamer, Fontal)",
+          "grammi": 50
+        },
+        {
+          "nome": "Spinaci",
+          "grammi": 200,
+          "note": "saltati in padella"
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 5
+        },
+        {
+          "nome": "Frutto",
+          "grammi": 150
+        }
+      ],
+      "note": "Con le sottilette le proteine si dimezzano: meglio formaggi stagionati a fette. Nei giorni ROSSO aggiungi 1 frutto o 40 g di pane.",
+      "tags": [
+        "ufficio"
+      ]
+    },
+    {
+      "id": "P15",
+      "nome": "Pasta con zucca e ricotta",
+      "kcal": 1000,
+      "cho": 142,
+      "proteine": 37,
+      "alimenti": [
+        {
+          "nome": "Pasta",
+          "grammi": 130
+        },
+        {
+          "nome": "Zucca",
+          "grammi": 300
+        },
+        {
+          "nome": "Ricotta vaccina",
+          "grammi": 100
+        },
+        {
+          "nome": "Parmigiano",
+          "grammi": 15
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 15
+        },
+        {
+          "nome": "Pane",
+          "grammi": 40
+        }
+      ],
+      "note": "Qui la zucca e' il condimento (300 g, oltre la porzione di verdura): per questo e' contata a parte. Come contorno resta una verdura amidacea della lista verdure."
+    },
+    {
+      "id": "P16",
+      "nome": "Bowl di riso con hummus, barbabietole, avocado e tonno",
+      "kcal": 1040,
+      "cho": 142,
+      "proteine": 44,
+      "alimenti": [
+        {
+          "nome": "Riso basmati",
+          "grammi": 120
+        },
+        {
+          "nome": "Hummus",
+          "grammi": 80
+        },
+        {
+          "nome": "Barbabietole cotte al vapore",
+          "grammi": 150
+        },
+        {
+          "nome": "Avocado",
+          "grammi": 60
+        },
+        {
+          "nome": "Tonno al naturale sgocciolato",
+          "grammi": 80
+        },
+        {
+          "nome": "Insalata o rucola",
+          "grammi": 100
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 5
+        },
+        {
+          "nome": "Pane",
+          "grammi": 40
+        }
+      ],
+      "note": "Si mangia fredda: comoda in ufficio. Conta come una delle 2-3 barbabietole della settimana. Hummus del supermercato: controlla l'etichetta, varia da 170 a 300 kcal/100 g.",
+      "tags": [
+        "ufficio",
+        "freddo",
+        "barbabietola"
+      ]
+    },
+    {
+      "id": "P17",
+      "nome": "Burger vegetale di soia con patate",
+      "kcal": 1020,
+      "cho": 129,
+      "proteine": 46,
+      "alimenti": [
+        {
+          "nome": "Burger vegetale di soia",
+          "grammi": 160,
+          "note": "2 burger"
+        },
+        {
+          "nome": "Patate",
+          "grammi": 350
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 12
+        },
+        {
+          "nome": "Pane",
+          "grammi": 100
+        }
+      ],
+      "note": "Come P3 ha meno CHO delle opzioni a base di pasta: nei giorni ROSSO porta il pane a 130 g. Valori del burger variabili tra marche: cerca almeno 15 g di proteine per 100 g."
     }
   ],
 
@@ -2446,7 +2647,7 @@
       "nome": "Pesce bianco",
       "kcal": 810,
       "cho": 89,
-      "proteine": 45,
+      "proteine": 50,
       "alimenti": [
         { "nome": "Pesce bianco (merluzzo, orata, branzino)", "grammi": 200, "note": "a crudo" },
         { "nome": "Patate", "grammi": 300 },
@@ -2455,7 +2656,7 @@
         { "nome": "Pane", "grammi": 60 }
       ],
       "ridotto": {
-        "id": "C1rid", "kcal": 640, "cho": 64, "modifiche": "patate 200 g, pane 40 g",
+        "id": "C1rid", "kcal": 640, "cho": 64, "proteine": 46, "modifiche": "patate 200 g, pane 40 g",
         "modificheGrammi": [{ "nome": "Patate", "grammi": 200 }, { "nome": "Pane", "grammi": 40 }]
       }
     },
@@ -2464,7 +2665,7 @@
       "nome": "Pesce grasso",
       "kcal": 790,
       "cho": 75,
-      "proteine": 42,
+      "proteine": 47,
       "contaComeOmega3": true,
       "alimenti": [
         { "nome": "Salmone, sgombro, sardine o alici", "grammi": 180, "note": "a crudo o al naturale; 130-140 g se sott'olio sgocciolato" },
@@ -2474,7 +2675,7 @@
         { "nome": "Pane", "grammi": 50 }
       ],
       "ridotto": {
-        "id": "C2rid", "kcal": 620, "cho": 50, "modifiche": "patate 170 g, pane 30 g",
+        "id": "C2rid", "kcal": 620, "cho": 50, "proteine": 43, "modifiche": "patate 170 g, pane 30 g",
         "modificheGrammi": [{ "nome": "Patate", "grammi": 170 }, { "nome": "Pane", "grammi": 30 }]
       },
       "note": "Omega-3 per il recupero. Preferire il vasetto in vetro alla latta, filetti interi e non pezzi."
@@ -2484,7 +2685,7 @@
       "nome": "Uova",
       "kcal": 770,
       "cho": 79,
-      "proteine": 32,
+      "proteine": 38,
       "alimenti": [
         { "nome": "Uova", "pezzi": 3 },
         { "nome": "Parmigiano", "grammi": 20 },
@@ -2494,7 +2695,7 @@
         { "nome": "Frutto", "pezzi": 1 }
       ],
       "maggiorato": {
-        "id": "C3+", "kcal": 870, "cho": 99, "modifiche": "pane 140 g (40 g in piu') nei giorni ROSSO",
+        "id": "C3+", "kcal": 870, "cho": 99, "proteine": 42, "modifiche": "pane 140 g (40 g in piu') nei giorni ROSSO",
         "modificheGrammi": [{ "nome": "Pane", "grammi": 140 }]
       },
       "note": "Ha 10 g di CHO in meno di C1: nei giorni ROSSO aggiungere 40 g di pane."
@@ -2504,7 +2705,7 @@
       "nome": "Formaggio fresco",
       "kcal": 820,
       "cho": 85,
-      "proteine": 35,
+      "proteine": 39,
       "soloTipiGiornata": ["VERDE", "GRIGIO"],
       "incompatibileCon": ["C2"],
       "alimenti": [
@@ -2917,22 +3118,493 @@
         "legumi",
         "uova"
       ]
+    },
+    {
+      "id": "C15",
+      "nome": "Seppie ripiene di tonno con sugo e piselli",
+      "kcal": 800,
+      "cho": 88,
+      "proteine": 64,
+      "alimenti": [
+        {
+          "nome": "Seppie",
+          "grammi": 200,
+          "note": "pulite"
+        },
+        {
+          "nome": "Tonno al naturale sgocciolato",
+          "grammi": 50,
+          "note": "ripieno"
+        },
+        {
+          "nome": "Pangrattato",
+          "grammi": 20,
+          "note": "ripieno"
+        },
+        {
+          "nome": "Parmigiano",
+          "grammi": 10,
+          "note": "ripieno"
+        },
+        {
+          "nome": "Passata di pomodoro",
+          "grammi": 200
+        },
+        {
+          "nome": "Piselli (surgelati)",
+          "grammi": 150
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 12
+        },
+        {
+          "nome": "Pane",
+          "grammi": 80
+        }
+      ],
+      "note": "Molto proteica. I piselli contano come legumi, non come verdura: se vuoi la verdura aggiungila a parte (insalata, 100-150 g)."
+    },
+    {
+      "id": "C16",
+      "nome": "Bastoncini di pesce fritti con patate",
+      "kcal": 810,
+      "cho": 90,
+      "proteine": 34,
+      "alimenti": [
+        {
+          "nome": "Bastoncini di pesce (fritti in padella)",
+          "grammi": 200,
+          "note": "circa 8 pezzi"
+        },
+        {
+          "nome": "Patate",
+          "grammi": 200,
+          "note": "lesse o al forno"
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 5
+        },
+        {
+          "nome": "Pane",
+          "grammi": 30
+        }
+      ],
+      "note": "Frittura: sposta la curva glicemica in avanti di 4-6 ore, guarda il Libre a 2, 4 e 6 ore. Non conta come pesce grasso (C2). Al forno invece che fritti: circa -100 kcal.",
+      "tags": [
+        "grasso",
+        "frittura"
+      ],
+      "soloTipiGiornata": [
+        "VERDE",
+        "GRIGIO"
+      ]
+    },
+    {
+      "id": "C17",
+      "nome": "Burger vegetale di soia con barbabietole e patate",
+      "kcal": 810,
+      "cho": 92,
+      "proteine": 40,
+      "alimenti": [
+        {
+          "nome": "Burger vegetale di soia",
+          "grammi": 160,
+          "note": "2 burger"
+        },
+        {
+          "nome": "Patate",
+          "grammi": 250
+        },
+        {
+          "nome": "Barbabietole cotte al vapore",
+          "grammi": 150
+        },
+        {
+          "nome": "Insalata o rucola",
+          "grammi": 50
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 10
+        },
+        {
+          "nome": "Pane",
+          "grammi": 50
+        }
+      ],
+      "note": "Conta come una delle 2-3 barbabietole della settimana.",
+      "tags": [
+        "barbabietola"
+      ]
+    },
+    {
+      "id": "C18",
+      "nome": "Zucca al forno con ceci e feta",
+      "kcal": 810,
+      "cho": 105,
+      "proteine": 34,
+      "alimenti": [
+        {
+          "nome": "Zucca",
+          "grammi": 400
+        },
+        {
+          "nome": "Ceci lessati",
+          "grammi": 200
+        },
+        {
+          "nome": "Feta",
+          "grammi": 60
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 12
+        },
+        {
+          "nome": "Pane",
+          "grammi": 70
+        }
+      ],
+      "note": "Ha un po' piu' di CHO delle altre cene: va bene anche nei giorni ROSSO. Zucca al forno: caramellizza e la curva sale piu' in fretta che lessa."
+    },
+    {
+      "id": "C19",
+      "nome": "Piatto freddo: hummus, uova sode e avocado",
+      "kcal": 840,
+      "cho": 88,
+      "proteine": 34,
+      "alimenti": [
+        {
+          "nome": "Hummus",
+          "grammi": 100
+        },
+        {
+          "nome": "Uova",
+          "pezzi": 2,
+          "note": "sode"
+        },
+        {
+          "nome": "Avocado",
+          "grammi": 50
+        },
+        {
+          "nome": "Pane",
+          "grammi": 120
+        },
+        {
+          "nome": "Verdure crude (carote, finocchi, pomodorini)",
+          "grammi": 200
+        }
+      ],
+      "note": "Cena ricca di grassi (circa 37 g): solo giorni VERDE o GRIGIO, come C4.",
+      "tags": [
+        "freddo",
+        "grasso"
+      ],
+      "soloTipiGiornata": [
+        "VERDE",
+        "GRIGIO"
+      ]
     }
   ],
 
   "merende": [
-    { "id": "M1", "kcal": 350, "cho": 62, "proteine": 18, "composizione": "Pane 60 g + miele 30 g + yogurt greco 170 g", "tags": [] },
-    { "id": "M2", "kcal": 360, "cho": 62, "proteine": 18, "composizione": "Yogurt greco 170 g + banana 150 g + 4 gallette di mais o 5 fette biscottate integrali", "tags": ["ufficio"] },
+    { "id": "M1", "kcal": 350, "cho": 62, "proteine": 22, "composizione": "Pane 60 g + miele 30 g + yogurt greco 170 g", "tags": [] },
+    { "id": "M2", "kcal": 360, "cho": 62, "proteine": 21, "composizione": "Yogurt greco 170 g + banana 150 g + 4 gallette di mais o 5 fette biscottate integrali", "tags": ["ufficio"] },
     { "id": "M3", "kcal": 370, "cho": 56, "proteine": 14, "composizione": "Pane 70 g + ricotta 80 g + 1 mela o pera 130 g", "tags": [] },
     { "id": "M4", "kcal": 375, "cho": 54, "proteine": 7, "composizione": "Banana 150 g + mela 180 g + mandorle 25 g", "tags": ["ufficio", "senzaYogurt", "senzaCucchiaio", "pocheProteine"] },
-    { "id": "M5", "kcal": 350, "cho": 58, "proteine": 20, "composizione": "Pane 80 g + bresaola o salmone affumicato 60 g + pomodorini + 1 frutto", "tags": ["salata", "senzaYogurt"] },
-    { "id": "M6", "kcal": 355, "cho": 60, "proteine": 13, "composizione": "Avena 50 g ammollata in latte 250 ml + banana 150 g + cannella", "tags": ["ufficio", "preparareSeraPrima"] },
+    { "id": "M5", "kcal": 350, "cho": 58, "proteine": 25, "composizione": "Pane 80 g + bresaola o salmone affumicato 60 g + pomodorini + 1 frutto", "tags": ["salata", "senzaYogurt"] },
+    { "id": "M6", "kcal": 355, "cho": 60, "proteine": 17, "composizione": "Avena 50 g ammollata in latte 250 ml + banana 150 g + cannella", "tags": ["ufficio", "preparareSeraPrima"] },
     { "id": "M7", "kcal": 360, "cho": 56, "proteine": 8, "composizione": "Pane 80 g + cioccolato fondente 70-85% 25 g + 1 frutto", "tags": ["senzaYogurt", "pocheProteine"] },
     { "id": "M8", "kcal": 355, "cho": 57, "proteine": 14, "composizione": "2 fette di pane integrale + ricotta 100 g + composta 30 g + 1 frutto", "tags": [] },
-    { "id": "M9", "kcal": 370, "cho": 58, "proteine": 14, "composizione": "Latte 300 ml + banana 150 g + avena 40 g + burro d'arachidi 10 g", "tags": ["ufficio", "daBere", "preparareSeraPrima"] },
+    { "id": "M9", "kcal": 370, "cho": 58, "proteine": 20, "composizione": "Latte 300 ml + banana 150 g + avena 40 g + burro d'arachidi 10 g", "tags": ["ufficio", "daBere", "preparareSeraPrima"] },
     { "id": "M10", "kcal": 385, "cho": 55, "proteine": 17, "composizione": "Pane 70 g + parmigiano 30 g + 1 frutto 150 g", "tags": ["salata", "senzaYogurt", "senzaCucchiaio", "ufficio"] },
-    { "id": "M11", "kcal": 400, "cho": 48, "proteine": 8, "composizione": "Banana 150 g + mandorle o noci 30 g + 3 fette biscottate integrali", "tags": ["ufficio", "senzaYogurt", "senzaCucchiaio", "pocheProteine"] },
+    { "id": "M11", "kcal": 400, "cho": 48, "proteine": 11, "composizione": "Banana 150 g + mandorle o noci 30 g + 3 fette biscottate integrali", "tags": ["ufficio", "senzaYogurt", "senzaCucchiaio", "pocheProteine"] },
     { "id": "M12", "kcal": 390, "cho": 55, "proteine": 12, "composizione": "Bruschetta: pane 70 g + pomodorini + parmigiano 20 g + olio EVO 5 g + 1 frutto", "tags": ["salata", "senzaYogurt", "senzaCucchiaio"] }
+  ],
+  "sgarri": [
+    {
+      "id": "S1",
+      "nome": "Pizza + 1 birra",
+      "momento": [
+        "pranzo",
+        "cena"
+      ],
+      "kcal": 1010,
+      "cho": 117,
+      "proteine": 35,
+      "alimenti": [
+        {
+          "nome": "Pizza margherita (pizzeria)",
+          "grammi": 300
+        },
+        {
+          "nome": "Birra chiara 5%",
+          "grammi": 500,
+          "note": "ml"
+        }
+      ],
+      "note": "Sgarro: al posto del pranzo o della cena, non in aggiunta. Effetto pizza: grassi + carboidrati, la glicemia sale tardi (3-6 ore dopo) e a lungo. Alcol: blocca la produzione di glucosio del fegato, quindi il rischio e' l'ipoglicemia tardiva e notturna, non il picco. I CHO della birra non si comportano come quelli del cibo: chiedi al diabetologo come regolarti. Prima di dormire guarda la freccia del Libre.",
+      "tags": [
+        "sgarro",
+        "alcol",
+        "grasso"
+      ]
+    },
+    {
+      "id": "S1+",
+      "base": "S1",
+      "nome": "Pizza + 2 birre",
+      "momento": [
+        "pranzo",
+        "cena"
+      ],
+      "kcal": 1220,
+      "cho": 135,
+      "proteine": 37,
+      "alimenti": [
+        {
+          "nome": "Pizza margherita (pizzeria)",
+          "grammi": 300
+        },
+        {
+          "nome": "Birra chiara 5%",
+          "grammi": 1000,
+          "note": "ml"
+        }
+      ],
+      "note": "Sgarro: al posto del pranzo o della cena, non in aggiunta. Effetto pizza: grassi + carboidrati, la glicemia sale tardi (3-6 ore dopo) e a lungo. Alcol: blocca la produzione di glucosio del fegato, quindi il rischio e' l'ipoglicemia tardiva e notturna, non il picco. I CHO della birra non si comportano come quelli del cibo: chiedi al diabetologo come regolarti. Prima di dormire guarda la freccia del Libre. Con 2 birre mai la sera prima di un giorno ROSSO.",
+      "tags": [
+        "sgarro",
+        "alcol",
+        "grasso"
+      ]
+    },
+    {
+      "id": "S2",
+      "nome": "Verdure fritte in pastella con pane",
+      "momento": [
+        "pranzo",
+        "cena"
+      ],
+      "kcal": 740,
+      "cho": 83,
+      "proteine": 14,
+      "alimenti": [
+        {
+          "nome": "Verdure fritte in pastella (zucchine, carciofi, fiori di zucca)",
+          "grammi": 250
+        },
+        {
+          "nome": "Pane",
+          "grammi": 60
+        }
+      ],
+      "note": "Sgarro: al posto del pranzo o della cena, non in aggiunta. Poche proteine (circa 14 g): recuperale nel resto della giornata (merenda con yogurt greco o parmigiano). Frittura: curva spostata in avanti di 4-6 ore.",
+      "tags": [
+        "sgarro",
+        "frittura",
+        "grasso",
+        "pocheProteine"
+      ]
+    },
+    {
+      "id": "S3",
+      "nome": "Cinese",
+      "momento": [
+        "pranzo",
+        "cena"
+      ],
+      "kcal": 1040,
+      "cho": 118,
+      "proteine": 41,
+      "alimenti": [
+        {
+          "nome": "Involtino primavera",
+          "grammi": 80,
+          "note": "1 pezzo"
+        },
+        {
+          "nome": "Ravioli al vapore",
+          "grammi": 100,
+          "note": "4 pezzi"
+        },
+        {
+          "nome": "Riso alla cantonese",
+          "grammi": 250,
+          "note": "porzione da ristorante, gia' cotto"
+        },
+        {
+          "nome": "Gamberi saltati con verdure",
+          "grammi": 200
+        }
+      ],
+      "note": "Sgarro: al posto del pranzo o della cena, non in aggiunta. Il riso alla cantonese contiene prosciutto: in alternativa riso con verdure (valori simili). Salse agrodolci: +15-20 g di zuccheri a cucchiaiata.",
+      "tags": [
+        "sgarro"
+      ]
+    },
+    {
+      "id": "S4",
+      "nome": "Sushi",
+      "momento": [
+        "pranzo",
+        "cena"
+      ],
+      "kcal": 1010,
+      "cho": 113,
+      "proteine": 60,
+      "alimenti": [
+        {
+          "nome": "Nigiri",
+          "pezzi": 8
+        },
+        {
+          "nome": "Uramaki",
+          "pezzi": 8
+        },
+        {
+          "nome": "Sashimi di salmone",
+          "grammi": 90,
+          "note": "6 fette"
+        },
+        {
+          "nome": "Zuppa di miso",
+          "grammi": 200
+        },
+        {
+          "nome": "Edamame (sgusciati)",
+          "grammi": 60
+        }
+      ],
+      "note": "Sgarro: al posto del pranzo o della cena, non in aggiunta. Il riso del sushi e' condito con zucchero e aceto: curva rapida. Ogni 2 pezzi in piu' circa +90 kcal e +13 g CHO; i pezzi fritti (tempura, crunch) circa il doppio dei grassi. Il salmone porta omega-3.",
+      "tags": [
+        "sgarro",
+        "pesce"
+      ]
+    }
+  ],
+  "dolci": [
+    {
+      "id": "D1",
+      "nome": "Tiramisu'",
+      "kcal": 350,
+      "cho": 32,
+      "proteine": 7,
+      "alimenti": [
+        {
+          "nome": "Tiramisu'",
+          "grammi": 120,
+          "note": "1 porzione"
+        }
+      ],
+      "note": "Dolce: si aggiunge al pasto. Nei giorni ROSSO meglio dopo pranzo; la sera prima di dormire guarda la freccia del Libre.",
+      "tags": [
+        "sgarro",
+        "dolce"
+      ]
+    },
+    {
+      "id": "D2",
+      "nome": "Coppa Malu'",
+      "kcal": 320,
+      "cho": 36,
+      "proteine": 5,
+      "alimenti": [
+        {
+          "nome": "Gelato in coppa con panna e cialda",
+          "grammi": 130,
+          "note": "stima"
+        }
+      ],
+      "note": "Dolce: si aggiunge al pasto. Nei giorni ROSSO meglio dopo pranzo; la sera prima di dormire guarda la freccia del Libre. Valori stimati come coppa gelato con panna: correggili con quelli dell'etichetta.",
+      "tags": [
+        "sgarro",
+        "dolce",
+        "daVerificare"
+      ]
+    },
+    {
+      "id": "D3",
+      "nome": "Pastarelle",
+      "kcal": 410,
+      "cho": 48,
+      "proteine": 7,
+      "alimenti": [
+        {
+          "nome": "Pastarelle (paste mignon / bignè, cannoli, crostatine)",
+          "grammi": 120,
+          "note": "circa 3 pastarelle medie o 5 mignon"
+        }
+      ],
+      "note": "Dolce: si aggiunge al pasto. Nei giorni ROSSO meglio dopo pranzo; la sera prima di dormire guarda la freccia del Libre.",
+      "tags": [
+        "sgarro",
+        "dolce"
+      ]
+    },
+    {
+      "id": "D4",
+      "nome": "Maritozzo con panna",
+      "kcal": 460,
+      "cho": 46,
+      "proteine": 8,
+      "alimenti": [
+        {
+          "nome": "Maritozzo con panna",
+          "grammi": 130,
+          "note": "1 pezzo"
+        }
+      ],
+      "note": "Dolce: si aggiunge al pasto. Nei giorni ROSSO meglio dopo pranzo; la sera prima di dormire guarda la freccia del Libre.",
+      "tags": [
+        "sgarro",
+        "dolce"
+      ]
+    },
+    {
+      "id": "D5",
+      "nome": "Gelato artigianale 2 gusti",
+      "kcal": 320,
+      "cho": 44,
+      "proteine": 5,
+      "alimenti": [
+        {
+          "nome": "Gelato artigianale (2 gusti) con cono",
+          "grammi": 150
+        }
+      ],
+      "note": "Dolce: si aggiunge al pasto. Nei giorni ROSSO meglio dopo pranzo; la sera prima di dormire guarda la freccia del Libre. Gusti alla frutta: circa -40 kcal rispetto alle creme.",
+      "tags": [
+        "sgarro",
+        "dolce"
+      ]
+    },
+    {
+      "id": "D6",
+      "nome": "Crostata di marmellata",
+      "kcal": 400,
+      "cho": 60,
+      "proteine": 6,
+      "alimenti": [
+        {
+          "nome": "Crostata di marmellata",
+          "grammi": 100,
+          "note": "1 fetta"
+        }
+      ],
+      "note": "Dolce: si aggiunge al pasto. Nei giorni ROSSO meglio dopo pranzo; la sera prima di dormire guarda la freccia del Libre.",
+      "tags": [
+        "sgarro",
+        "dolce"
+      ]
+    }
   ],
   "noteColazioni": [
     "Tutte le colazioni sono il PASTO POST-ALLENAMENTO: vanno fatte entro 45-60 minuti dalla fine della corsa.",

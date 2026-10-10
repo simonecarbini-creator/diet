@@ -9,6 +9,7 @@ import { formatNumero, formatScarto } from '../formato'
 import { haValori, targetGiorno, valutaAlternativa, type PastoLibero, type TargetGiorno, type VocePasto } from '../giornata'
 import { RiassuntoAlimenti } from './Alimenti'
 import { bozzaDa, CampiPastoLibero, daBozza, type BozzaLibero } from './CampiPastoLibero'
+import { NumeriPasto } from './NumeriPasto'
 import { RigaScorrevole } from './RigaScorrevole'
 import { conteggiDelPasto, frazioneLimite, nomeVincolo, oltreMassimo, type ConteggioVincolo } from '../vincoli'
 
@@ -166,7 +167,8 @@ export function PannelloScelta({
   const pasti = idAlternative(categoria)
     .map((id) => trovaPasto(categoria, id))
     .filter((p): p is PastoRisolto => p !== null)
-  const tuttiTag = [...new Set(pasti.flatMap((p) => p.tags ?? []))]
+  // Filtri dai pasti del piano: gli sgarri hanno una sezione loro.
+  const tuttiTag = [...new Set(pasti.filter((p) => !p.daSgarro).flatMap((p) => p.tags ?? []))]
   const visibili = pasti.filter((p) => !nascoste.includes(p.id) && filtri.every((f) => p.tags?.includes(f)))
 
   const sostituito = voce.delPiano !== undefined
@@ -187,10 +189,15 @@ export function PannelloScelta({
   // Con il pasto del piano: spiega perché la giornata può essere già sopra o sotto il piano.
   const conPiano = riferimento ? valuta(riferimento) : null
 
-  const principali = visibili
+  // Ordine: il pasto del piano sempre primo, poi quelli nel target, poi quelli fuori target.
+  // Gli sgarri hanno una sezione a parte, in fondo.
+  const ordine = (p: PastoRisolto) => (p.id === voce.idPiano ? 0 : nelTarget(p) ? 1 : 2)
+  const pianificabili = visibili.filter((p) => !p.daSgarro)
+  const principali = pianificabili
     .filter((p) => adattaAOggi(p, piano, giornata))
-    .sort((a, b) => Number(nelTarget(b)) - Number(nelTarget(a)))
-  const altre = visibili.filter((p) => !adattaAOggi(p, piano, giornata))
+    .sort((a, b) => ordine(a) - ordine(b))
+  const altre = pianificabili.filter((p) => !adattaAOggi(p, piano, giornata))
+  const sgarri = visibili.filter((p) => p.daSgarro).sort((a, b) => ordine(a) - ordine(b))
 
   function rigaOpzione(opzione: PastoRisolto, secondaria: boolean) {
     const attivo = opzione.id === selezionato
@@ -213,10 +220,11 @@ export function PannelloScelta({
             setSelezionato(opzione.id)
             setInteragito(true)
           }}
-          className={`w-full rounded-xl border-2 p-3 text-left disabled:opacity-40 ${
+          // Attenuate solo nel contenuto: il fondo resta pieno, altrimenti sotto traspare il rosso di "Nascondi".
+          className={`w-full rounded-xl border-2 p-3 text-left disabled:[&>*]:opacity-40 ${
             // Selezionata: bordo rosa spesso e fondo rosato pieno (sotto c'è il rosso di "Nascondi").
             attivo ? 'border-cho bg-[color-mix(in_srgb,var(--cho)_9%,var(--superficie))]' : 'border-bordo bg-superficie'
-          } ${secondaria && !attivo ? 'opacity-60' : ''}`}
+          } ${secondaria && !attivo ? '[&>*]:opacity-60' : ''}`}
         >
           <div className="flex items-start gap-3">
             <div className="min-w-0 flex-1">
@@ -237,9 +245,8 @@ export function PannelloScelta({
               </div>
               {opzione.composizione && <p className="mt-1 font-medium leading-snug">{opzione.composizione}</p>}
             </div>
-            <div className="shrink-0 text-right text-cho">
-              <div className="text-2xl font-bold leading-none tabular-nums">{formatNumero(opzione.cho)}</div>
-              <div className="text-xs font-semibold">g CHO</div>
+            <div className="shrink-0 text-right">
+              <NumeriPasto cho={opzione.cho} proteine={opzione.proteine} />
               {riferimento && opzione.id !== riferimento.id && (
                 <div className="mt-0.5 text-xs text-testo opacity-70">
                   {diff === 0 ? `come ${riferimento.id}` : `${formatScarto(diff, 'g')} di ${riferimento.id}`}
@@ -441,6 +448,15 @@ export function PannelloScelta({
               Altre versioni ({altre.length}): pensate per altri tipi di giornata
             </summary>
             <ul className="mt-2 space-y-2">{altre.map((p) => rigaOpzione(p, true))}</ul>
+          </details>
+        )}
+
+        {sgarri.length > 0 && (
+          <details className="mt-2" open={sgarri.some((p) => p.id === voce.pasto?.id) || undefined}>
+            <summary className="py-2 text-sm font-semibold opacity-70">
+              Sgarri ({sgarri.length}): al posto {categoria === 'pranzo' ? 'del pranzo' : `della ${nomeCategoria}`}, fuori dal piano
+            </summary>
+            <ul className="mt-2 space-y-2">{sgarri.map((p) => rigaOpzione(p, false))}</ul>
           </details>
         )}
 
