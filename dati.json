@@ -1951,6 +1951,8 @@
     ],
 
     "spuntinoSerale": {
+      "_nota": "predefinito: lo spuntino serale messo nei giorni che lo prevedono (scelto il 2026-10-10: SER-PB2 e' il piu' vicino allo yogurt, 27 g CHO / 320 kcal / 24 g pro contro 25 / 300 / 23). Gli altri restano tra le alternative.",
+      "predefinito": "SER-PB2",
       "id": "serale",
       "nome": "Spuntino serale",
       "kcal": 300,

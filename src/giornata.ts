@@ -69,7 +69,7 @@ export function vociDelGiorno(
     voce('merenda', giorno.merenda),
     voce('cena', giorno.cena),
   )
-  if (giorno.spuntinoSerale) voci.push(voce('spuntinoSerale', dati.blocchi.spuntinoSerale.id))
+  if (giorno.spuntinoSerale) voci.push(voce('spuntinoSerale', dati.blocchi.spuntinoSerale.predefinito))
 
   for (const voce of voci) {
     const libero = liberi[voce.categoria]
@@ -231,12 +231,23 @@ export function giornoDopo(data: string): string {
 }
 
 /** Media delle merende M1-M12: la stima usata nel totale del piano quando la merenda non è scelta. */
-export function merendaMedia(): { kcal: number; cho: number } {
+export function merendaMedia(): { kcal: number; cho: number; proteine: number } {
   const n = dati.merende.length
   return {
     kcal: Math.round(dati.merende.reduce((s, m) => s + m.kcal, 0) / n),
     cho: Math.round(dati.merende.reduce((s, m) => s + m.cho, 0) / n),
+    proteine: Math.round(dati.merende.reduce((s, m) => s + m.proteine, 0) / n),
   }
+}
+
+/**
+ * Proteine del piano per un giorno (dati.json non le riporta nel calendario): somma dei pasti
+ * del piano, più la merenda media se la merenda non è assegnata.
+ */
+export function proteineDelPiano(giorno: Giorno): number {
+  const voci = vociDelGiorno(giorno)
+  const merendaDaStimare = voci.some((v) => v.categoria === 'merenda' && !v.pasto)
+  return totaliPasti(voci).proteine + (merendaDaStimare ? merendaMedia().proteine : 0)
 }
 
 /** Totale del piano per un giorno creato nell'app: somma dei pasti, più la merenda media se non è assegnata. */

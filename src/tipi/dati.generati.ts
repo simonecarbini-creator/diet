@@ -117,6 +117,8 @@ export type ModificheGrammiElement = {
 }
 
 export type BlocchiSpuntinoSerale = {
+    _nota:       string;
+    predefinito: string;
     id:          string;
     nome:        string;
     kcal:        number;

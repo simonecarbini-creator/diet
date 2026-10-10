@@ -1,5 +1,5 @@
-// In alto a destra nelle card dei pasti: proteine (più piccole, in blu) accanto ai CHO,
-// che restano il numero principale, grande e rosa.
+// In alto a destra nelle card dei pasti: i CHO, numero principale grande e rosa, e sotto
+// le proteine, più piccole e in blu.
 import { formatNumero } from '../formato'
 
 type Props = {
@@ -13,19 +13,24 @@ type Props = {
 
 export function NumeriPasto({ cho, proteine, mancante = '—', grande = false }: Props) {
   return (
-    <div className="flex shrink-0 items-end gap-3 text-right">
-      {proteine !== null && (
-        <div className="text-pro">
-          <div className={`${grande ? 'text-xl' : 'text-lg'} font-bold leading-none tabular-nums`}>{formatNumero(proteine)}</div>
-          <div className="text-xs font-semibold">g PRO</div>
-        </div>
-      )}
+    <div className="shrink-0 text-right">
       <div className="text-cho">
         <div className={`${grande ? 'text-3xl' : 'text-2xl'} font-bold leading-none tabular-nums`}>
           {cho === null ? mancante : formatNumero(cho)}
         </div>
         <div className="text-xs font-semibold">g CHO</div>
       </div>
+      {proteine !== null && <NumeroProteine proteine={proteine} />}
+    </div>
+  )
+}
+
+/** "47 g PRO" in blu, sotto i CHO (card dei pasti e vista settimanale). */
+export function NumeroProteine({ proteine }: { proteine: number }) {
+  return (
+    <div className="mt-1 whitespace-nowrap text-pro">
+      <span className="text-base font-bold tabular-nums">{formatNumero(proteine)}</span>
+      <span className="text-xs font-semibold"> g PRO</span>
     </div>
   )
 }

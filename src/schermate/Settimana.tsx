@@ -6,7 +6,8 @@ import { dati, isTipoGiornata, type Giorno, type Settimana as TipoSettimana } fr
 import { formatDataBreve, formatGiornoMese, formatNumero } from '../formato'
 import { link } from '../navigazione'
 import { settimane } from '../piano'
-import { esitoGiorno } from '../giornata'
+import { esitoGiorno, proteineDelPiano } from '../giornata'
+import { NumeroProteine } from '../componenti/NumeriPasto'
 import { BadgeEsito } from '../componenti/BadgeEsito'
 import { useStatiGiorni, type StatoGiorno } from '../statoGiorno'
 import { controllaVincoli } from '../vincoli'
@@ -119,6 +120,7 @@ function RigaGiorno({
         <div className="shrink-0 text-right text-cho">
           <div className="text-2xl font-bold leading-none tabular-nums">{formatNumero(giorno.cho)}</div>
           <div className="text-xs font-semibold">g CHO</div>
+          <NumeroProteine proteine={proteineDelPiano(giorno)} />
           <div className="mt-1 text-xs text-testo opacity-70">{formatNumero(giorno.kcal)} kcal</div>
           {diario && (
             <div className="mt-2 flex justify-end">
@@ -209,7 +211,7 @@ export function Settimana({ numero, oggi }: Props) {
       </ul>
       <p className="mt-2 text-xs opacity-70">
         Codici: colazione · pranzo · cena · merenda, poi spuntino serale e gel se previsti. CHO
-        e kcal sono quelli del piano.{cambiamenti && ' * = cambiato per quel giorno.'}
+        e kcal sono quelli del piano; le proteine sono la somma dei pasti del piano (merenda non scelta: la media).{cambiamenti && ' * = cambiato per quel giorno.'}
         {diario && ' Pollice su: tutti i pasti spuntati · pollice giù: solo alcuni · ND: nessuno.'}
       </p>
 

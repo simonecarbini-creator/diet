@@ -132,7 +132,7 @@ export function CardPasto({
                 <div className="font-semibold leading-snug">
                   {titolo}
                   {mostraCodice && (
-                    <span className="ml-2 rounded bg-bordo px-1.5 py-0.5 text-xs font-medium">
+                    <span className="ml-2 whitespace-nowrap rounded bg-bordo px-1.5 py-0.5 text-xs font-medium">
                       {pasto.id}
                     </span>
                   )}

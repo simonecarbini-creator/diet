@@ -8,6 +8,7 @@ import {
   esitoGiorno,
   giornataEquivalente,
   merendaMedia,
+  proteineDelPiano,
   targetGiorno,
   totaliPasti,
   totaliSenza,
@@ -92,10 +93,11 @@ describe('totali della giornata', () => {
     expect(totali.pastiMancanti).toEqual(['merenda'])
   })
 
-  it('venerdì 9 ottobre con C3+: 415 g CHO e 3265 kcal', () => {
+  // Spuntino serale predefinito SER-PB2 (27 g, 320 kcal): 2 g e 20 kcal più dello yogurt (25 g, 300 kcal).
+  it('venerdì 9 ottobre con C3+ e SER-PB2: 417 g CHO e 3285 kcal', () => {
     const totali = totaliPasti(vociDelGiorno(giorno('2026-10-09')))
-    expect(totali.cho).toBe(415)
-    expect(totali.kcal).toBe(3265)
+    expect(totali.cho).toBe(417)
+    expect(totali.kcal).toBe(3285)
   })
 
   it('sabato 10 ottobre (GRIGIO): niente pre-corsa, 346 g CHO e 2625 kcal', () => {
@@ -120,11 +122,12 @@ describe('totali della giornata', () => {
   it('il gel non entra mai nei totali', () => {
     // Domenica 11: 160 g di gel nel piano, che non devono comparire nella somma dei pasti.
     const totali = totaliPasti(vociDelGiorno(giorno('2026-10-11')))
-    expect(totali.cho).toBe(422)
+    expect(totali.cho).toBe(424)
   })
 
-  it('merenda media (stima del piano): 57 g CHO e 368 kcal', () => {
-    expect(merendaMedia()).toEqual({ cho: 57, kcal: 368 })
+  // Proteine M1-M12: 22+21+14+7+25+17+8+14+20+17+11+12 = 188 / 12 = 15,7 → 16.
+  it('merenda media (stima del piano): 57 g CHO, 368 kcal, 16 g pro', () => {
+    expect(merendaMedia()).toEqual({ cho: 57, kcal: 368, proteine: 16 })
   })
 })
 
@@ -318,11 +321,27 @@ describe('spuntino serale', () => {
   ] as const)('%s: %i g CHO, %i kcal, %i g pro', (id, cho, kcal, proteine) => {
     expect(trovaPasto('spuntinoSerale', id)).toMatchObject({ cho, kcal, proteine })
   })
-  // 9 ottobre (ROSSO, con spuntino serale): pasti 415 g. Con SER-SAL (17 g al posto di 25): 407 g.
-  it('scelto al posto del piano cambia i totali del giorno (9 ottobre: 415 → 407 g)', () => {
+  it('nei giorni che lo prevedono il piano mette SER-PB2', () => {
+    const serale = vociDelGiorno(giorno('2026-10-09')).find((v) => v.categoria === 'spuntinoSerale')
+    expect(serale?.pasto?.id).toBe('SER-PB2')
+    expect(serale?.idPiano).toBe('SER-PB2')
+  })
+  // 9 ottobre (ROSSO, con spuntino serale): pasti 417 g con SER-PB2. Con SER-SAL (17 g al posto di 27): 407 g.
+  it('scelto al posto del piano cambia i totali del giorno (9 ottobre: 417 → 407 g)', () => {
     const venerdi = giorno('2026-10-09')
-    expect(totaliPasti(vociDelGiorno(venerdi)).cho).toBe(415)
+    expect(totaliPasti(vociDelGiorno(venerdi)).cho).toBe(417)
     expect(totaliPasti(vociDelGiorno(venerdi, { spuntinoSerale: 'SER-SAL' })).cho).toBe(407)
+  })
+})
+
+describe('proteine del piano nella vista settimanale', () => {
+  // 5 ottobre: pre-corsa 1 + STD 37 + solo frutto 1 + P2 48 + C4 39 = 126, + merenda media 16 = 142.
+  it('5 ottobre (merenda da scegliere): 142 g', () => {
+    expect(proteineDelPiano(giorno('2026-10-05'))).toBe(142)
+  })
+  // 10 ottobre (GRIGIO, niente pre-corsa): STD 37 + solo frutto 1 + P1 38 + Mrid 12 + C1rid 46 = 134.
+  it('10 ottobre (merenda Mrid assegnata): 134 g', () => {
+    expect(proteineDelPiano(giorno('2026-10-10'))).toBe(134)
   })
 })
 

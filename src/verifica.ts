@@ -72,6 +72,12 @@ export function verificaDati(dati: Dati, idExtra: string[] = []): string[] {
     errori.push(`codice "${id}" usato piu' di una volta tra pranzi, cene, sgarri e dolci`)
   }
 
+  // Spuntino serale predefinito: deve essere quello di base o una delle alternative.
+  const serale = dati.blocchi.spuntinoSerale
+  if (serale.predefinito !== serale.id && !serale.alternative.some((a) => a.id === serale.predefinito)) {
+    errori.push(`spuntinoSerale.predefinito: "${serale.predefinito}" non trovato`)
+  }
+
   // Le condizioni delle regole devono essere leggibili dall'app.
   const { regole } = dati
   errori.push(
