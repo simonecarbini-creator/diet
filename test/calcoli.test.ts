@@ -56,7 +56,11 @@ describe('valori dei pasti: quelli mostrati sono quelli di dati.json', () => {
     ['colazione', 'B1rid', 71, 562],
     ['pranzo', 'P1', 154, 1030],
     ['pranzo', 'P1rid', 104, 790],
-    ['pranzo', 'P3+', 133, 1130],
+    // P3+ corretto il 2026-10-10: +100 g di patate = +16 g CHO su P3 (108), non +25.
+    ['pranzo', 'P3+', 124, 1110],
+    ['pranzo', 'P2rid', 84, 730],
+    ['pranzo', 'P3rid', 70, 850],
+    ['pranzo', 'P8-zuppa', 167, 1130],
     ['pranzo', 'P8-fiocchi', 150, 1090],
     ['cena', 'C1rid', 64, 640],
     ['cena', 'C3', 79, 770],
@@ -308,6 +312,17 @@ describe('proteine delle versioni ridotte e maggiorate', () => {
     const categorie: CategoriaConId[] = ['colazione', 'spuntino', 'pranzo', 'merenda', 'cena', 'spuntinoSerale']
     const senza = categorie.flatMap((c) => idAlternative(c).filter((id) => trovaPasto(c, id)?.proteine == null))
     expect(senza).toEqual([])
+  })
+})
+
+describe('correzioni del 10 ottobre', () => {
+  // 1 ottobre (pranzo P3+): 403 - 9 = 394 g CHO, 3240 - 20 = 3220 kcal nel calendario.
+  it('1 ottobre con P3+: calendario 394 g CHO e 3220 kcal', () => {
+    expect(giorno('2026-10-01')).toMatchObject({ cho: 394, kcal: 3220 })
+  })
+  it('P8-zuppa senza olio aggiunto e P8-fiocchi senza la nota della zuppa', () => {
+    expect(trovaPasto('pranzo', 'P8-zuppa')?.alimenti.map((a) => a.nome)).not.toContain('Olio EVO')
+    expect(trovaPasto('pranzo', 'P8-fiocchi')?.alimenti.some((a) => a.note?.includes('zuppa di ceci pronta'))).toBe(false)
   })
 })
 

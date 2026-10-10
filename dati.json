@@ -2181,7 +2181,7 @@
         { "nome": "Pane", "grammi": 60 }
       ],
       "ridotto": {
-        "id": "P2rid", "kcal": 750, "cho": 100, "proteine": 40, "modifiche": "cereale 100 g, niente pane",
+        "id": "P2rid", "kcal": 730, "cho": 84, "proteine": 40, "modifiche": "cereale 100 g, niente pane",
         "modificheGrammi": [{ "nome": "Riso o farro", "grammi": 100 }],
         "rimozioni": ["Pane"]
       },
@@ -2202,12 +2202,12 @@
         { "nome": "Pane", "grammi": 80 }
       ],
       "maggiorato": {
-        "id": "P3+", "kcal": 1130, "cho": 133, "proteine": 60, "modifiche": "patate 450 g oppure pane 110 g",
+        "id": "P3+", "kcal": 1110, "cho": 124, "proteine": 60, "modifiche": "patate 450 g oppure pane 110 g",
         "modificheGrammi": [{ "nome": "Patate", "grammi": 450 }],
         "nota": "Si maggiora uno solo dei due: patate 450 g (pane resta 80 g) OPPURE pane 110 g (patate restano 350 g)."
       },
       "ridotto": {
-        "id": "P3rid", "kcal": 750, "cho": 85, "proteine": 53, "modifiche": "patate 250 g, pane 40 g",
+        "id": "P3rid", "kcal": 850, "cho": 70, "proteine": 53, "modifiche": "patate 250 g, pane 40 g",
         "modificheGrammi": [{ "nome": "Patate", "grammi": 250 }, { "nome": "Pane", "grammi": 40 }]
       },
       "note": "Ha meno CHO delle altre due opzioni: nei giorni ROSSO usare la versione maggiorata."
@@ -2395,12 +2395,11 @@
         {
           "nome": "Ceci lessati",
           "grammi": 280,
-          "note": "oppure una lattina intera di zuppa di ceci pronta da 500 g, che contiene gia' l'olio"
+          "note": "con la zuppa di ceci Pam al posto di ceci e olio: scegli P8-zuppa"
         },
         {
           "nome": "Olio EVO",
-          "grammi": 8,
-          "note": "da omettere se usi la zuppa pronta"
+          "grammi": 8
         },
         {
           "nome": "Curry",
@@ -2425,13 +2424,11 @@
             },
             {
               "nome": "Ceci lessati",
-              "grammi": 280,
-              "note": "oppure una lattina intera di zuppa di ceci pronta da 500 g, che contiene gia' l'olio"
+              "grammi": 280
             },
             {
               "nome": "Olio EVO",
-              "grammi": 8,
-              "note": "da omettere se usi la zuppa pronta"
+              "grammi": 8
             },
             {
               "nome": "Curry",
@@ -2448,6 +2445,20 @@
             }
           ],
           "note": "Dal nutrizionista: riso a 140 g, aggiungere 100 g di fiocchi di latte a fine pasto (non dentro la zuppa calda: si separano)."
+        },
+        {
+          "id": "P8-zuppa",
+          "nome": "Riso al curry con zuppa di ceci Pam",
+          "kcal": 1130,
+          "cho": 167,
+          "proteine": 36,
+          "alimenti": [
+            { "nome": "Riso basmati", "grammi": 155 },
+            { "nome": "Zuppa di ceci Pam", "grammi": 500, "note": "una lattina intera: contiene gia' l'olio, non aggiungerne" },
+            { "nome": "Curry", "grammi": null },
+            { "nome": "Verdure", "grammi": 200 }
+          ],
+          "note": "Etichetta della zuppa per 100 g: 102 kcal, 7,4 g CHO, 4,1 g proteine, 5,3 g grassi (circa 26 g di grassi nella lattina). Rispetto a P8: 13 g di CHO in meno e 116 kcal in piu'. Valori validi solo per la zuppa di ceci Pam."
         }
       ],
       "note": "Il basmati ha l'indice glicemico piu' basso tra i risi (50-58). Con i ceci si arriva a ~21 g di fibra: curva molto gentile ma pesante sull'intestino — non la sera prima di una seduta.",
@@ -3936,8 +3947,8 @@
           "merenda": null,
           "spuntinoSerale": false,
           "gelCho": 0,
-          "kcal": 3240,
-          "cho": 403,
+          "kcal": 3220,
+          "cho": 394,
           "proteine": 168
         },
         {
