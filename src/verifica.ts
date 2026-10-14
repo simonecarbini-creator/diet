@@ -136,6 +136,14 @@ export function verificaDati(dati: Dati, idExtra: string[] = []): string[] {
       if (!idCene.has(giorno.cena)) {
         errori.push(`${dove}: cena "${giorno.cena}" non trovata`)
       }
+      const serale = dati.blocchi.spuntinoSerale
+      if (
+        giorno.spuntinoSeraleScelta !== undefined &&
+        giorno.spuntinoSeraleScelta !== serale.id &&
+        !serale.alternative.some((a) => a.id === giorno.spuntinoSeraleScelta)
+      ) {
+        errori.push(`${dove}: spuntino serale "${giorno.spuntinoSeraleScelta}" non trovato`)
+      }
       if (giorno.merenda !== null && !idMerende.has(giorno.merenda)) {
         errori.push(`${dove}: merenda "${giorno.merenda}" non trovata`)
       }

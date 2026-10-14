@@ -562,23 +562,24 @@ export type Settimane = {
 }
 
 export type Giorni = {
-    data:             string;
-    allenamento:      string;
-    distanzaKm:       number;
-    tipo:             string;
-    colazione:        string;
-    spuntino:         string;
-    pranzo:           string;
-    cena:             string;
-    merenda:          null | string;
-    spuntinoSerale:   boolean;
-    gelCho:           number;
-    kcal:             number;
-    cho:              number;
-    proteine:         number;
-    note?:            string;
-    ricarica?:        boolean;
-    lungoDomenicale?: boolean;
+    data:                  string;
+    allenamento:           string;
+    distanzaKm:            number;
+    tipo:                  string;
+    colazione:             string;
+    spuntino:              string;
+    pranzo:                string;
+    cena:                  string;
+    merenda:               null | string;
+    spuntinoSerale:        boolean;
+    gelCho:                number;
+    kcal:                  number;
+    cho:                   number;
+    proteine:              number;
+    note?:                 string;
+    ricarica?:             boolean;
+    lungoDomenicale?:      boolean;
+    spuntinoSeraleScelta?: string;
 }
 
 export type Sgarri = {

@@ -70,7 +70,10 @@ export function vociDelGiorno(
     voce('merenda', giorno.merenda),
     voce('cena', giorno.cena),
   )
-  if (giorno.spuntinoSerale) voci.push(voce('spuntinoSerale', dati.blocchi.spuntinoSerale.predefinito))
+  // Il calendario puo' indicare lo spuntino serale del giorno; altrimenti quello predefinito.
+  if (giorno.spuntinoSerale) {
+    voci.push(voce('spuntinoSerale', giorno.spuntinoSeraleScelta ?? dati.blocchi.spuntinoSerale.predefinito))
+  }
 
   for (const voce of voci) {
     const libero = liberi[voce.categoria]

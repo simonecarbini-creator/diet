@@ -113,7 +113,7 @@ function RigaGiorno({
               <Codice key={i} id={pasto.id} cambiato={pasto.cambiato} />
             ))}
             {merenda && <Codice id={merenda} cambiato={!!scelte.merenda} />}
-            {giorno.spuntinoSerale && <Codice id="serale" />}
+            {giorno.spuntinoSerale && <Codice id={giorno.spuntinoSeraleScelta ?? 'serale'} />}
             {giorno.gelCho > 0 && <Codice id={`gel ${formatNumero(giorno.gelCho)} g`} />}
           </div>
         </div>

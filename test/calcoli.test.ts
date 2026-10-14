@@ -528,6 +528,34 @@ describe('motore delle regole', () => {
   })
 })
 
+describe('settimana 6 (12-18 ottobre)', () => {
+  const settimana6 = dati.settimane.find((x) => x.numero === 6)!
+  // Totali del calendario controllati a mano sulla somma dei pasti (con merenda e spuntino serale del giorno).
+  it.each([
+    ['2026-10-12', 3260, 420, 137],
+    ['2026-10-13', 3565, 470, 145],
+    ['2026-10-14', 3525, 456, 147],
+    ['2026-10-15', 3275, 416, 138],
+    ['2026-10-16', 3650, 473, 147],
+    ['2026-10-17', 2650, 332, 126],
+    ['2026-10-18', 3710, 496, 149],
+  ] as const)('%s: somma dei pasti = calendario (%i kcal, %i g CHO, %i g pro)', (data, kcal, cho, proteine) => {
+    const g = settimana6.giorni.find((x) => x.data === data)!
+    expect([g.kcal, g.cho, g.proteine]).toEqual([kcal, cho, proteine])
+    const totali = totaliPasti(vociDelGiorno(g))
+    expect([totali.kcal, totali.cho, totali.proteine]).toEqual([kcal, cho, proteine])
+  })
+  it('lo spuntino serale del giorno viene dal calendario (13 ottobre: SER-PB3)', () => {
+    const serale = vociDelGiorno(giorno('2026-10-13')).find((v) => v.categoria === 'spuntinoSerale')
+    expect(serale).toMatchObject({ idPiano: 'SER-PB3', pasto: { id: 'SER-PB3', cho: 30 } })
+  })
+  it('pesce grasso 3 volte (C2 lunedi\' e mercoledi\', C2rid sabato), formaggio C4 mai', () => {
+    const conteggi = conteggiVincoli(settimana6.giorni, (g) => ({ pranzo: g.pranzo, cena: g.cena }))
+    expect(conteggi.omega3.volte).toBe(3)
+    expect(conteggi.formaggio.volte).toBe(0)
+  })
+})
+
 describe('vincoli settimanali', () => {
   const settimana5 = dati.settimane.find((s) => s.numero === 5)!
   const piano = (g: (typeof settimana5.giorni)[number]) => ({ pranzo: g.pranzo, cena: g.cena })
