@@ -305,6 +305,7 @@ export type Pranzi = {
     varianti?:                    PranziVarianti[];
     ridotto?:                     Ridotto;
     note:                         string;
+    _nota?:                       string;
     tags?:                        string[];
     maggiorato?:                  PranziMaggiorato;
     categoria?:                   string;

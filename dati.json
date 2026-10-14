@@ -2476,9 +2476,9 @@
       "id": "P1",
       "nome": "Pasta e legumi",
       "primaScelta": true,
-      "kcal": 1030,
-      "cho": 154,
-      "proteine": 38,
+      "kcal": 1090,
+      "cho": 166,
+      "proteine": 41,
       "alimenti": [
         {
           "nome": "Pasta",
@@ -2500,6 +2500,10 @@
         {
           "nome": "Pane",
           "grammi": 40
+        },
+        {
+          "nome": "Passata di pomodoro",
+          "grammi": 200
         }
       ],
       "varianti": [
@@ -2528,48 +2532,13 @@
             }
           ],
           "note": "I fiocchi di latte hanno ottime proteine ma zero carboidrati: ogni volta che sostituiscono i legumi, alzare la pasta di 40 g e togliere il pane."
-        },
-        {
-          "id": "P1-passata",
-          "nome": "Con 200 g di passata di pomodoro",
-          "kcal": 1090,
-          "cho": 166,
-          "proteine": 41,
-          "alimenti": [
-            {
-              "nome": "Pasta",
-              "grammi": 120
-            },
-            {
-              "nome": "Legumi lessati (ceci, lenticchie, fagioli)",
-              "grammi": 230,
-              "note": "una confezione intera"
-            },
-            {
-              "nome": "Verdure",
-              "grammi": 200
-            },
-            {
-              "nome": "Olio EVO",
-              "grammi": 20
-            },
-            {
-              "nome": "Pane",
-              "grammi": 40
-            },
-            {
-              "nome": "Passata di pomodoro",
-              "grammi": 200
-            }
-          ],
-          "note": "Passata 200 g: 60 kcal e 12 g di CHO in piu' rispetto a P1."
         }
       ],
       "ridotto": {
         "id": "P1rid",
-        "kcal": 780,
-        "cho": 104,
-        "proteine": 30,
+        "kcal": 840,
+        "cho": 116,
+        "proteine": 33,
         "modifiche": "pasta 80 g, niente pane",
         "modificheGrammi": [
           {
@@ -2581,7 +2550,8 @@
           "Pane"
         ]
       },
-      "note": "Indice glicemico contenuto e ottimo profilo aminoacidico. Con 200 g di passata di pomodoro (aiuta l'assorbimento del ferro) scegli P1-passata: 12 g di CHO in piu'."
+      "note": "Indice glicemico contenuto e ottimo profilo aminoacidico. La passata di pomodoro aiuta l'assorbimento del ferro.",
+      "_nota": "2026-10-14: la passata 200 g fa parte di P1 (prima era la variante P1-passata). Rispetto a prima: +60 kcal, +12 g CHO, +3 g proteine; aggiornati anche P1rid e i giorni del calendario con P1."
     },
     {
       "id": "P2",
@@ -4642,9 +4612,9 @@
           "merenda": null,
           "spuntinoSerale": false,
           "gelCho": 30,
-          "kcal": 3180,
-          "cho": 422,
-          "proteine": 146
+          "kcal": 3240,
+          "cho": 434,
+          "proteine": 149
         },
         {
           "data": "2026-09-30",
@@ -4658,9 +4628,9 @@
           "merenda": null,
           "spuntinoSerale": true,
           "gelCho": 90,
-          "kcal": 3700,
-          "cho": 494,
-          "proteine": 174,
+          "kcal": 3760,
+          "cho": 506,
+          "proteine": 177,
           "note": "La qualita' piu' lunga del blocco: oltre un'ora sopra il ritmo medio. Si comporta in modo ibrido sulla glicemia (l'intensita' la fa salire, la durata la fa scendere): guardare il Libre dal quinto 1000 in poi."
         },
         {
@@ -4691,9 +4661,9 @@
           "merenda": null,
           "spuntinoSerale": true,
           "gelCho": 30,
-          "kcal": 3500,
-          "cho": 439,
-          "proteine": 160
+          "kcal": 3560,
+          "cho": 451,
+          "proteine": 163
         },
         {
           "data": "2026-10-03",
@@ -4708,9 +4678,9 @@
           "merenda": "Mrid",
           "spuntinoSerale": false,
           "gelCho": 0,
-          "kcal": 2670,
-          "cho": 343,
-          "proteine": 129,
+          "kcal": 2730,
+          "cho": 355,
+          "proteine": 132,
           "note": "Riposo di ricarica: domenica c'e' il frazionato. Colazione STD e pranzo pieno, si tagliano solo merenda e cena."
         },
         {
@@ -4726,9 +4696,9 @@
           "merenda": null,
           "spuntinoSerale": true,
           "gelCho": 150,
-          "kcal": 3700,
-          "cho": 494,
-          "proteine": 171,
+          "kcal": 3760,
+          "cho": 506,
+          "proteine": 174,
           "note": "Prova di gara: stesso protocollo gel di Firenze, glicemie annotate prima, durante e dopo."
         }
       ]
@@ -4767,9 +4737,9 @@
           "merenda": null,
           "spuntinoSerale": false,
           "gelCho": 30,
-          "kcal": 3240,
-          "cho": 424,
-          "proteine": 146,
+          "kcal": 3300,
+          "cho": 436,
+          "proteine": 149,
           "note": "Progressiva sotto i 18 km: resta VERDE, ma con spuntino intero e pranzo P1 perche' domani ci sono i 4x2000. Niente crucifere a cena."
         },
         {
@@ -4784,9 +4754,9 @@
           "merenda": null,
           "spuntinoSerale": true,
           "gelCho": 30,
-          "kcal": 3560,
-          "cho": 463,
-          "proteine": 172,
+          "kcal": 3620,
+          "cho": 475,
+          "proteine": 175,
           "note": "Circa 32 minuti sopra il ritmo medio: colazione STD, non MAGG. Recupero da fermo: la glicemia tende a salire tra una prova e l'altra."
         },
         {
@@ -4817,9 +4787,9 @@
           "merenda": null,
           "spuntinoSerale": true,
           "gelCho": 0,
-          "kcal": 3620,
-          "cho": 473,
-          "proteine": 164,
+          "kcal": 3680,
+          "cho": 485,
+          "proteine": 167,
           "note": "Qualita' breve: cena C3 con 40 g di pane in piu' (gia' contati)."
         },
         {
@@ -4835,9 +4805,9 @@
           "merenda": "Mrid",
           "spuntinoSerale": false,
           "gelCho": 0,
-          "kcal": 2660,
-          "cho": 346,
-          "proteine": 129,
+          "kcal": 2720,
+          "cho": 358,
+          "proteine": 132,
           "note": "Riposo di ricarica: domenica gara 10K dentro il frazionato. Colazione STD e pranzo pieno, si tagliano solo merenda e cena. Niente crucifere."
         },
         {
@@ -4853,9 +4823,9 @@
           "merenda": null,
           "spuntinoSerale": true,
           "gelCho": 160,
-          "kcal": 3680,
-          "cho": 480,
-          "proteine": 171,
+          "kcal": 3740,
+          "cho": 492,
+          "proteine": 174,
           "note": "Il lungo piu' lungo finora, con gara dentro: protocollo gel di Firenze, glicemie annotate prima, durante e dopo. Spuntino serale obbligatorio. Orari dei pasti da adattare all'ora di partenza della gara."
         }
       ]
@@ -4878,9 +4848,9 @@
           "merenda": "M4",
           "spuntinoSerale": false,
           "gelCho": 0,
-          "kcal": 3260,
-          "cho": 420,
-          "proteine": 137,
+          "kcal": 3320,
+          "cho": 432,
+          "proteine": 140,
           "note": "Merenda con poche proteine (M4) perche' la cena C2 ne ha gia' molte. Niente crucifere a cena: domani progressiva."
         },
         {
@@ -4914,9 +4884,9 @@
           "spuntinoSerale": true,
           "spuntinoSeraleScelta": "SER-PB4",
           "gelCho": 40,
-          "kcal": 3525,
-          "cho": 456,
-          "proteine": 147,
+          "kcal": 3585,
+          "cho": 468,
+          "proteine": 150,
           "note": "Circa 18 km con 10 km veloci (circa 40 minuti sopra il ritmo medio): colazione STD. Gel circa 40 g."
         },
         {
@@ -4949,9 +4919,9 @@
           "spuntinoSerale": true,
           "spuntinoSeraleScelta": "SER-PB1",
           "gelCho": 0,
-          "kcal": 3650,
-          "cho": 473,
-          "proteine": 147,
+          "kcal": 3710,
+          "cho": 485,
+          "proteine": 150,
           "note": "Qualita' breve (circa 65 minuti): niente gel. La glicemia spesso sale durante e subito dopo, il rischio arriva la sera: spuntino serale."
         },
         {
@@ -4967,9 +4937,9 @@
           "merenda": "Mrid",
           "spuntinoSerale": false,
           "gelCho": 0,
-          "kcal": 2650,
-          "cho": 332,
-          "proteine": 126,
+          "kcal": 2710,
+          "cho": 344,
+          "proteine": 129,
           "note": "Riposo di ricarica: domenica la seduta piu' pesante della settimana. Colazione STD e pranzo pieno, si tagliano solo merenda e cena. Barbabietola come verdura a pranzo (terza della settimana). Niente crucifere."
         },
         {
