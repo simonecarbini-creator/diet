@@ -428,9 +428,10 @@
       {
         "id": "carne",
         "nome": "Carne",
-        "regola": "carne al massimo una volta a settimana in totale, tra P13 e C13",
+        "regola": "carne al massimo una volta a settimana in totale, tra P3, P13 e C13",
         "motivo": "carne limitata per scelta",
         "pasti": [
+          "P3",
           "P13",
           "C13"
         ],
@@ -7817,7 +7818,13 @@
           "P14+pane",
           "intero",
           "soloFrutto"
-        ]
+        ],
+        "unitaPratica": {
+          "singolare": "arancia",
+          "plurale": "arance",
+          "grammi": 150,
+          "passo": 1
+        }
       },
       {
         "id": "avocado",
@@ -7850,7 +7857,7 @@
           "grassi": 0.3
         },
         "passo": 10,
-        "quantitaTipica": 150,
+        "quantitaTipica": 120,
         "sinonimi": [
           "banane"
         ],
@@ -7892,7 +7899,13 @@
           "intero",
           "preCorsa",
           "soloFrutto"
-        ]
+        ],
+        "unitaPratica": {
+          "singolare": "banana",
+          "plurale": "banane",
+          "grammi": 120,
+          "passo": 1
+        }
       },
       {
         "id": "cachi",
@@ -7906,7 +7919,7 @@
           "grassi": 0.3
         },
         "passo": 10,
-        "quantitaTipica": 150,
+        "quantitaTipica": 180,
         "sinonimi": [
           "kaki"
         ],
@@ -7917,7 +7930,13 @@
           "P14+pane",
           "intero",
           "soloFrutto"
-        ]
+        ],
+        "unitaPratica": {
+          "singolare": "caco",
+          "plurale": "cachi",
+          "grammi": 180,
+          "passo": 1
+        }
       },
       {
         "id": "fichi",
@@ -7931,7 +7950,7 @@
           "grassi": 0.2
         },
         "passo": 10,
-        "quantitaTipica": 150,
+        "quantitaTipica": 40,
         "sinonimi": [],
         "usatoIn": [
           "C3",
@@ -7940,7 +7959,13 @@
           "P14+pane",
           "intero",
           "soloFrutto"
-        ]
+        ],
+        "unitaPratica": {
+          "singolare": "fico",
+          "plurale": "fichi",
+          "grammi": 40,
+          "passo": 1
+        }
       },
       {
         "id": "fichi-secchi",
@@ -8030,7 +8055,7 @@
           "grassi": 0.6
         },
         "passo": 10,
-        "quantitaTipica": 150,
+        "quantitaTipica": 70,
         "sinonimi": [],
         "usatoIn": [
           "C3",
@@ -8039,7 +8064,13 @@
           "P14+pane",
           "intero",
           "soloFrutto"
-        ]
+        ],
+        "unitaPratica": {
+          "singolare": "kiwi",
+          "plurale": "kiwi",
+          "grammi": 70,
+          "passo": 1
+        }
       },
       {
         "id": "mandarini",
@@ -8053,7 +8084,7 @@
           "grassi": 0.2
         },
         "passo": 10,
-        "quantitaTipica": 150,
+        "quantitaTipica": 60,
         "sinonimi": [
           "clementina",
           "mandarino"
@@ -8065,7 +8096,13 @@
           "P14+pane",
           "intero",
           "soloFrutto"
-        ]
+        ],
+        "unitaPratica": {
+          "singolare": "mandarino",
+          "plurale": "mandarini",
+          "grammi": 60,
+          "passo": 1
+        }
       },
       {
         "id": "mela",
@@ -8100,7 +8137,13 @@
           "SER-PB4",
           "intero",
           "soloFrutto"
-        ]
+        ],
+        "unitaPratica": {
+          "singolare": "mela",
+          "plurale": "mele",
+          "grammi": 150,
+          "passo": 1
+        }
       },
       {
         "id": "melone",
@@ -8157,7 +8200,13 @@
           "P14+pane",
           "intero",
           "soloFrutto"
-        ]
+        ],
+        "unitaPratica": {
+          "singolare": "pera",
+          "plurale": "pere",
+          "grammi": 150,
+          "passo": 1
+        }
       },
       {
         "id": "pesca",
@@ -8183,7 +8232,13 @@
           "P14+pane",
           "intero",
           "soloFrutto"
-        ]
+        ],
+        "unitaPratica": {
+          "singolare": "pesca",
+          "plurale": "pesche",
+          "grammi": 150,
+          "passo": 1
+        }
       },
       {
         "id": "prugne",
@@ -8197,7 +8252,7 @@
           "grassi": 0.1
         },
         "passo": 10,
-        "quantitaTipica": 150,
+        "quantitaTipica": 40,
         "sinonimi": [
           "susine"
         ],
@@ -8208,7 +8263,13 @@
           "P14+pane",
           "intero",
           "soloFrutto"
-        ]
+        ],
+        "unitaPratica": {
+          "singolare": "prugna",
+          "plurale": "prugne",
+          "grammi": 40,
+          "passo": 1
+        }
       },
       {
         "id": "prugne-secche",
@@ -9606,7 +9667,13 @@
           "P8-fiocchi",
           "P9"
         ],
-        "nota": "1 cucchiaio = circa 10 g."
+        "nota": "1 cucchiaio = circa 10 g.",
+        "unitaPratica": {
+          "singolare": "cucchiaio",
+          "plurale": "cucchiai",
+          "grammi": 10,
+          "passo": 0.5
+        }
       },
       {
         "id": "pesto",
@@ -10414,7 +10481,15 @@
           "C11"
         ]
       }
-    ]
+    ],
+    "inEvidenza": {
+      "titolo": "Condimenti",
+      "alimenti": [
+        "olio-evo",
+        "parmigiano"
+      ]
+    },
+    "_notaUnita": "unitaPratica: il selettore conta cucchiai o pezzi (1 banana, 1 kiwi) e mostra i grammi, che si possono correggere. I grammi per pezzo sono il peso medio della parte edibile, una stima: quando puoi, pesa. inEvidenza: alimenti sempre in cima all'elenco del calcolatore."
   },
   "disclaimer": "Piano alimentare a base settimanale, costruito sul programma di allenamento specifico dell'atleta. Non sostituisce il parere del medico curante."
 }

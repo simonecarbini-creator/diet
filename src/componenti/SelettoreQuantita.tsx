@@ -10,6 +10,8 @@ type Props = {
   valori: number[]
   valore: number
   unita: string
+  /** Unita' diversa per il plurale (es. 1 banana, 2 banane). */
+  unitaPlurale?: string
   onCambia: (valore: number) => void
 }
 
@@ -21,7 +23,7 @@ function indiceVicino(valori: number[], valore: number): number {
   return migliore
 }
 
-export function SelettoreQuantita({ valori, valore, unita, onCambia }: Props) {
+export function SelettoreQuantita({ valori, valore, unita, unitaPlurale, onCambia }: Props) {
   const rotella = useRef<HTMLDivElement>(null)
   const indice = indiceVicino(valori, valore)
 
@@ -83,7 +85,7 @@ export function SelettoreQuantita({ valori, valore, unita, onCambia }: Props) {
               }`}
               style={{ height: ALTEZZA }}
             >
-              {formatNumero(v)} {unita}
+              {formatNumero(v)} {v > 1 && unitaPlurale ? unitaPlurale : unita}
             </button>
           ))}
         </div>

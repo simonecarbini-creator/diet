@@ -19,7 +19,7 @@ import {
 import { proponiSettimana, type GiornoInserito } from '../src/motore'
 import { verificaDati } from '../src/verifica'
 import { formatScarto } from '../src/formato'
-import { confrontaObiettivo, gruppiAlimenti, totaleComposto, valoriAlimento, trovaAlimento, valoriSelettore, corrisponde } from '../src/calcolatore'
+import { confrontaObiettivo, descriviQuantita, fasciaDelPasto, pezziDa, unitaPratica, gruppiAlimenti, totaleComposto, valoriAlimento, trovaAlimento, valoriSelettore, corrisponde } from '../src/calcolatore'
 import { avvisiAlimento, conteggiVincoli, controllaVincoli, pastiEffettiviDi } from '../src/vincoli'
 
 function giorno(data: string) {
@@ -646,10 +646,11 @@ describe('calcolatore del pasto', () => {
   })
   it('prima gli alimenti del pasto (STD), poi quelli delle altre colazioni, poi gli altri', () => {
     const gruppi = gruppiAlimenti(['STD'], idAlternative('colazione'))
-    expect(gruppi.map((g) => g.titolo)).toEqual(['pasto', 'categoria', 'altri'])
-    expect(gruppi[0].alimenti.map((a) => a.id)).toContain('avena-fiocchi')
-    expect(gruppi[1].alimenti.map((a) => a.id)).toContain('skyr')
-    expect(gruppi[2].alimenti.map((a) => a.id)).toContain('pasta')
+    expect(gruppi.map((g) => g.titolo)).toEqual(['evidenza', 'pasto', 'categoria', 'altri'])
+    expect(gruppi[0].alimenti.map((a) => a.id)).toEqual(['olio-evo', 'parmigiano'])
+    expect(gruppi[1].alimenti.map((a) => a.id)).toContain('avena-fiocchi')
+    expect(gruppi[2].alimenti.map((a) => a.id)).toContain('skyr')
+    expect(gruppi[3].alimenti.map((a) => a.id)).toContain('pasta')
   })
   it('ricerca anche nei sinonimi e senza accenti', () => {
     expect(corrisponde(trovaAlimento('burro-d-arachidi')!, 'arachidi')).toBe(true)
@@ -701,5 +702,33 @@ describe('calcolatore: alimenti sconsigliati dalle regole della settimana (setti
   it('salmone a cena sabato 17: informazione sul minimo omega-3 (2 su 3 negli altri giorni)', () => {
     const a = avvisiAlimento('salmone-fresco', { categoria: 'cena', tipoGiorno: 'GRIGIO', conteggiAltri: altri('2026-10-17') })
     expect(a).toEqual([{ livello: 'info', testo: 'Pesce grasso (omega-3): conta per il minimo (2 su 3 negli altri giorni)' }])
+  })
+})
+
+describe('calcolatore: unita\' pratiche e fascia del pasto', () => {
+  it('olio a cucchiai da 10 g: 15 g = 1,5 cucchiai', () => {
+    const olio = trovaAlimento('olio-evo')!
+    expect(pezziDa(unitaPratica(olio)!, 15)).toBe(1.5)
+    expect(descriviQuantita(olio, 15)).toBe('1,5 cucchiai · 15 g')
+    expect(descriviQuantita(olio, 10)).toBe('1 cucchiaio · 10 g')
+  })
+  it('frutta a pezzi: 1 banana = 120 g, 135 g = circa 1,1 banane', () => {
+    const banana = trovaAlimento('banana')!
+    expect(descriviQuantita(banana, 120)).toBe('1 banana · 120 g')
+    expect(descriviQuantita(banana, 135)).toBe('≈ 1,1 banane · 135 g')
+    expect(descriviQuantita(trovaAlimento('kiwi')!, 140)).toBe('2 kiwi · 140 g')
+  })
+  it('alimenti senza unita\' pratica: solo i grammi', () => {
+    expect(descriviQuantita(trovaAlimento('pasta')!, 120)).toBe('120 g')
+  })
+  // Giovedi' 15: piano 416 g (target 395-437); se gli altri pasti fanno 340 g, la cena deve stare tra 55 e 97 g.
+  it('fascia del pasto: target del giorno meno gli altri pasti', () => {
+    const t = targetGiorno({ cho: 416, kcal: 3275 })
+    expect(fasciaDelPasto(t, { cho: 340, kcal: 2600 }).cho).toEqual({ da: t.cho.da - 340, a: t.cho.a - 340 })
+    expect([t.cho.da, t.cho.a]).toEqual([395, 437])
+  })
+  it('P3 conta nella regola della carne (1 ottobre: P3+ a pranzo)', () => {
+    const settimana4 = dati.settimane.find((x) => x.numero === 4)!
+    expect(conteggiVincoli(settimana4.giorni, (g) => ({ pranzo: g.pranzo, cena: g.cena })).carne.volte).toBe(1)
   })
 })

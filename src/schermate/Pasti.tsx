@@ -307,8 +307,18 @@ export function Pasti() {
           value={cerca}
           onChange={(e) => setCerca(e.target.value)}
           placeholder="Cerca un pasto o un alimento…"
-          className="block w-full rounded-xl border border-bordo bg-superficie py-3 pl-10 pr-3 outline-none focus:border-cho"
+          className="block w-full rounded-xl border border-bordo bg-superficie py-3 pl-10 pr-11 outline-none focus:border-cho [&::-webkit-search-cancel-button]:hidden"
         />
+        {cerca && (
+          <button
+            type="button"
+            onClick={() => setCerca('')}
+            aria-label="Cancella la ricerca"
+            className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-lg opacity-60"
+          >
+            ✕
+          </button>
+        )}
         <svg viewBox="0 0 24 24" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 opacity-50" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
           <circle cx="11" cy="11" r="7" />
           <path d="m20 20-3.5-3.5" />

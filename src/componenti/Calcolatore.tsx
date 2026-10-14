@@ -1,9 +1,14 @@
 // Calcolatore del pasto: si sceglie alimento per alimento, con la quantita' sulla rotella,
 // e il box in alto confronta in tempo reale kcal, CHO, proteine e grassi con il pasto del
 // piano (tolleranze in dati.json → regole.calcolatore). Rosso se un valore esce, sopra o sotto.
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   confrontaObiettivo,
+  descriviQuantita,
+  fasciaDelPasto,
+  pezziDa,
+  unitaPratica,
+  valoriPezzi,
   corrisponde,
   gruppiAlimenti,
   totaleComposto,
@@ -15,8 +20,8 @@ import {
   type Valori,
   type VoceComposta,
 } from '../calcolatore'
-import { categorieAlimenti, type AlimentoBanca, type Nutriente } from '../dati'
-import { formatNumero, formatScarto } from '../formato'
+import { categorieAlimenti, dati, type AlimentoBanca, type Nutriente } from '../dati'
+import { formatNumero } from '../formato'
 import { targetGiorno, valutaAlternativa, type PastoLibero } from '../giornata'
 import { BoxGiornata } from './BoxGiornata'
 import type { ContestoGiornata } from './PannelloScelta'
@@ -42,22 +47,34 @@ type Props = {
   onChiudi: () => void
 }
 
-function BoxObiettivo({ confronti, vuoto }: { confronti: ConfrontoNutriente[]; vuoto: boolean }) {
-  const fuori = confronti.filter((c) => c.esito !== 'dentro')
-  const stato = vuoto ? 'vuoto' : fuori.length > 0 ? 'fuori' : 'dentro'
+function BoxObiettivo({
+  confronti,
+  vuoto,
+  fascia,
+}: {
+  confronti: ConfrontoNutriente[]
+  vuoto: boolean
+  /** Quanto puo' valere il pasto perche' la giornata resti nel target. */
+  fascia?: { cho: { da: number; a: number }; kcal: { da: number; a: number } }
+}) {
+  const oltre = confronti.filter((c) => c.esito === 'sopra')
+  const mancano = confronti.filter((c) => c.esito === 'sotto')
+  // Neutro finche' e' vuoto, blu mentre si compone (sotto l'obiettivo), verde dentro, rosso solo oltre.
+  const stato = vuoto ? 'vuoto' : oltre.length > 0 ? 'oltre' : mancano.length > 0 ? 'inCorso' : 'dentro'
+  const bordo = { vuoto: 'border-bordo bg-sfondo', inCorso: 'border-pro bg-pro/10', dentro: 'border-ok bg-ok/10', oltre: 'border-ko bg-ko/10' }[stato]
+  const elenco = (lista: ConfrontoNutriente[], assoluto = false) =>
+    lista
+      .map((c) => `${etichette[c.nutriente]} ${formatNumero(assoluto ? Math.abs(c.scarto) : c.scarto)}${c.nutriente === 'kcal' ? '' : ' g'}`)
+      .join(' · ')
   return (
-    <div
-      className={`rounded-xl border-2 p-3 ${
-        stato === 'fuori' ? 'border-ko bg-ko/10' : stato === 'dentro' ? 'border-ok bg-ok/10' : 'border-bordo bg-sfondo'
-      }`}
-    >
+    <div className={`rounded-xl border-2 p-3 ${bordo}`}>
       <div className="grid grid-cols-4 gap-2 text-center">
         {confronti.map((c) => (
           <div key={c.nutriente}>
             <div className="text-xs font-semibold uppercase opacity-70">{etichette[c.nutriente]}</div>
             <div
-              className={`font-bold leading-tight tabular-nums ${c.nutriente === 'cho' ? 'text-2xl text-cho' : 'text-xl'} ${
-                !vuoto && c.esito !== 'dentro' ? 'text-ko' : ''
+              className={`font-bold leading-tight tabular-nums ${c.nutriente === 'cho' ? 'text-2xl' : 'text-xl'} ${
+                c.esito === 'sopra' && !vuoto ? 'text-ko' : c.nutriente === 'cho' ? 'text-cho' : ''
               }`}
             >
               {formatNumero(c.attuale)}
@@ -69,15 +86,21 @@ function BoxObiettivo({ confronti, vuoto }: { confronti: ConfrontoNutriente[]; v
           </div>
         ))}
       </div>
-      <p className={`mt-2 text-sm font-semibold ${stato === 'fuori' ? 'text-ko' : stato === 'dentro' ? 'text-ok' : 'opacity-70'}`}>
-        {stato === 'vuoto'
-          ? 'Aggiungi gli alimenti: i totali crescono qui.'
-          : stato === 'dentro'
-            ? '✓ Nel target del pasto'
-            : `✗ ${fuori
-                .map((c) => `${etichette[c.nutriente]} ${formatScarto(c.scarto, c.nutriente === 'kcal' ? 'kcal' : 'g')}`)
-                .join(' · ')}`}
+      <p className="mt-2 text-sm font-semibold">
+        {stato === 'vuoto' && <span className="opacity-70">Aggiungi gli alimenti: i totali crescono qui.</span>}
+        {stato === 'dentro' && <span className="text-ok">✓ Nel target del pasto</span>}
+        {oltre.length > 0 && <span className="block text-ko">Oltre: {elenco(oltre)}</span>}
+        {mancano.length > 0 && !vuoto && <span className="block text-pro">Mancano: {elenco(mancano, true)}</span>}
       </p>
+      {fascia && (
+        <p className="mt-1 text-xs opacity-80">
+          Perche' la giornata resti nel target questo pasto deve stare tra{' '}
+          <span className="font-semibold">
+            {formatNumero(fascia.cho.da)}–{formatNumero(fascia.cho.a)} g CHO
+          </span>{' '}
+          e {formatNumero(fascia.kcal.da)}–{formatNumero(fascia.kcal.a)} kcal.
+        </p>
+      )}
     </div>
   )
 }
@@ -97,12 +120,17 @@ function Avvisi({ avvisi, compatti = false }: { avvisi: AvvisoAlimento[]; compat
   )
 }
 
-/** Foglio con la rotella: quantita' e valori di quell'alimento, poi Aggiungi o Togli. */
+/**
+ * Foglio con la rotella: quantita' e valori di quell'alimento, poi Aggiungi o Togli.
+ * Con un'unita' pratica (cucchiai, pezzi di frutta) la rotella conta quella e sotto si
+ * correggono i grammi. Ogni cambiamento arriva subito al box del pasto (onCambia).
+ */
 function SceltaQuantita({
   alimento,
   iniziale,
   gia,
   avvisi,
+  onCambia,
   onConferma,
   onTogli,
   onChiudi,
@@ -111,21 +139,25 @@ function SceltaQuantita({
   iniziale: number
   gia: boolean
   avvisi: AvvisoAlimento[]
+  onCambia: (quantita: number) => void
   onConferma: (quantita: number) => void
   onTogli: () => void
   onChiudi: () => void
 }) {
+  const u = unitaPratica(alimento)
   const [quantita, setQuantita] = useState(iniziale)
+  const [pezzi, setPezzi] = useState(u ? pezziDa(u, iniziale) : 0)
+  useEffect(() => onCambia(quantita), [quantita, onCambia])
   const v = valoriAlimento(alimento, quantita)
   const unita = unitaBreve(alimento)
   return (
-    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/50" onClick={onChiudi}>
+    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/30" onClick={onChiudi}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label={alimento.nome}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-xl rounded-t-2xl bg-superficie px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4"
+        className="w-full max-w-xl rounded-t-2xl bg-superficie px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 shadow-2xl"
       >
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -144,8 +176,45 @@ function SceltaQuantita({
         <Avvisi avvisi={avvisi} />
 
         <div className="mt-3">
-          <SelettoreQuantita valori={valoriSelettore(alimento)} valore={quantita} unita={unita} onCambia={setQuantita} />
+          {u ? (
+            <SelettoreQuantita
+              valori={valoriPezzi(u)}
+              valore={pezzi}
+              unita={u.singolare}
+              unitaPlurale={u.plurale}
+              onCambia={(p) => {
+                setPezzi(p)
+                setQuantita(Math.round(p * u.grammi))
+              }}
+            />
+          ) : (
+            <SelettoreQuantita valori={valoriSelettore(alimento)} valore={quantita} unita={unita} onCambia={setQuantita} />
+          )}
         </div>
+        {u && (
+          <div className="mt-2 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => setQuantita(Math.max(alimento.passo, quantita - alimento.passo))}
+              aria-label="Meno grammi"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-bordo text-lg font-bold"
+            >
+              −
+            </button>
+            <span className="min-w-24 text-center font-semibold tabular-nums">
+              {formatNumero(quantita)} {unita}
+            </span>
+            <button
+              type="button"
+              onClick={() => setQuantita(quantita + alimento.passo)}
+              aria-label="Piu' grammi"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-bordo text-lg font-bold"
+            >
+              +
+            </button>
+          </div>
+        )}
+        {u && <p className="mt-1 text-center text-xs opacity-70">Peso medio: se hai pesato, correggi i grammi.</p>}
 
         <div className="mt-3 grid grid-cols-4 gap-2 rounded-xl bg-sfondo p-2 text-center">
           {(['cho', 'kcal', 'proteine', 'grassi'] as const).map((n) => (
@@ -176,6 +245,12 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
   const [cerca, setCerca] = useState('')
   const [categoria, setCategoria] = useState<string | null>(null)
   const [aperto, setAperto] = useState<AlimentoBanca | null>(null)
+  // Quantita' che si sta scegliendo sulla rotella: il box del pasto la conta gia'.
+  const [anteprima, setAnteprima] = useState<VoceComposta | null>(null)
+  const chiudiScelta = () => {
+    setAperto(null)
+    setAnteprima(null)
+  }
 
   // Sotto il calcolatore la pagina non deve scorrere.
   useEffect(() => {
@@ -186,7 +261,12 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
     }
   }, [])
 
-  const totale = totaleComposto(voci)
+  const vociConAnteprima = anteprima
+    ? voci.some((v) => v.id === anteprima.id)
+      ? voci.map((v) => (v.id === anteprima.id ? anteprima : v))
+      : [...voci, anteprima]
+    : voci
+  const totale = totaleComposto(vociConAnteprima)
   const confronti = confrontaObiettivo(obiettivo.valori, totale)
   const inRicerca = cerca.trim().length >= 2
   const filtra = (a: AlimentoBanca) => (!categoria || a.categoria === categoria) && (!inRicerca || corrisponde(a, cerca))
@@ -200,18 +280,25 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
     }))
     .filter((g) => g.alimenti.length > 0)
   const titoli = {
+    evidenza: dati.bancaAlimenti.inEvidenza.titolo,
     pasto: `Nel pasto ${obiettivo.etichetta}`,
     categoria: `Negli altri pasti (${nomeCategoria})`,
     altri: 'Altri alimenti',
   }
   const quantitaDi = (id: string) => voci.find((v) => v.id === id)?.quantita
   const target = giornata ? targetGiorno(giornata.piano) : null
+  const fascia = target && giornata ? fasciaDelPasto(target, giornata.senzaQuesto) : undefined
+
+  const idAperto = aperto?.id
+  const anteprimaDi = useCallback((quantita: number) => {
+    if (idAperto) setAnteprima({ id: idAperto, quantita })
+  }, [idAperto])
 
   function usa() {
     const testo = voci
       .map((v) => {
         const a = trovaAlimento(v.id)
-        return a ? `${a.nome} ${formatNumero(v.quantita)} ${unitaBreve(a)}` : ''
+        return a ? `${a.nome} ${descriviQuantita(a, v.quantita)}` : ''
       })
       .filter(Boolean)
       .join(' · ')
@@ -227,12 +314,13 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
 
   return (
     <div role="dialog" aria-modal="true" aria-label={`Componi il ${nomeCategoria}`} className="fixed inset-0 z-[60] flex flex-col bg-sfondo">
-      <header className="shrink-0 border-b border-bordo bg-superficie px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+      {/* Mentre si sceglie la quantita' il box resta sopra la velina e si aggiorna in tempo reale. */}
+      <header className={`shrink-0 border-b border-bordo bg-superficie px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] ${aperto ? 'relative z-[71]' : ''}`}>
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-bold">Componi il pasto</h2>
             <p className="text-sm opacity-70">
-              Obiettivo: {obiettivo.etichetta}. Rosso se un valore esce dalla tolleranza, sopra o sotto.
+              Obiettivo: {obiettivo.etichetta}. Blu finche' manca qualcosa, verde nel target, rosso se vai oltre.
             </p>
           </div>
           <button type="button" onClick={onChiudi} aria-label="Chiudi" className="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-2xl">
@@ -240,7 +328,7 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
           </button>
         </div>
         <div className="mt-2">
-          <BoxObiettivo confronti={confronti} vuoto={voci.length === 0} />
+          <BoxObiettivo confronti={confronti} vuoto={vociConAnteprima.length === 0} fascia={fascia} />
         </div>
       </header>
 
@@ -259,9 +347,7 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
                         {sconsigliato(a.id) && <span className="text-ko">⚠ </span>}
                         {a.nome}
                       </span>
-                      <span className="shrink-0 tabular-nums opacity-70">
-                        {formatNumero(v.quantita)} {unitaBreve(a)}
-                      </span>
+                      <span className="shrink-0 text-sm tabular-nums opacity-70">{descriviQuantita(a, v.quantita)}</span>
                       <span className="w-16 shrink-0 text-right font-bold tabular-nums text-cho">
                         {formatNumero(Math.round(valoriAlimento(a, v.quantita).cho))} g
                       </span>
@@ -283,6 +369,7 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
                 titolo="La giornata con questo pasto"
                 totale={valutaAlternativa(giornata.senzaQuesto, { cho: Math.round(totale.cho), kcal: Math.round(totale.kcal) }, target)}
                 target={target}
+                inCorso
               />
             )}
           </section>
@@ -295,8 +382,18 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
             value={cerca}
             onChange={(e) => setCerca(e.target.value)}
             placeholder="Cerca un alimento…"
-            className="block w-full rounded-xl border border-bordo bg-superficie py-3 pl-10 pr-3 outline-none focus:border-cho"
+            className="block w-full rounded-xl border border-bordo bg-superficie py-3 pl-10 pr-11 outline-none focus:border-cho [&::-webkit-search-cancel-button]:hidden"
           />
+          {cerca && (
+            <button
+              type="button"
+              onClick={() => setCerca('')}
+              aria-label="Cancella la ricerca"
+              className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-lg opacity-60"
+            >
+              ✕
+            </button>
+          )}
           <svg viewBox="0 0 24 24" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 opacity-50" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
             <circle cx="11" cy="11" r="7" />
             <path d="m20 20-3.5-3.5" />
@@ -337,7 +434,7 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
                       </span>
                       {q !== undefined ? (
                         <span className="shrink-0 rounded-full bg-cho px-2.5 py-1 text-sm font-bold text-white tabular-nums">
-                          ✓ {formatNumero(q)} {unitaBreve(a)}
+                          ✓ {descriviQuantita(a, q).split(' · ')[0]}
                         </span>
                       ) : (
                         <span className="shrink-0 text-2xl leading-none text-cho" aria-hidden="true">
@@ -371,15 +468,16 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
           iniziale={quantitaDi(aperto.id) ?? aperto.quantitaTipica}
           gia={quantitaDi(aperto.id) !== undefined}
           avvisi={avvisiDi(aperto.id)}
-          onChiudi={() => setAperto(null)}
+          onChiudi={chiudiScelta}
+          onCambia={anteprimaDi}
           onTogli={() => {
             setVoci(voci.filter((x) => x.id !== aperto.id))
-            setAperto(null)
+            chiudiScelta()
           }}
           onConferma={(quantita) => {
             const esiste = voci.some((x) => x.id === aperto.id)
             setVoci(esiste ? voci.map((x) => (x.id === aperto.id ? { ...x, quantita } : x)) : [...voci, { id: aperto.id, quantita }])
-            setAperto(null)
+            chiudiScelta()
           }}
         />
       )}

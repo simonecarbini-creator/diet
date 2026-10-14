@@ -52,9 +52,11 @@ export type Gara = {
 }
 
 export type BancaAlimenti = {
-    _nota:     string;
-    categorie: string[];
-    alimenti:  BancaAlimentiAlimenti[];
+    _nota:      string;
+    categorie:  string[];
+    alimenti:   BancaAlimentiAlimenti[];
+    inEvidenza: InEvidenza;
+    _notaUnita: string;
 }
 
 export type BancaAlimentiAlimenti = {
@@ -69,6 +71,7 @@ export type BancaAlimentiAlimenti = {
     usatoIn:         string[];
     nota?:           string;
     grammiPerPezzo?: number;
+    unitaPratica?:   UnitaPratica;
 }
 
 export type Per100 = {
@@ -76,6 +79,18 @@ export type Per100 = {
     cho:      number;
     proteine: number;
     grassi:   number;
+}
+
+export type UnitaPratica = {
+    singolare: string;
+    plurale:   string;
+    grammi:    number;
+    passo:     number;
+}
+
+export type InEvidenza = {
+    titolo:   string;
+    alimenti: string[];
 }
 
 export type Blocchi = {

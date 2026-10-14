@@ -86,7 +86,8 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
               {etichetta} ·{' '}
               {libero.composto ? <span className="text-cho">composto</span> : <span className="text-ko">libero</span>}
             </div>
-            <div className="font-semibold leading-snug">{libero.testo}</div>
+            {/* Il testo di un pasto composto puo' essere lungo: due righe, tutto quando si apre. */}
+            <div className={`font-semibold leading-snug ${aperto ? '' : 'line-clamp-2'}`}>{libero.testo}</div>
             <div className="text-sm opacity-70">
               {conValori
                 ? `${formatNumero(libero.kcal ?? 0)} kcal`
