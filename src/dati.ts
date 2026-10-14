@@ -42,6 +42,8 @@ export type PastoRisolto = {
   cho: number
   /** null quando il JSON non lo riporta (es. versioni ridotte e maggiorate). */
   proteine: number | null
+  /** Grassi del pasto (g): obiettivo del calcolatore. Assenti nelle alternative create nell'app. */
+  grassi?: number
   /** Vuoto per le merende, che hanno solo `composizione`. */
   alimenti: Alimento[]
   composizione?: string
@@ -77,6 +79,7 @@ type Versione = {
   kcal: number
   cho: number
   proteine?: number
+  grassi?: number
   modificheGrammi: { nome: string; grammi: number }[]
   rimozioni?: string[]
   /** Alimenti in piu' rispetto al pasto base (es. P14+: un frutto). */
@@ -138,6 +141,7 @@ function cercaConVersioni(elenco: ConVersioni[], id: string): PastoRisolto | nul
           kcal: versione.kcal,
           cho: versione.cho,
           proteine: versione.proteine ?? null,
+          grassi: versione.grassi,
           alimenti: applicaModifiche(pasto.alimenti, versione),
           notaVersione: versione.nota,
           versione: etichetta,
@@ -170,6 +174,7 @@ function trovaColazione(id: string): PastoRisolto | null {
     kcal: colazione.kcal,
     cho: colazione.cho,
     proteine: colazione.proteine,
+    grassi: colazione.grassi,
     alimenti: colazione.alimenti,
     base: colazione.base !== colazione.id ? colazione.base : undefined,
     quando: colazione.orario ?? base?.orario ?? std?.orario,
@@ -243,6 +248,7 @@ function trovaPastoDelPiano(categoria: CategoriaConId, id: string): PastoRisolto
             kcal: merenda.kcal,
             cho: merenda.cho,
             proteine: merenda.proteine,
+            grassi: merenda.grassi,
             alimenti: [],
             composizione: merenda.composizione,
             tags: 'tags' in merenda ? (merenda.tags as string[]) : [],
@@ -304,4 +310,23 @@ export function idAlternative(categoria: CategoriaConId): string[] {
 
 export function isCategoriaConId(categoria: CategoriaPasto): categoria is CategoriaConId {
   return ['colazione', 'spuntino', 'pranzo', 'cena', 'merenda', 'spuntinoSerale'].includes(categoria)
+}
+
+// --- Banca dati degli alimenti (calcolatore del pasto) -----------------------------
+
+export type AlimentoBanca = Dati['bancaAlimenti']['alimenti'][number]
+export type Nutriente = 'kcal' | 'cho' | 'proteine' | 'grassi'
+export type Tolleranza = { percento: number; minimoGrammi?: number }
+
+export function alimentiBanca(): AlimentoBanca[] {
+  return dati.bancaAlimenti.alimenti
+}
+
+/** Le categorie nell'ordine di dati.json, solo quelle con almeno un alimento. */
+export function categorieAlimenti(): string[] {
+  return dati.bancaAlimenti.categorie.filter((c) => dati.bancaAlimenti.alimenti.some((a) => a.categoria === c))
+}
+
+export function tolleranzeCalcolatore(): Record<Nutriente, Tolleranza> {
+  return dati.regole.calcolatore.tolleranze
 }

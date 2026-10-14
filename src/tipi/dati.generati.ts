@@ -24,6 +24,7 @@ export type Dati = {
     settimane:             Settimane[];
     promemoriaGlicemico:   PromemoriaGlicemico[];
     controlli:             Controlli[];
+    bancaAlimenti:         BancaAlimenti;
     disclaimer:            string;
 }
 
@@ -50,6 +51,33 @@ export type Gara = {
     data: string;
 }
 
+export type BancaAlimenti = {
+    _nota:     string;
+    categorie: string[];
+    alimenti:  BancaAlimentiAlimenti[];
+}
+
+export type BancaAlimentiAlimenti = {
+    id:              string;
+    nome:            string;
+    categoria:       string;
+    unita:           string;
+    per100:          Per100;
+    passo:           number;
+    quantitaTipica:  number;
+    sinonimi:        string[];
+    usatoIn:         string[];
+    nota?:           string;
+    grammiPerPezzo?: number;
+}
+
+export type Per100 = {
+    kcal:     number;
+    cho:      number;
+    proteine: number;
+    grassi:   number;
+}
+
 export type Blocchi = {
     preCorsa:       PreCorsa;
     colazioni:      Colazioni[];
@@ -66,7 +94,7 @@ export type Colazioni = {
     kcal:          number;
     cho:           number;
     proteine:      number;
-    grassi?:       number;
+    grassi:        number;
     alimenti:      ColazioniAlimenti[];
     note:          string;
     tags:          string[];
@@ -93,6 +121,7 @@ export type PreCorsa = {
     alimenti: PreCorsaAlimenti[];
     note:     string;
     saltaSe:  string;
+    grassi:   number;
 }
 
 export type PreCorsaAlimenti = {
@@ -109,6 +138,7 @@ export type Spuntini = {
     cho:      number;
     proteine: number;
     alimenti: ModificheGrammiElement[];
+    grassi:   number;
 }
 
 export type ModificheGrammiElement = {
@@ -128,6 +158,7 @@ export type BlocchiSpuntinoSerale = {
     alternative: SpuntinoSeraleAlternative[];
     consigli:    string[];
     note:        string;
+    grassi:      number;
 }
 
 export type SpuntinoSeraleAlternative = {
@@ -140,6 +171,7 @@ export type SpuntinoSeraleAlternative = {
     alimenti: AlternativeAlimenti[];
     note:     string;
     tags:     string[];
+    grassi:   number;
 }
 
 export type AlternativeAlimenti = {
@@ -174,6 +206,7 @@ export type Cene = {
     proteine:                     number;
     alimenti:                     CeneAlimenti[];
     ridotto?:                     RidottoClass;
+    grassi:                       number;
     contaComeOmega3?:             boolean;
     note?:                        string;
     maggiorato?:                  RidottoClass;
@@ -181,7 +214,6 @@ export type Cene = {
     incompatibileCon?:            string[];
     varianti?:                    CeneVarianti[];
     categoria?:                   string;
-    grassi?:                      number;
     tags?:                        string[];
     frequenzaMassimaSettimanale?: number;
 }
@@ -201,6 +233,7 @@ export type RidottoClass = {
     proteine:        number;
     modifiche:       string;
     modificheGrammi: ModificheGrammiElement[];
+    grassi:          number;
 }
 
 export type CeneVarianti = {
@@ -211,6 +244,7 @@ export type CeneVarianti = {
     proteine: number;
     alimenti: DolciAlimenti[];
     note:     string;
+    grassi:   number;
 }
 
 export type DolciAlimenti = {
@@ -247,6 +281,7 @@ export type Dolci = {
     alimenti: DolciAlimenti[];
     note:     string;
     tags:     string[];
+    grassi:   number;
 }
 
 export type MerendaRidotta = {
@@ -259,6 +294,7 @@ export type MerendaRidotta = {
     quando:       MerendaRidottaQuando;
     _nota:        string;
     alternative:  MerendaRidottaAlternative[];
+    grassi:       number;
 }
 
 export type MerendaRidottaAlternative = {
@@ -267,6 +303,7 @@ export type MerendaRidottaAlternative = {
     cho:          number;
     proteine:     number;
     composizione: string;
+    grassi:       number;
 }
 
 export type MerendaRidottaQuando = {
@@ -281,6 +318,7 @@ export type Merende = {
     proteine:     number;
     composizione: string;
     tags:         string[];
+    grassi:       number;
 }
 
 export type OrariPasti = {
@@ -306,10 +344,10 @@ export type Pranzi = {
     ridotto?:                     Ridotto;
     note:                         string;
     _nota?:                       string;
+    grassi:                       number;
     tags?:                        string[];
     maggiorato?:                  PranziMaggiorato;
     categoria?:                   string;
-    grassi?:                      number;
     soloTipiGiornata?:            string[];
     contaComeOmega3?:             boolean;
     frequenzaMassimaSettimanale?: number;
@@ -330,6 +368,7 @@ export type PranziMaggiorato = {
     modifiche:       string;
     modificheGrammi: ModificheGrammiElement[];
     nota?:           string;
+    grassi:          number;
     aggiunte?:       ModificheGrammiElement[];
 }
 
@@ -341,6 +380,7 @@ export type Ridotto = {
     modifiche:       string;
     modificheGrammi: ModificheGrammiElement[];
     rimozioni?:      string[];
+    grassi:          number;
 }
 
 export type PranziVarianti = {
@@ -351,6 +391,7 @@ export type PranziVarianti = {
     proteine: number;
     alimenti: PreCorsaAlimenti[];
     note:     string;
+    grassi:   number;
 }
 
 export type PromemoriaGlicemico = {
@@ -378,6 +419,7 @@ export type Regole = {
     regolaSabato:              string;
     assegnazionePasti:         AssegnazionePasti;
     vincoliSettimanali:        VincoliSettimanali[];
+    calcolatore:               Calcolatore;
 }
 
 export type AssegnazionePasti = {
@@ -402,6 +444,27 @@ export type CeneDistribuite = {
 export type GiornoGrigio = {
     pranzo: string;
     cena:   string;
+}
+
+export type Calcolatore = {
+    _nota:      string;
+    tolleranze: Tolleranze;
+}
+
+export type Tolleranze = {
+    kcal:     Kcal;
+    cho:      Cho;
+    proteine: Cho;
+    grassi:   Cho;
+}
+
+export type Cho = {
+    percento:     number;
+    minimoGrammi: number;
+}
+
+export type Kcal = {
+    percento: number;
 }
 
 export type ClassificazioneGiornata = {
@@ -593,6 +656,7 @@ export type Sgarri = {
     alimenti: AlternativeAlimenti[];
     note:     string;
     tags:     string[];
+    grassi:   number;
     base?:    string;
 }
 

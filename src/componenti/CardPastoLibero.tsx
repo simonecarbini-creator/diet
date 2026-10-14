@@ -83,7 +83,8 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
           <div className="w-11 shrink-0 pt-0.5 text-sm tabular-nums opacity-70">{voce.orario}</div>
           <div className="min-w-0 flex-1">
             <div className="text-xs font-semibold uppercase tracking-wide opacity-70">
-              {etichetta} · <span className="text-ko">libero</span>
+              {etichetta} ·{' '}
+              {libero.composto ? <span className="text-cho">composto</span> : <span className="text-ko">libero</span>}
             </div>
             <div className="font-semibold leading-snug">{libero.testo}</div>
             <div className="text-sm opacity-70">

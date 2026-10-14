@@ -15,7 +15,15 @@ import {
 } from './dati'
 
 /** Pasto libero della giornata di sgarro; i valori sono facoltativi (se si conoscono). */
-export type PastoLibero = { testo: string; kcal?: number; cho?: number; proteine?: number }
+export type PastoLibero = {
+  testo: string
+  kcal?: number
+  cho?: number
+  proteine?: number
+  grassi?: number
+  /** Composto con il calcolatore: gli alimenti della banca dati con le quantita'. */
+  composto?: { id: string; quantita: number }[]
+}
 
 /** I pasti liberi salvati prima dei valori erano solo testo. */
 export function comeLibero(valore: string | PastoLibero): PastoLibero {
@@ -235,13 +243,10 @@ export function giornoDopo(data: string): string {
 }
 
 /** Media delle merende M1-M12: la stima usata nel totale del piano quando la merenda non è scelta. */
-export function merendaMedia(): { kcal: number; cho: number; proteine: number } {
+export function merendaMedia(): { kcal: number; cho: number; proteine: number; grassi: number } {
   const n = dati.merende.length
-  return {
-    kcal: Math.round(dati.merende.reduce((s, m) => s + m.kcal, 0) / n),
-    cho: Math.round(dati.merende.reduce((s, m) => s + m.cho, 0) / n),
-    proteine: Math.round(dati.merende.reduce((s, m) => s + m.proteine, 0) / n),
-  }
+  const media = (valore: (m: (typeof dati.merende)[number]) => number) => Math.round(dati.merende.reduce((s, m) => s + valore(m), 0) / n)
+  return { kcal: media((m) => m.kcal), cho: media((m) => m.cho), proteine: media((m) => m.proteine), grassi: media((m) => m.grassi) }
 }
 
 /**

@@ -4,7 +4,8 @@ import { dolci } from '../dati'
 import { formatNumero } from '../formato'
 import { targetGiorno, valutaAlternativa } from '../giornata'
 import { NumeriPasto } from './NumeriPasto'
-import { BoxGiornata, type ContestoGiornata } from './PannelloScelta'
+import { BoxGiornata } from './BoxGiornata'
+import type { ContestoGiornata } from './PannelloScelta'
 import { Popup } from './Popup'
 
 type Props = {

@@ -19,6 +19,7 @@ import {
 import { proponiSettimana, type GiornoInserito } from '../src/motore'
 import { verificaDati } from '../src/verifica'
 import { formatScarto } from '../src/formato'
+import { confrontaObiettivo, gruppiAlimenti, totaleComposto, valoriAlimento, trovaAlimento, valoriSelettore, corrisponde } from '../src/calcolatore'
 import { conteggiVincoli, controllaVincoli } from '../src/vincoli'
 
 function giorno(data: string) {
@@ -136,7 +137,8 @@ describe('totali della giornata', () => {
 
   // Proteine M1-M12: 22+21+14+7+25+17+8+14+20+17+11+12 = 188 / 12 = 15,7 → 16.
   it('merenda media (stima del piano): 57 g CHO, 368 kcal, 16 g pro', () => {
-    expect(merendaMedia()).toEqual({ cho: 57, kcal: 368, proteine: 16 })
+    // Grassi M1-M12: 2+3+10+15+2+5+12+8+6+11+18+14 = 106 / 12 = 8,8 → 9.
+    expect(merendaMedia()).toEqual({ cho: 57, kcal: 368, proteine: 16, grassi: 9 })
   })
 })
 
@@ -585,5 +587,79 @@ describe('vincoli settimanali', () => {
     })
     const esiti = controllaVincoli(settimana5.giorni, Object.fromEntries(settimana5.giorni.map((g) => [g.data, conCarne(g)])))
     expect(esiti.find((e) => e.id === 'carne')?.rispettato).toBe(false)
+  })
+})
+
+describe('calcolatore del pasto', () => {
+  // Pasta di semola per 100 g: 353 kcal, 72 g CHO, 12,5 g pro, 1,5 g grassi → 120 g: 423,6 / 86,4 / 15 / 1,8.
+  it('pasta 120 g: 86,4 g CHO e 423,6 kcal', () => {
+    const v = valoriAlimento(trovaAlimento('pasta')!, 120)
+    expect(v.cho).toBeCloseTo(86.4)
+    expect(v.kcal).toBeCloseTo(423.6)
+  })
+  // Uovo 55 g, per 100 g 143 kcal e 12,6 g pro → 2 uova = 110 g: 157,3 kcal, 13,86 g pro.
+  it('alimenti a pezzi: 2 uova = 110 g', () => {
+    const v = valoriAlimento(trovaAlimento('uova')!, 2)
+    expect(v.kcal).toBeCloseTo(157.3)
+    expect(v.proteine).toBeCloseTo(13.86)
+  })
+  // 3 fette biscottate da 9,5 g = 28,5 g, 63 g CHO/100 g → 17,955 g.
+  it('3 fette biscottate integrali: 18 g CHO', () => {
+    expect(valoriAlimento(trovaAlimento('fette-biscottate-integrali')!, 3).cho).toBeCloseTo(17.955)
+  })
+  // STD ricomposta con gli alimenti della banca dati (yogurt 200, avena 70, mandorle 20, gocce 5,
+  // albicocche secche 10, 3 fette, composta 40): 715 kcal, 91 g CHO, 38 g pro, 19 g grassi.
+  const std = [
+    { id: 'yogurt-greco-0', quantita: 200 },
+    { id: 'avena-fiocchi', quantita: 70 },
+    { id: 'mandorle', quantita: 20 },
+    { id: 'gocce-di-cioccolato-fondente', quantita: 5 },
+    { id: 'albicocche-secche', quantita: 10 },
+    { id: 'fette-biscottate-integrali', quantita: 3 },
+    { id: 'composta-albicocche', quantita: 40 },
+  ]
+  it('STD ricomposta: 715 kcal, 91 g CHO, 38 g pro, 19 g grassi', () => {
+    const t = totaleComposto(std)
+    expect([t.kcal, t.cho, t.proteine, t.grassi].map(Math.round)).toEqual([715, 91, 38, 19])
+  })
+  it('STD ricomposta contro STD del piano (700 / 90 / 37 / 20): tutto dentro', () => {
+    const c = confrontaObiettivo({ kcal: 700, cho: 90, proteine: 37, grassi: 20 }, totaleComposto(std))
+    expect(c.map((x) => x.esito)).toEqual(['dentro', 'dentro', 'dentro', 'dentro'])
+  })
+  // Tolleranze: kcal 5%, CHO 5% (minimo 3 g), proteine 10% (min 3), grassi 15% (min 3).
+  it('limiti: su 90 g di CHO 4,5 g; su 25 g di CHO il minimo di 3 g', () => {
+    const z = { kcal: 0, cho: 0, proteine: 0, grassi: 0 }
+    expect(confrontaObiettivo({ cho: 90 }, { ...z, cho: 84 })[0]).toMatchObject({ limite: 4.5, scarto: -6, esito: 'sotto' })
+    expect(confrontaObiettivo({ cho: 90 }, { ...z, cho: 94 })[0]).toMatchObject({ esito: 'dentro' })
+    expect(confrontaObiettivo({ cho: 25 }, { ...z, cho: 28 })[0]).toMatchObject({ limite: 3, esito: 'dentro' })
+    expect(confrontaObiettivo({ cho: 25 }, { ...z, cho: 29 })[0]).toMatchObject({ esito: 'sopra' })
+    expect(confrontaObiettivo({ grassi: 20 }, { ...z, grassi: 24 })[0]).toMatchObject({ limite: 3, esito: 'sopra' })
+  })
+  it('senza obiettivo dei grassi i grassi non si confrontano', () => {
+    expect(confrontaObiettivo({ kcal: 700, cho: 90, proteine: 37 }, totaleComposto(std)).map((c) => c.nutriente)).toEqual(['kcal', 'cho', 'proteine'])
+  })
+  it('prima gli alimenti del pasto (STD), poi quelli delle altre colazioni, poi gli altri', () => {
+    const gruppi = gruppiAlimenti(['STD'], idAlternative('colazione'))
+    expect(gruppi.map((g) => g.titolo)).toEqual(['pasto', 'categoria', 'altri'])
+    expect(gruppi[0].alimenti.map((a) => a.id)).toContain('avena-fiocchi')
+    expect(gruppi[1].alimenti.map((a) => a.id)).toContain('skyr')
+    expect(gruppi[2].alimenti.map((a) => a.id)).toContain('pasta')
+  })
+  it('ricerca anche nei sinonimi e senza accenti', () => {
+    expect(corrisponde(trovaAlimento('burro-d-arachidi')!, 'arachidi')).toBe(true)
+    expect(corrisponde(trovaAlimento('tiramisu')!, 'tiramisù')).toBe(true)
+  })
+  it('selettore: olio a passi di 5 g fino a 100 g, uova a pezzi da 1 a 20', () => {
+    expect(valoriSelettore(trovaAlimento('olio-evo')!).slice(0, 3)).toEqual([5, 10, 15])
+    expect(valoriSelettore(trovaAlimento('olio-evo')!).at(-1)).toBe(100)
+    expect(valoriSelettore(trovaAlimento('uova')!).at(-1)).toBe(20)
+  })
+  it('la coppa Milk ha i valori dell\'etichetta (16,4 g di CHO per 100 g)', () => {
+    expect(trovaAlimento('coppa-al-cacao-con-panna')?.per100).toEqual({ kcal: 93, cho: 16.4, proteine: 1.3, grassi: 2.5 })
+  })
+  it('tutti i pasti del piano hanno i grassi', () => {
+    const categorie: CategoriaConId[] = ['colazione', 'spuntino', 'pranzo', 'merenda', 'cena', 'spuntinoSerale']
+    const senza = categorie.flatMap((c) => idAlternative(c).filter((id) => trovaPasto(c, id)?.grassi === undefined))
+    expect(senza).toEqual([])
   })
 })

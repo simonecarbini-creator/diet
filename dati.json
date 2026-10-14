@@ -82,153 +82,415 @@
 
   "regole": {
     "_nota": "Queste regole sono il motore dell'app: dall'allenamento inserito si deriva automaticamente tipo giornata, colazione, spuntino, gel e spuntino serale. Il testo 'se' e' per le persone; il campo 'quando' e' la stessa condizione in forma leggibile dall'app. Si applica la prima regola dell'elenco che corrisponde.",
-
     "riconoscimentoTesto": {
       "_nota": "Come l'app legge il testo libero dell'allenamento. Decisioni del 2026-10-02.",
-      "paroleRiposo": ["riposo"],
-      "paroleQualita": ["ripetute", "salite", "frazionato", "medio"],
-      "paroleProgressiva": ["progressiva", "progressione"],
+      "paroleRiposo": [
+        "riposo"
+      ],
+      "paroleQualita": [
+        "ripetute",
+        "salite",
+        "frazionato",
+        "medio"
+      ],
+      "paroleProgressiva": [
+        "progressiva",
+        "progressione"
+      ],
       "progressivaLungaKmMin": 18,
       "nota": "La 'x' da sola non rende il giorno di qualita' (es. 15 km + 6x100 di allunghi resta VERDE): serve la parola 'ripetute' oppure almeno 20 minuti sopra il ritmo medio."
     },
-
     "lungoDomenicaleAutomatico": {
       "_nota": "La domenica con almeno questi km e' proposta come lungo domenicale; si puo' cambiare a mano.",
       "giornoSettimana": 7,
       "distanzaKmMin": 18
     },
-
     "rossoPesante": {
       "se": "giorno ROSSO con lungo >= 20 km oppure almeno 50 minuti sopra il ritmo medio",
-      "quando": { "e": [
-        { "var": "tipo", "==": "ROSSO" },
-        { "oppure": [ { "var": "distanzaKm", ">=": 20 }, { "var": "minutiSopraRitmoMedio", ">=": 50 } ] }
-      ] }
+      "quando": {
+        "e": [
+          {
+            "var": "tipo",
+            "==": "ROSSO"
+          },
+          {
+            "oppure": [
+              {
+                "var": "distanzaKm",
+                ">=": 20
+              },
+              {
+                "var": "minutiSopraRitmoMedio",
+                ">=": 50
+              }
+            ]
+          }
+        ]
+      }
     },
-
     "classificazioneGiornata": [
       {
         "id": "riposo",
         "se": "allenamento assente o 'riposo'",
         "tipo": "GRIGIO",
         "priorita": 1,
-        "quando": { "var": "riposo", "==": true }
+        "quando": {
+          "var": "riposo",
+          "==": true
+        }
       },
       {
         "id": "lungo",
         "se": "distanzaTotaleKm >= 18",
         "tipo": "ROSSO",
         "priorita": 2,
-        "quando": { "var": "distanzaKm", ">=": 18 }
+        "quando": {
+          "var": "distanzaKm",
+          ">=": 18
+        }
       },
       {
         "id": "qualita",
         "se": "contiene ripetute, salite, frazionato, medio, progressiva lunga, o minutiSopraRitmoMedio >= 20",
         "tipo": "ROSSO",
         "priorita": 3,
-        "quando": { "oppure": [ { "var": "qualitaNelTesto", "==": true }, { "var": "minutiSopraRitmoMedio", ">=": 20 } ] }
+        "quando": {
+          "oppure": [
+            {
+              "var": "qualitaNelTesto",
+              "==": true
+            },
+            {
+              "var": "minutiSopraRitmoMedio",
+              ">=": 20
+            }
+          ]
+        }
       },
       {
         "id": "lento",
         "se": "altrimenti",
         "tipo": "VERDE",
         "priorita": 4,
-        "quando": { "sempre": true }
+        "quando": {
+          "sempre": true
+        }
       }
     ],
     "classificazioneNota": "Una progressiva breve (14-15 km che chiude veloce negli ultimi km) resta VERDE: chiude veloce ma dura poco. Una seduta di qualita' lunga come 10x1000 (~18 km, oltre un'ora sopra il ritmo medio) e' ROSSO e va trattata come un lungo.",
-
     "sceltaColazione": [
       {
         "colazione": "MAGG",
         "se": "distanzaTotaleKm >= 20 OPPURE minutiSopraRitmoMedio >= 50 OPPURE e' il lungo domenicale",
-        "quando": { "oppure": [
-          { "var": "distanzaKm", ">=": 20 },
-          { "var": "minutiSopraRitmoMedio", ">=": 50 },
-          { "var": "lungoDomenicale", "==": true }
-        ] }
+        "quando": {
+          "oppure": [
+            {
+              "var": "distanzaKm",
+              ">=": 20
+            },
+            {
+              "var": "minutiSopraRitmoMedio",
+              ">=": 50
+            },
+            {
+              "var": "lungoDomenicale",
+              "==": true
+            }
+          ]
+        }
       },
       {
         "colazione": "RID",
         "se": "tipo == GRIGIO E il giorno successivo NON e' ROSSO pesante",
-        "quando": { "e": [ { "var": "tipo", "==": "GRIGIO" }, { "var": "domaniRossoPesante", "==": false } ] }
+        "quando": {
+          "e": [
+            {
+              "var": "tipo",
+              "==": "GRIGIO"
+            },
+            {
+              "var": "domaniRossoPesante",
+              "==": false
+            }
+          ]
+        }
       },
       {
         "colazione": "STD",
         "se": "altrimenti",
-        "quando": { "sempre": true }
+        "quando": {
+          "sempre": true
+        }
       }
     ],
-
     "sceltaSpuntino": [
-      { "spuntino": "intero", "se": "tipo == ROSSO OPPURE distanzaTotaleKm >= 15",
-        "quando": { "oppure": [ { "var": "tipo", "==": "ROSSO" }, { "var": "distanzaKm", ">=": 15 } ] } },
-      { "spuntino": "soloFrutto", "se": "altrimenti", "quando": { "sempre": true } }
+      {
+        "spuntino": "intero",
+        "se": "tipo == ROSSO OPPURE distanzaTotaleKm >= 15",
+        "quando": {
+          "oppure": [
+            {
+              "var": "tipo",
+              "==": "ROSSO"
+            },
+            {
+              "var": "distanzaKm",
+              ">=": 15
+            }
+          ]
+        }
+      },
+      {
+        "spuntino": "soloFrutto",
+        "se": "altrimenti",
+        "quando": {
+          "sempre": true
+        }
+      }
     ],
-
     "spuntinoSerale": [
-      { "valore": true, "se": "distanzaTotaleKm >= 20", "obbligatorio": true, "motivo": "anti-ipoglicemia notturna post-lungo",
-        "quando": { "var": "distanzaKm", ">=": 20 } },
-      { "valore": true, "se": "tipo == ROSSO", "quando": { "var": "tipo", "==": "ROSSO" } },
-      { "valore": false, "se": "altrimenti", "quando": { "sempre": true } }
+      {
+        "valore": true,
+        "se": "distanzaTotaleKm >= 20",
+        "obbligatorio": true,
+        "motivo": "anti-ipoglicemia notturna post-lungo",
+        "quando": {
+          "var": "distanzaKm",
+          ">=": 20
+        }
+      },
+      {
+        "valore": true,
+        "se": "tipo == ROSSO",
+        "quando": {
+          "var": "tipo",
+          "==": "ROSSO"
+        }
+      },
+      {
+        "valore": false,
+        "se": "altrimenti",
+        "quando": {
+          "sempre": true
+        }
+      }
     ],
-
     "gelInCorsa": [
-      { "grammiChoPerOra": 70, "se": "e' il lungo domenicale", "nota": "protocollo gara: stesso gel, stessi intervalli, glicemia annotata prima/durante/dopo",
-        "quando": { "var": "lungoDomenicale", "==": true } },
-      { "grammiChoPerOra": 60, "se": "durataMinuti > 100", "quando": { "var": "durataMinuti", ">": 100 } },
-      { "grammiChoPerOra": 30, "se": "durataMinuti tra 75 e 100", "quando": { "var": "durataMinuti", ">=": 75 } },
-      { "grammiChoPerOra": 0, "se": "durataMinuti < 75", "quando": { "sempre": true } }
+      {
+        "grammiChoPerOra": 70,
+        "se": "e' il lungo domenicale",
+        "nota": "protocollo gara: stesso gel, stessi intervalli, glicemia annotata prima/durante/dopo",
+        "quando": {
+          "var": "lungoDomenicale",
+          "==": true
+        }
+      },
+      {
+        "grammiChoPerOra": 60,
+        "se": "durataMinuti > 100",
+        "quando": {
+          "var": "durataMinuti",
+          ">": 100
+        }
+      },
+      {
+        "grammiChoPerOra": 30,
+        "se": "durataMinuti tra 75 e 100",
+        "quando": {
+          "var": "durataMinuti",
+          ">=": 75
+        }
+      },
+      {
+        "grammiChoPerOra": 0,
+        "se": "durataMinuti < 75",
+        "quando": {
+          "sempre": true
+        }
+      }
     ],
     "gelGrammiPerUnita": 30,
     "gelNota": "I grammi si calcolano come g/ora x durata e si arrotondano per eccesso al gel intero da 30 g. Senza la durata il gel non si calcola.",
-
     "sabatoRicarica": {
       "condizione": "la domenica successiva e' ROSSO pesante (lungo >= 20 km o qualita' estesa)",
       "effetto": "colazione STD invece di RID e pranzo pieno invece di ridotto; si tagliano solo merenda e cena",
       "motivo": "non e' un riposo qualsiasi, e' la ricarica prima della seduta pesante",
-      "quando": { "e": [ { "var": "tipo", "==": "GRIGIO" }, { "var": "domaniRossoPesante", "==": true } ] }
+      "quando": {
+        "e": [
+          {
+            "var": "tipo",
+            "==": "GRIGIO"
+          },
+          {
+            "var": "domaniRossoPesante",
+            "==": true
+          }
+        ]
+      }
     },
-
     "sceltaPasti": {
       "tolleranzaPercento": 5,
       "nota": "Quando si cambia un pasto, l'alternativa e' 'nel target' se con lei CHO e kcal del giorno restano entro questa percentuale dal piano di quel giorno (kcal e cho del giorno nel calendario). Non blocca la scelta: la ordina e la segnala. Decisione dell'utente del 2026-10-05."
     },
-
     "giornataLibera": {
       "tolleranzaPercento": 5,
       "nota": "Una giornata libera conta come rispettata se tutti i pasti liberi hanno kcal, CHO e proteine e il totale del giorno resta entro questa percentuale da quello dei pasti del piano. Decisione dell'utente del 2026-10-02."
     },
-
     "regolaSabato": "Si tagliano SOLO i cereali. Proteine (120-135 g) e grassi (90 g) NON si tagliano: la riparazione muscolare avviene proprio nel giorno di riposo. Nessun pre-corsa, nessuno spuntino serale.",
-
     "assegnazionePasti": {
       "_nota": "Proposta automatica di pranzi e cene per una nuova settimana; tutto resta modificabile a mano prima di salvare.",
       "pranzo": "P1",
-      "maggioratoNeiGiorni": ["ROSSO"],
-      "ceneDistribuite": [
-        { "cena": "C2", "volte": 3, "preferenzaTipi": ["ROSSO", "VERDE", "GRIGIO"], "nonConsecutive": true },
-        { "cena": "C4", "volte": 2, "preferenzaTipi": ["VERDE", "GRIGIO"], "nonConsecutive": true }
+      "maggioratoNeiGiorni": [
+        "ROSSO"
       ],
-      "ceneARotazione": ["C1", "C3"],
-      "giornoGrigio": { "pranzo": "ridotto", "cena": "ridotto" },
-      "ricarica": { "pranzo": "pieno", "cena": "ridotto" },
+      "ceneDistribuite": [
+        {
+          "cena": "C2",
+          "volte": 3,
+          "preferenzaTipi": [
+            "ROSSO",
+            "VERDE",
+            "GRIGIO"
+          ],
+          "nonConsecutive": true
+        },
+        {
+          "cena": "C4",
+          "volte": 2,
+          "preferenzaTipi": [
+            "VERDE",
+            "GRIGIO"
+          ],
+          "nonConsecutive": true
+        }
+      ],
+      "ceneARotazione": [
+        "C1",
+        "C3"
+      ],
+      "giornoGrigio": {
+        "pranzo": "ridotto",
+        "cena": "ridotto"
+      },
+      "ricarica": {
+        "pranzo": "pieno",
+        "cena": "ridotto"
+      },
       "cenaRidottaDiRiserva": "C1rid",
       "totalePianoNota": "Se la merenda non e' assegnata, il totale del piano include la media delle merende M1-M12."
     },
-
     "vincoliSettimanali": [
-      { "id": "omega3", "nome": "Pesce grasso (omega-3)", "regola": "pesce grasso almeno 3 volte a settimana: C2 a cena o P9 a pranzo", "motivo": "omega-3 per il recupero; il pesce bianco (C1, C7, C8, C9, C11) non conta", "pasti": ["C2", "P9"], "minimo": 3 },
-      { "id": "formaggio", "nome": "Formaggio (C4)", "regola": "cena C4 massimo 2-3 volte, solo nei giorni VERDE o GRIGIO", "motivo": "pochi CHO e molti grassi: rallenta lo svuotamento gastrico quando serve ricostituire glicogeno", "pasti": ["C4"], "massimo": 3 },
-      { "id": "carne", "nome": "Carne", "regola": "carne al massimo una volta a settimana in totale, tra P13 e C13", "motivo": "carne limitata per scelta", "pasti": ["P13", "C13"], "massimo": 1 },
-      { "id": "grassiAlti", "regola": "pasti con piu' di 30 g di grassi (C4, P4, P12, C10) solo nei giorni VERDE o GRIGIO, mai prima o dopo una seduta di qualita'", "motivo": "rallentano lo svuotamento gastrico e spostano la curva in avanti di 3-5 ore", "pasti": ["C4", "P4", "P12", "C10"] },
-      { "id": "noC4conC2", "regola": "mai C4 nello stesso giorno di C2", "pasti": ["C4", "C2"] },
-      { "id": "cenaPreGara", "regola": "la sera prima di un lungo o di una seduta di qualita' preferire C9", "motivo": "114 g di CHO con soli 15 g di grassi: il rapporto migliore della lista", "pasti": ["C9"], "seraPrimaDiTipo": "ROSSO" },
-      { "id": "proteineBasse", "regola": "C12 ha 33 g di proteine: compensare negli altri pasti o con 30 g di parmigiano sulle patate", "pasti": ["C12"] },
-      { "id": "fibra", "regola": "P8 e C5 superano i 20 g di fibra: ottimi sulla curva glicemica, ma non la sera prima di un allenamento", "pasti": ["P8", "C5"] },
-      { "id": "barbabietola", "regola": "barbabietola 2-3 volte a settimana", "motivo": "i nitrati migliorano l'efficienza a ritmo submassimale", "verdure": ["Barbabietola"] },
-      { "id": "crucifere", "regola": "niente crucifere (broccoli, cavolfiore, cavoli, verze) la sera prima di un giorno ROSSO", "motivo": "fermentano: problemi intestinali alle 5:30", "categoriaVerdure": "crucifera", "seraPrimaDiTipo": "ROSSO" }
-    ]
+      {
+        "id": "omega3",
+        "nome": "Pesce grasso (omega-3)",
+        "regola": "pesce grasso almeno 3 volte a settimana: C2 a cena o P9 a pranzo",
+        "motivo": "omega-3 per il recupero; il pesce bianco (C1, C7, C8, C9, C11) non conta",
+        "pasti": [
+          "C2",
+          "P9"
+        ],
+        "minimo": 3
+      },
+      {
+        "id": "formaggio",
+        "nome": "Formaggio (C4)",
+        "regola": "cena C4 massimo 2-3 volte, solo nei giorni VERDE o GRIGIO",
+        "motivo": "pochi CHO e molti grassi: rallenta lo svuotamento gastrico quando serve ricostituire glicogeno",
+        "pasti": [
+          "C4"
+        ],
+        "massimo": 3
+      },
+      {
+        "id": "carne",
+        "nome": "Carne",
+        "regola": "carne al massimo una volta a settimana in totale, tra P13 e C13",
+        "motivo": "carne limitata per scelta",
+        "pasti": [
+          "P13",
+          "C13"
+        ],
+        "massimo": 1
+      },
+      {
+        "id": "grassiAlti",
+        "regola": "pasti con piu' di 30 g di grassi (C4, P4, P12, C10) solo nei giorni VERDE o GRIGIO, mai prima o dopo una seduta di qualita'",
+        "motivo": "rallentano lo svuotamento gastrico e spostano la curva in avanti di 3-5 ore",
+        "pasti": [
+          "C4",
+          "P4",
+          "P12",
+          "C10"
+        ]
+      },
+      {
+        "id": "noC4conC2",
+        "regola": "mai C4 nello stesso giorno di C2",
+        "pasti": [
+          "C4",
+          "C2"
+        ]
+      },
+      {
+        "id": "cenaPreGara",
+        "regola": "la sera prima di un lungo o di una seduta di qualita' preferire C9",
+        "motivo": "114 g di CHO con soli 15 g di grassi: il rapporto migliore della lista",
+        "pasti": [
+          "C9"
+        ],
+        "seraPrimaDiTipo": "ROSSO"
+      },
+      {
+        "id": "proteineBasse",
+        "regola": "C12 ha 33 g di proteine: compensare negli altri pasti o con 30 g di parmigiano sulle patate",
+        "pasti": [
+          "C12"
+        ]
+      },
+      {
+        "id": "fibra",
+        "regola": "P8 e C5 superano i 20 g di fibra: ottimi sulla curva glicemica, ma non la sera prima di un allenamento",
+        "pasti": [
+          "P8",
+          "C5"
+        ]
+      },
+      {
+        "id": "barbabietola",
+        "regola": "barbabietola 2-3 volte a settimana",
+        "motivo": "i nitrati migliorano l'efficienza a ritmo submassimale",
+        "verdure": [
+          "Barbabietola"
+        ]
+      },
+      {
+        "id": "crucifere",
+        "regola": "niente crucifere (broccoli, cavolfiore, cavoli, verze) la sera prima di un giorno ROSSO",
+        "motivo": "fermentano: problemi intestinali alle 5:30",
+        "categoriaVerdure": "crucifera",
+        "seraPrimaDiTipo": "ROSSO"
+      }
+    ],
+    "calcolatore": {
+      "_nota": "Il 5% va bene per kcal e CHO. Per i CHO serve anche un minimo in grammi: sui pasti piccoli il 5% e' meno di 1 g, cioe' sotto la precisione di una bilancia e delle etichette. Proteine e grassi possono essere piu' larghi: contano meno nel singolo pasto e le etichette variano di piu' (formaggi, pesce, olio assorbito). Regola: il box diventa rosso se lo scarto supera il piu' grande tra percentuale e minimo in grammi. Il campo 'percento' resta a 5 per compatibilita'.",
+      "tolleranze": {
+        "kcal": {
+          "percento": 5
+        },
+        "cho": {
+          "percento": 5,
+          "minimoGrammi": 3
+        },
+        "proteine": {
+          "percento": 10,
+          "minimoGrammi": 3
+        },
+        "grassi": {
+          "percento": 15,
+          "minimoGrammi": 3
+        }
+      }
+    }
   },
 
   "blocchi": {
@@ -240,14 +502,24 @@
       "cho": 25,
       "proteine": 1,
       "alimenti": [
-        { "nome": "Banana", "grammi": 120 },
-        { "nome": "Caffe'", "grammi": null },
-        { "nome": "Acqua", "grammi": null, "note": "1 bicchiere" }
+        {
+          "nome": "Banana",
+          "grammi": 120
+        },
+        {
+          "nome": "Caffe'",
+          "grammi": null
+        },
+        {
+          "nome": "Acqua",
+          "grammi": null,
+          "note": "1 bicchiere"
+        }
       ],
       "note": "Evita iniezioni su coscia e polpaccio nelle ore precedenti. Niente polioli (marmellata 0 zuccheri) prima della corsa.",
-      "saltaSe": "tipo == GRIGIO"
+      "saltaSe": "tipo == GRIGIO",
+      "grassi": 1
     },
-
     "colazioni": [
       {
         "id": "STD",
@@ -1873,7 +2145,8 @@
           "sgarro",
           "bar"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "grassi": 16
       },
       {
         "id": "COL-SG+",
@@ -1910,7 +2183,8 @@
           "sgarro",
           "bar"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "grassi": 18
       },
       {
         "id": "STD-latte",
@@ -1964,7 +2238,8 @@
           "veloce",
           "freddo"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "grassi": 26
       },
       {
         "id": "STD-soia",
@@ -2018,7 +2293,8 @@
           "veloce",
           "freddo"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "grassi": 28
       },
       {
         "id": "MAGG-latte",
@@ -2077,7 +2353,8 @@
           "freddo"
         ],
         "tipoColazione": "MAGG",
-        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale"
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "grassi": 27
       },
       {
         "id": "MAGG-soia",
@@ -2136,7 +2413,8 @@
           "freddo"
         ],
         "tipoColazione": "MAGG",
-        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale"
+        "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
+        "grassi": 28
       },
       {
         "id": "RID-latte",
@@ -2183,7 +2461,8 @@
           "freddo"
         ],
         "tipoColazione": "RID",
-        "modifiche": "Niente fette biscottate, niente composta"
+        "modifiche": "Niente fette biscottate, niente composta",
+        "grassi": 28
       },
       {
         "id": "RID-soia",
@@ -2230,7 +2509,8 @@
           "freddo"
         ],
         "tipoColazione": "RID",
-        "modifiche": "Niente fette biscottate, niente composta"
+        "modifiche": "Niente fette biscottate, niente composta",
+        "grassi": 30
       },
       {
         "id": "COL-SG-crema",
@@ -2255,10 +2535,10 @@
           "sgarro",
           "bar"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "grassi": 18
       }
     ],
-
     "tipiColazione": {
       "STD": {
         "nome": "Standard",
@@ -2275,7 +2555,6 @@
         "regola": "si taglia solo la quota di pane / fette biscottate / miele / composta / cereali; fonte proteica e frutta secca restano intatte"
       }
     },
-
     "spuntini": [
       {
         "id": "intero",
@@ -2285,9 +2564,16 @@
         "cho": 22,
         "proteine": 7,
         "alimenti": [
-          { "nome": "Frutto", "grammi": 150 },
-          { "nome": "Mandorle", "grammi": 30 }
-        ]
+          {
+            "nome": "Frutto",
+            "grammi": 150
+          },
+          {
+            "nome": "Mandorle",
+            "grammi": 30
+          }
+        ],
+        "grassi": 15
       },
       {
         "id": "soloFrutto",
@@ -2296,10 +2582,15 @@
         "kcal": 95,
         "cho": 20,
         "proteine": 1,
-        "alimenti": [{ "nome": "Frutto", "grammi": 150 }]
+        "alimenti": [
+          {
+            "nome": "Frutto",
+            "grammi": 150
+          }
+        ],
+        "grassi": 1
       }
     ],
-
     "spuntinoSerale": {
       "_nota": "predefinito: lo spuntino serale messo nei giorni che lo prevedono (scelto il 2026-10-10: SER-PB2 e' il piu' vicino allo yogurt, 27 g CHO / 320 kcal / 24 g pro contro 25 / 300 / 23). Gli altri restano tra le alternative.",
       "predefinito": "SER-PB2",
@@ -2309,9 +2600,18 @@
       "cho": 25,
       "proteine": 23,
       "alimenti": [
-        { "nome": "Yogurt greco", "grammi": 170 },
-        { "nome": "Avena", "grammi": 30 },
-        { "nome": "Noci", "grammi": 15 }
+        {
+          "nome": "Yogurt greco",
+          "grammi": 170
+        },
+        {
+          "nome": "Avena",
+          "grammi": 30
+        },
+        {
+          "nome": "Noci",
+          "grammi": 15
+        }
       ],
       "alternative": [
         {
@@ -2340,7 +2640,8 @@
           "tags": [
             "burroArachidi",
             "veloce"
-          ]
+          ],
+          "grassi": 15
         },
         {
           "id": "SER-PB2",
@@ -2373,7 +2674,8 @@
           "tags": [
             "burroArachidi",
             "proteineAlte"
-          ]
+          ],
+          "grassi": 13
         },
         {
           "id": "SER-PB3",
@@ -2401,7 +2703,8 @@
           "tags": [
             "burroArachidi",
             "curvaDolce"
-          ]
+          ],
+          "grassi": 13
         },
         {
           "id": "SER-PB4",
@@ -2429,7 +2732,8 @@
             "burroArachidi",
             "senzaLatte",
             "pocheProteine"
-          ]
+          ],
+          "grassi": 12
         },
         {
           "id": "SER-SAL",
@@ -2456,7 +2760,8 @@
           "tags": [
             "salata",
             "senzaLatte"
-          ]
+          ],
+          "grassi": 16
         }
       ],
       "consigli": [
@@ -2467,7 +2772,8 @@
         "Burro d'arachidi 100% arachidi, senza zuccheri ne' oli aggiunti. Pesalo le prime volte: un cucchiaio pieno e' facilmente 25-30 g invece di 15-20.",
         "I grassi del burro d'arachidi rallentano l'assorbimento dei carboidrati: copre bene la notte."
       ],
-      "note": "E' l'anti-ipoglicemia notturna dopo qualita' e lungo. Prima di dormire guarda la FRECCIA del Libre, non solo il valore."
+      "note": "E' l'anti-ipoglicemia notturna dopo qualita' e lungo. Prima di dormire guarda la FRECCIA del Libre, non solo il valore.",
+      "grassi": 12
     }
   },
 
@@ -2531,7 +2837,8 @@
               "grammi": 20
             }
           ],
-          "note": "I fiocchi di latte hanno ottime proteine ma zero carboidrati: ogni volta che sostituiscono i legumi, alzare la pasta di 40 g e togliere il pane."
+          "note": "I fiocchi di latte hanno ottime proteine ma zero carboidrati: ogni volta che sostituiscono i legumi, alzare la pasta di 40 g e togliere il pane.",
+          "grassi": 29
         }
       ],
       "ridotto": {
@@ -2548,10 +2855,12 @@
         ],
         "rimozioni": [
           "Pane"
-        ]
+        ],
+        "grassi": 27
       },
       "note": "Indice glicemico contenuto e ottimo profilo aminoacidico. La passata di pomodoro aiuta l'assorbimento del ferro.",
-      "_nota": "2026-10-14: la passata 200 g fa parte di P1 (prima era la variante P1-passata). Rispetto a prima: +60 kcal, +12 g CHO, +3 g proteine; aggiornati anche P1rid e i giorni del calendario con P1."
+      "_nota": "2026-10-14: la passata 200 g fa parte di P1 (prima era la variante P1-passata). Rispetto a prima: +60 kcal, +12 g CHO, +3 g proteine; aggiornati anche P1rid e i giorni del calendario con P1.",
+      "grassi": 29
     },
     {
       "id": "P2",
@@ -2560,19 +2869,54 @@
       "cho": 148,
       "proteine": 48,
       "alimenti": [
-        { "nome": "Riso o farro", "grammi": 140 },
-        { "nome": "Tonno al naturale", "grammi": 120, "sostituibileCon": ["Salmone 130 g", "Salmone affumicato 120 g (togliere l'olio)"] },
-        { "nome": "Verdure", "grammi": 200 },
-        { "nome": "Olio EVO", "grammi": 20 },
-        { "nome": "Pane", "grammi": 60 }
+        {
+          "nome": "Riso o farro",
+          "grammi": 140
+        },
+        {
+          "nome": "Tonno al naturale",
+          "grammi": 120,
+          "sostituibileCon": [
+            "Salmone 130 g",
+            "Salmone affumicato 120 g (togliere l'olio)"
+          ]
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 20
+        },
+        {
+          "nome": "Pane",
+          "grammi": 60
+        }
       ],
       "ridotto": {
-        "id": "P2rid", "kcal": 730, "cho": 84, "proteine": 40, "modifiche": "cereale 100 g, niente pane",
-        "modificheGrammi": [{ "nome": "Riso o farro", "grammi": 100 }],
-        "rimozioni": ["Pane"]
+        "id": "P2rid",
+        "kcal": 730,
+        "cho": 84,
+        "proteine": 40,
+        "modifiche": "cereale 100 g, niente pane",
+        "modificheGrammi": [
+          {
+            "nome": "Riso o farro",
+            "grammi": 100
+          }
+        ],
+        "rimozioni": [
+          "Pane"
+        ],
+        "grassi": 26
       },
       "note": "La piu' comoda in ufficio: si mangia bene anche fredda.",
-      "tags": ["ufficio", "freddo"]
+      "tags": [
+        "ufficio",
+        "freddo"
+      ],
+      "grassi": 27
     },
     {
       "id": "P3",
@@ -2581,22 +2925,62 @@
       "cho": 108,
       "proteine": 58,
       "alimenti": [
-        { "nome": "Pollo ai ferri", "grammi": 180 },
-        { "nome": "Patate", "grammi": 350 },
-        { "nome": "Verdure", "grammi": 200 },
-        { "nome": "Olio EVO", "grammi": 20 },
-        { "nome": "Pane", "grammi": 80 }
+        {
+          "nome": "Pollo ai ferri",
+          "grammi": 180
+        },
+        {
+          "nome": "Patate",
+          "grammi": 350
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 20
+        },
+        {
+          "nome": "Pane",
+          "grammi": 80
+        }
       ],
       "maggiorato": {
-        "id": "P3+", "kcal": 1110, "cho": 124, "proteine": 60, "modifiche": "patate 450 g oppure pane 110 g",
-        "modificheGrammi": [{ "nome": "Patate", "grammi": 450 }],
-        "nota": "Si maggiora uno solo dei due: patate 450 g (pane resta 80 g) OPPURE pane 110 g (patate restano 350 g)."
+        "id": "P3+",
+        "kcal": 1110,
+        "cho": 124,
+        "proteine": 60,
+        "modifiche": "patate 450 g oppure pane 110 g",
+        "modificheGrammi": [
+          {
+            "nome": "Patate",
+            "grammi": 450
+          }
+        ],
+        "nota": "Si maggiora uno solo dei due: patate 450 g (pane resta 80 g) OPPURE pane 110 g (patate restano 350 g).",
+        "grassi": 42
       },
       "ridotto": {
-        "id": "P3rid", "kcal": 850, "cho": 70, "proteine": 53, "modifiche": "patate 250 g, pane 40 g",
-        "modificheGrammi": [{ "nome": "Patate", "grammi": 250 }, { "nome": "Pane", "grammi": 40 }]
+        "id": "P3rid",
+        "kcal": 850,
+        "cho": 70,
+        "proteine": 53,
+        "modifiche": "patate 250 g, pane 40 g",
+        "modificheGrammi": [
+          {
+            "nome": "Patate",
+            "grammi": 250
+          },
+          {
+            "nome": "Pane",
+            "grammi": 40
+          }
+        ],
+        "grassi": 40
       },
-      "note": "Ha meno CHO delle altre due opzioni: nei giorni ROSSO usare la versione maggiorata."
+      "note": "Ha meno CHO delle altre due opzioni: nei giorni ROSSO usare la versione maggiorata.",
+      "grassi": 41
     },
     {
       "id": "P4",
@@ -2677,7 +3061,8 @@
               "grammi": 60
             }
           ],
-          "note": "La ricotta ha circa 3,5 g di CHO per 100 g: su 180 g sono 6 g, contro 1 g della mozzarella."
+          "note": "La ricotta ha circa 3,5 g di CHO per 100 g: su 180 g sono 6 g, contro 1 g della mozzarella.",
+          "grassi": 38
         }
       ]
     },
@@ -2865,7 +3250,8 @@
               "note": "a fine pasto, non dentro la zuppa calda: si separano"
             }
           ],
-          "note": "Dal nutrizionista: riso a 140 g, aggiungere 100 g di fiocchi di latte a fine pasto (non dentro la zuppa calda: si separano)."
+          "note": "Dal nutrizionista: riso a 140 g, aggiungere 100 g di fiocchi di latte a fine pasto (non dentro la zuppa calda: si separano).",
+          "grassi": 34
         },
         {
           "id": "P8-zuppa",
@@ -2874,12 +3260,26 @@
           "cho": 167,
           "proteine": 36,
           "alimenti": [
-            { "nome": "Riso basmati", "grammi": 155 },
-            { "nome": "Zuppa di ceci Pam", "grammi": 500, "note": "una lattina intera: contiene gia' l'olio, non aggiungerne" },
-            { "nome": "Curry", "grammi": null },
-            { "nome": "Verdure", "grammi": 200 }
+            {
+              "nome": "Riso basmati",
+              "grammi": 155
+            },
+            {
+              "nome": "Zuppa di ceci Pam",
+              "grammi": 500,
+              "note": "una lattina intera: contiene gia' l'olio, non aggiungerne"
+            },
+            {
+              "nome": "Curry",
+              "grammi": null
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            }
           ],
-          "note": "Etichetta della zuppa per 100 g: 102 kcal, 7,4 g CHO, 4,1 g proteine, 5,3 g grassi (circa 26 g di grassi nella lattina). Rispetto a P8: 13 g di CHO in meno e 116 kcal in piu'. Valori validi solo per la zuppa di ceci Pam."
+          "note": "Etichetta della zuppa per 100 g: 102 kcal, 7,4 g CHO, 4,1 g proteine, 5,3 g grassi (circa 26 g di grassi nella lattina). Rispetto a P8: 13 g di CHO in meno e 116 kcal in piu'. Valori validi solo per la zuppa di ceci Pam.",
+          "grassi": 35
         }
       ],
       "note": "Il basmati ha l'indice glicemico piu' basso tra i risi (50-58). Con i ceci si arriva a ~21 g di fibra: curva molto gentile ma pesante sull'intestino — non la sera prima di una seduta.",
@@ -3133,7 +3533,8 @@
             "nome": "Frutto",
             "grammi": 150
           }
-        ]
+        ],
+        "grassi": 38
       },
       "varianti": [
         {
@@ -3170,9 +3571,11 @@
               "grammi": 40
             }
           ],
-          "note": "Alternativa a P14+ nei giorni ROSSO: 22 g di CHO in piu' invece dei 18 del frutto."
+          "note": "Alternativa a P14+ nei giorni ROSSO: 22 g di CHO in piu' invece dei 18 del frutto.",
+          "grassi": 40
         }
-      ]
+      ],
+      "grassi": 39
     },
     {
       "id": "P15",
@@ -3206,7 +3609,8 @@
           "grammi": 40
         }
       ],
-      "note": "Qui la zucca e' il condimento (300 g, oltre la porzione di verdura): per questo e' contata a parte. Come contorno resta una verdura amidacea della lista verdure."
+      "note": "Qui la zucca e' il condimento (300 g, oltre la porzione di verdura): per questo e' contata a parte. Come contorno resta una verdura amidacea della lista verdure.",
+      "grassi": 32
     },
     {
       "id": "P16",
@@ -3253,7 +3657,8 @@
         "ufficio",
         "freddo",
         "barbabietola"
-      ]
+      ],
+      "grassi": 33
     },
     {
       "id": "P17",
@@ -3296,8 +3701,10 @@
             "nome": "Pane",
             "grammi": 130
           }
-        ]
-      }
+        ],
+        "grassi": 36
+      },
+      "grassi": 36
     }
   ],
 
@@ -3346,8 +3753,10 @@
             "nome": "Pane",
             "grammi": 40
           }
-        ]
-      }
+        ],
+        "grassi": 27
+      },
+      "grassi": 28
     },
     {
       "id": "C2",
@@ -3394,9 +3803,11 @@
             "nome": "Pane",
             "grammi": 30
           }
-        ]
+        ],
+        "grassi": 33
       },
-      "note": "Omega-3 per il recupero. Preferire il vasetto in vetro alla latta, filetti interi e non pezzi."
+      "note": "Omega-3 per il recupero. Preferire il vasetto in vetro alla latta, filetti interi e non pezzi.",
+      "grassi": 34
     },
     {
       "id": "C3",
@@ -3405,18 +3816,47 @@
       "cho": 79,
       "proteine": 38,
       "alimenti": [
-        { "nome": "Uova", "pezzi": 3 },
-        { "nome": "Parmigiano", "grammi": 20 },
-        { "nome": "Pane", "grammi": 100 },
-        { "nome": "Verdure", "grammi": 200 },
-        { "nome": "Olio EVO", "grammi": 15 },
-        { "nome": "Frutto", "pezzi": 1 }
+        {
+          "nome": "Uova",
+          "pezzi": 3
+        },
+        {
+          "nome": "Parmigiano",
+          "grammi": 20
+        },
+        {
+          "nome": "Pane",
+          "grammi": 100
+        },
+        {
+          "nome": "Verdure",
+          "grammi": 200
+        },
+        {
+          "nome": "Olio EVO",
+          "grammi": 15
+        },
+        {
+          "nome": "Frutto",
+          "pezzi": 1
+        }
       ],
       "maggiorato": {
-        "id": "C3+", "kcal": 870, "cho": 99, "proteine": 42, "modifiche": "pane 140 g (40 g in piu') nei giorni ROSSO",
-        "modificheGrammi": [{ "nome": "Pane", "grammi": 140 }]
+        "id": "C3+",
+        "kcal": 870,
+        "cho": 99,
+        "proteine": 42,
+        "modifiche": "pane 140 g (40 g in piu') nei giorni ROSSO",
+        "modificheGrammi": [
+          {
+            "nome": "Pane",
+            "grammi": 140
+          }
+        ],
+        "grassi": 34
       },
-      "note": "Ha 10 g di CHO in meno di C1: nei giorni ROSSO usa C3+ (40 g di pane in piu', 99 g di CHO)."
+      "note": "Ha 10 g di CHO in meno di C1: nei giorni ROSSO usa C3+ (40 g di pane in piu', 99 g di CHO).",
+      "grassi": 34
     },
     {
       "id": "C4",
@@ -3485,7 +3925,8 @@
               "grammi": 70
             }
           ],
-          "note": "8 g di CHO in piu' di C4: la ricotta ha circa 3,5 g di CHO per 100 g, la mozzarella quasi zero."
+          "note": "8 g di CHO in piu' di C4: la ricotta ha circa 3,5 g di CHO per 100 g, la mozzarella quasi zero.",
+          "grassi": 38
         },
         {
           "id": "C4-pecora",
@@ -3516,9 +3957,11 @@
               "grammi": 70
             }
           ],
-          "note": "7 g di CHO in piu' di C4."
+          "note": "7 g di CHO in piu' di C4.",
+          "grassi": 32
         }
-      ]
+      ],
+      "grassi": 36
     },
     {
       "id": "C5",
@@ -3584,7 +4027,8 @@
               "grammi": 80
             }
           ],
-          "note": "Zuppa per 100 g: 102 kcal, 7,4 g CHO, 4,1 g proteine. Rispetto ai 300 g di legumi lessati: 17 g di CHO in meno. Valori validi solo per la zuppa di ceci Pam: con un'altra zuppa pronta servono i valori della sua etichetta."
+          "note": "Zuppa per 100 g: 102 kcal, 7,4 g CHO, 4,1 g proteine. Rispetto ai 300 g di legumi lessati: 17 g di CHO in meno. Valori validi solo per la zuppa di ceci Pam: con un'altra zuppa pronta servono i valori della sua etichetta.",
+          "grassi": 42
         }
       ]
     },
@@ -3995,7 +4439,8 @@
           "grammi": 80
         }
       ],
-      "note": "Molto proteica. I piselli contano come legumi, non come verdura: se vuoi la verdura aggiungila a parte (insalata, 100-150 g)."
+      "note": "Molto proteica. I piselli contano come legumi, non come verdura: se vuoi la verdura aggiungila a parte (insalata, 100-150 g).",
+      "grassi": 21
     },
     {
       "id": "C16",
@@ -4035,7 +4480,8 @@
       "soloTipiGiornata": [
         "VERDE",
         "GRIGIO"
-      ]
+      ],
+      "grassi": 35
     },
     {
       "id": "C17",
@@ -4073,7 +4519,8 @@
       "note": "Conta come una delle 2-3 barbabietole della settimana.",
       "tags": [
         "barbabietola"
-      ]
+      ],
+      "grassi": 31
     },
     {
       "id": "C18",
@@ -4103,7 +4550,8 @@
           "grammi": 70
         }
       ],
-      "note": "Ha un po' piu' di CHO delle altre cene: va bene anche nei giorni ROSSO. Zucca al forno: caramellizza e la curva sale piu' in fretta che lessa."
+      "note": "Ha un po' piu' di CHO delle altre cene: va bene anche nei giorni ROSSO. Zucca al forno: caramellizza e la curva sale piu' in fretta che lessa.",
+      "grassi": 28
     },
     {
       "id": "C19",
@@ -4142,23 +4590,154 @@
       "soloTipiGiornata": [
         "VERDE",
         "GRIGIO"
-      ]
+      ],
+      "grassi": 39
     }
   ],
 
   "merende": [
-    { "id": "M1", "kcal": 350, "cho": 62, "proteine": 22, "composizione": "Pane 60 g + miele 30 g + yogurt greco 170 g", "tags": [] },
-    { "id": "M2", "kcal": 360, "cho": 62, "proteine": 21, "composizione": "Yogurt greco 170 g + banana 150 g + 4 gallette di mais o 4 fette biscottate integrali", "tags": ["ufficio"]},
-    { "id": "M3", "kcal": 370, "cho": 56, "proteine": 14, "composizione": "Pane 70 g + ricotta 80 g + 1 mela o pera 130 g", "tags": [] },
-    { "id": "M4", "kcal": 375, "cho": 54, "proteine": 7, "composizione": "Banana 150 g + mela 180 g + mandorle 25 g", "tags": ["ufficio", "senzaYogurt", "senzaCucchiaio", "pocheProteine"] },
-    { "id": "M5", "kcal": 350, "cho": 58, "proteine": 25, "composizione": "Pane 80 g + bresaola o salmone affumicato 60 g + pomodorini + 1 frutto", "tags": ["salata", "senzaYogurt"] },
-    { "id": "M6", "kcal": 355, "cho": 60, "proteine": 17, "composizione": "Avena 50 g ammollata in latte 250 ml + banana 150 g + cannella", "tags": ["ufficio", "preparareSeraPrima"] },
-    { "id": "M7", "kcal": 360, "cho": 56, "proteine": 8, "composizione": "Pane 80 g + cioccolato fondente 70-85% 25 g + 1 frutto", "tags": ["senzaYogurt", "pocheProteine"] },
-    { "id": "M8", "kcal": 355, "cho": 57, "proteine": 14, "composizione": "2 fette di pane integrale + ricotta 100 g + composta 30 g + 1 frutto", "tags": [] },
-    { "id": "M9", "kcal": 370, "cho": 58, "proteine": 20, "composizione": "Latte 300 ml + banana 150 g + avena 40 g + burro d'arachidi 10 g", "tags": ["ufficio", "daBere", "preparareSeraPrima"] },
-    { "id": "M10", "kcal": 385, "cho": 55, "proteine": 17, "composizione": "Pane 70 g + parmigiano 30 g + 1 frutto 150 g", "tags": ["salata", "senzaYogurt", "senzaCucchiaio", "ufficio"] },
-    { "id": "M11", "kcal": 400, "cho": 48, "proteine": 11, "composizione": "Banana 150 g + mandorle o noci 30 g + 3 fette biscottate integrali", "tags": ["ufficio", "senzaYogurt", "senzaCucchiaio", "pocheProteine"] },
-    { "id": "M12", "kcal": 390, "cho": 55, "proteine": 12, "composizione": "Bruschetta: pane 70 g + pomodorini + parmigiano 20 g + olio EVO 5 g + 1 frutto", "tags": ["salata", "senzaYogurt", "senzaCucchiaio"] }
+    {
+      "id": "M1",
+      "kcal": 350,
+      "cho": 62,
+      "proteine": 22,
+      "composizione": "Pane 60 g + miele 30 g + yogurt greco 170 g",
+      "tags": [],
+      "grassi": 2
+    },
+    {
+      "id": "M2",
+      "kcal": 360,
+      "cho": 62,
+      "proteine": 21,
+      "composizione": "Yogurt greco 170 g + banana 150 g + 4 gallette di mais o 4 fette biscottate integrali",
+      "tags": [
+        "ufficio"
+      ],
+      "grassi": 3
+    },
+    {
+      "id": "M3",
+      "kcal": 370,
+      "cho": 56,
+      "proteine": 14,
+      "composizione": "Pane 70 g + ricotta 80 g + 1 mela o pera 130 g",
+      "tags": [],
+      "grassi": 10
+    },
+    {
+      "id": "M4",
+      "kcal": 375,
+      "cho": 54,
+      "proteine": 7,
+      "composizione": "Banana 150 g + mela 180 g + mandorle 25 g",
+      "tags": [
+        "ufficio",
+        "senzaYogurt",
+        "senzaCucchiaio",
+        "pocheProteine"
+      ],
+      "grassi": 15
+    },
+    {
+      "id": "M5",
+      "kcal": 350,
+      "cho": 58,
+      "proteine": 25,
+      "composizione": "Pane 80 g + bresaola o salmone affumicato 60 g + pomodorini + 1 frutto",
+      "tags": [
+        "salata",
+        "senzaYogurt"
+      ],
+      "grassi": 2
+    },
+    {
+      "id": "M6",
+      "kcal": 355,
+      "cho": 60,
+      "proteine": 17,
+      "composizione": "Avena 50 g ammollata in latte 250 ml + banana 150 g + cannella",
+      "tags": [
+        "ufficio",
+        "preparareSeraPrima"
+      ],
+      "grassi": 5
+    },
+    {
+      "id": "M7",
+      "kcal": 360,
+      "cho": 56,
+      "proteine": 8,
+      "composizione": "Pane 80 g + cioccolato fondente 70-85% 25 g + 1 frutto",
+      "tags": [
+        "senzaYogurt",
+        "pocheProteine"
+      ],
+      "grassi": 12
+    },
+    {
+      "id": "M8",
+      "kcal": 355,
+      "cho": 57,
+      "proteine": 14,
+      "composizione": "2 fette di pane integrale + ricotta 100 g + composta 30 g + 1 frutto",
+      "tags": [],
+      "grassi": 8
+    },
+    {
+      "id": "M9",
+      "kcal": 370,
+      "cho": 58,
+      "proteine": 20,
+      "composizione": "Latte 300 ml + banana 150 g + avena 40 g + burro d'arachidi 10 g",
+      "tags": [
+        "ufficio",
+        "daBere",
+        "preparareSeraPrima"
+      ],
+      "grassi": 6
+    },
+    {
+      "id": "M10",
+      "kcal": 385,
+      "cho": 55,
+      "proteine": 17,
+      "composizione": "Pane 70 g + parmigiano 30 g + 1 frutto 150 g",
+      "tags": [
+        "salata",
+        "senzaYogurt",
+        "senzaCucchiaio",
+        "ufficio"
+      ],
+      "grassi": 11
+    },
+    {
+      "id": "M11",
+      "kcal": 400,
+      "cho": 48,
+      "proteine": 11,
+      "composizione": "Banana 150 g + mandorle o noci 30 g + 3 fette biscottate integrali",
+      "tags": [
+        "ufficio",
+        "senzaYogurt",
+        "senzaCucchiaio",
+        "pocheProteine"
+      ],
+      "grassi": 18
+    },
+    {
+      "id": "M12",
+      "kcal": 390,
+      "cho": 55,
+      "proteine": 12,
+      "composizione": "Bruschetta: pane 70 g + pomodorini + parmigiano 20 g + olio EVO 5 g + 1 frutto",
+      "tags": [
+        "salata",
+        "senzaYogurt",
+        "senzaCucchiaio"
+      ],
+      "grassi": 14
+    }
   ],
   "sgarri": [
     {
@@ -4187,7 +4766,8 @@
         "sgarro",
         "alcol",
         "grasso"
-      ]
+      ],
+      "grassi": 27
     },
     {
       "id": "S1+",
@@ -4216,7 +4796,8 @@
         "sgarro",
         "alcol",
         "grasso"
-      ]
+      ],
+      "grassi": 27
     },
     {
       "id": "S2",
@@ -4244,7 +4825,8 @@
         "frittura",
         "grasso",
         "pocheProteine"
-      ]
+      ],
+      "grassi": 39
     },
     {
       "id": "S3",
@@ -4280,7 +4862,8 @@
       "note": "Sgarro: al posto del pranzo o della cena, non in aggiunta. Il riso alla cantonese contiene prosciutto: in alternativa riso con verdure (valori simili). Salse agrodolci: +15-20 g di zuccheri a cucchiaiata.",
       "tags": [
         "sgarro"
-      ]
+      ],
+      "grassi": 45
     },
     {
       "id": "S4",
@@ -4319,7 +4902,8 @@
       "tags": [
         "sgarro",
         "pesce"
-      ]
+      ],
+      "grassi": 35
     },
     {
       "id": "S4+",
@@ -4359,7 +4943,8 @@
       "tags": [
         "sgarro",
         "pesce"
-      ]
+      ],
+      "grassi": 39
     }
   ],
   "dolci": [
@@ -4380,7 +4965,8 @@
       "tags": [
         "sgarro",
         "dolce"
-      ]
+      ],
+      "grassi": 22
     },
     {
       "id": "D2",
@@ -4398,7 +4984,8 @@
       "tags": [
         "sgarro",
         "dolce"
-      ]
+      ],
+      "grassi": 3
     },
     {
       "id": "D3",
@@ -4417,7 +5004,8 @@
       "tags": [
         "sgarro",
         "dolce"
-      ]
+      ],
+      "grassi": 21
     },
     {
       "id": "D4",
@@ -4436,7 +5024,8 @@
       "tags": [
         "sgarro",
         "dolce"
-      ]
+      ],
+      "grassi": 27
     },
     {
       "id": "D5",
@@ -4454,7 +5043,8 @@
       "tags": [
         "sgarro",
         "dolce"
-      ]
+      ],
+      "grassi": 14
     },
     {
       "id": "D6",
@@ -4473,7 +5063,8 @@
       "tags": [
         "sgarro",
         "dolce"
-      ]
+      ],
+      "grassi": 15
     }
   ],
   "noteColazioni": [
@@ -4503,11 +5094,22 @@
     "proteine": 7,
     "composizione": "1 frutto + parmigiano 20 g",
     "usoSe": "tipo == GRIGIO",
-    "quando": { "var": "tipo", "==": "GRIGIO" },
+    "quando": {
+      "var": "tipo",
+      "==": "GRIGIO"
+    },
     "_nota": "2026-10-10: prima era 'oppure yogurt greco + frutta secca' nella stessa merenda, con 160 kcal e 12 g di proteine; divisa in due merende con i loro valori.",
     "alternative": [
-      { "id": "Mrid-yogurt", "kcal": 190, "cho": 23, "proteine": 13, "composizione": "1 frutto + yogurt greco 0% 100 g + frutta secca 10 g" }
-    ]
+      {
+        "id": "Mrid-yogurt",
+        "kcal": 190,
+        "cho": 23,
+        "proteine": 13,
+        "composizione": "1 frutto + yogurt greco 0% 100 g + frutta secca 10 g",
+        "grassi": 5
+      }
+    ],
+    "grassi": 6
   },
   "merendaNote": [
     "Le merende con tag pocheProteine (M4, M7, M11) vanno usate nei giorni con cena C1, C2 o C4.",
@@ -4996,5 +5598,4661 @@
     { "id": "glicemiaLungo", "cosa": "Glicemia prima / durante / dopo il lungo", "frequenza": "ogni lungo", "nota": "sono i dati piu' utili da portare al diabetologo" }
   ],
 
+  "bancaAlimenti": {
+    "_nota": "Valori medi per 100 g (o 100 ml) a crudo, tranne legumi lessati e sgocciolati e prodotti pronti, nella forma in cui si pesano. Per 'pz' i valori sono per 100 g di prodotto e grammiPerPezzo dice quanto pesa un pezzo. Usata dal calcolatore del pasto. Ricevuta il 2026-10-14.",
+    "categorie": [
+      "cereali e derivati",
+      "pane e prodotti da forno",
+      "legumi",
+      "verdure",
+      "frutta",
+      "frutta secca e semi",
+      "latte e yogurt",
+      "formaggi",
+      "uova",
+      "pesce",
+      "carne e salumi",
+      "grassi e condimenti",
+      "zuccheri e dolcificanti",
+      "bevande",
+      "prodotti pronti e di marca",
+      "dolci",
+      "altro"
+    ],
+    "alimenti": [
+      {
+        "id": "cous-cous",
+        "nome": "Cous cous",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 355,
+          "cho": 72,
+          "proteine": 12.5,
+          "grassi": 1.9
+        },
+        "passo": 10,
+        "quantitaTipica": 120,
+        "sinonimi": [
+          "couscous"
+        ],
+        "usatoIn": [
+          "P11"
+        ]
+      },
+      {
+        "id": "farro-perlato",
+        "nome": "Farro perlato",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 335,
+          "cho": 67,
+          "proteine": 14,
+          "grassi": 2.5
+        },
+        "passo": 10,
+        "quantitaTipica": 120,
+        "sinonimi": [
+          "farro"
+        ],
+        "usatoIn": [
+          "P2",
+          "P9"
+        ]
+      },
+      {
+        "id": "avena-fiocchi",
+        "nome": "Fiocchi d'avena",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 372,
+          "cho": 59,
+          "proteine": 13.5,
+          "grassi": 7
+        },
+        "passo": 5,
+        "quantitaTipica": 70,
+        "sinonimi": [
+          "avena",
+          "porridge"
+        ],
+        "usatoIn": [
+          "B1",
+          "B1+",
+          "B1rid",
+          "B5",
+          "B5+",
+          "B5rid",
+          "B6",
+          "B6+",
+          "B6rid",
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID",
+          "RID-latte",
+          "RID-soia",
+          "SER-PB3",
+          "STD",
+          "STD-latte",
+          "STD-soia",
+          "serale"
+        ]
+      },
+      {
+        "id": "fiocchi-d-orzo",
+        "nome": "Fiocchi d'orzo",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 350,
+          "cho": 64,
+          "proteine": 10,
+          "grassi": 2
+        },
+        "passo": 5,
+        "quantitaTipica": 70,
+        "sinonimi": [
+          "orzo in fiocchi"
+        ],
+        "usatoIn": [
+          "B2",
+          "B2+",
+          "B2rid"
+        ]
+      },
+      {
+        "id": "fiocchi-di-farro",
+        "nome": "Fiocchi di farro",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 350,
+          "cho": 64,
+          "proteine": 13,
+          "grassi": 2.5
+        },
+        "passo": 5,
+        "quantitaTipica": 70,
+        "sinonimi": [
+          "farro in fiocchi"
+        ],
+        "usatoIn": [
+          "B9",
+          "B9+",
+          "B9rid"
+        ]
+      },
+      {
+        "id": "muesli-senza-zuccheri",
+        "nome": "Muesli senza zuccheri aggiunti",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 360,
+          "cho": 57,
+          "proteine": 10,
+          "grassi": 7
+        },
+        "passo": 5,
+        "quantitaTipica": 65,
+        "sinonimi": [
+          "muesli"
+        ],
+        "usatoIn": [],
+        "nota": "Valori medi: controlla l'etichetta, CHO sotto 60 g/100 g."
+      },
+      {
+        "id": "orzo-perlato",
+        "nome": "Orzo perlato",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 320,
+          "cho": 70,
+          "proteine": 10,
+          "grassi": 1.4
+        },
+        "passo": 10,
+        "quantitaTipica": 120,
+        "sinonimi": [
+          "orzo"
+        ],
+        "usatoIn": []
+      },
+      {
+        "id": "pangrattato",
+        "nome": "Pangrattato",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 350,
+          "cho": 72,
+          "proteine": 11,
+          "grassi": 3
+        },
+        "passo": 5,
+        "quantitaTipica": 20,
+        "sinonimi": [
+          "pane grattugiato"
+        ],
+        "usatoIn": [
+          "C15"
+        ]
+      },
+      {
+        "id": "pasta",
+        "nome": "Pasta di semola",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 353,
+          "cho": 72,
+          "proteine": 12.5,
+          "grassi": 1.5
+        },
+        "passo": 10,
+        "quantitaTipica": 120,
+        "sinonimi": [
+          "spaghetti",
+          "penne",
+          "fusilli",
+          "maccheroni"
+        ],
+        "usatoIn": [
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P15",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7"
+        ]
+      },
+      {
+        "id": "pasta-integrale",
+        "nome": "Pasta integrale",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 340,
+          "cho": 64,
+          "proteine": 13.5,
+          "grassi": 2.5
+        },
+        "passo": 10,
+        "quantitaTipica": 120,
+        "sinonimi": [
+          "spaghetti integrali"
+        ],
+        "usatoIn": []
+      },
+      {
+        "id": "quinoa",
+        "nome": "Quinoa",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 365,
+          "cho": 64,
+          "proteine": 14,
+          "grassi": 6
+        },
+        "passo": 10,
+        "quantitaTipica": 100,
+        "sinonimi": [],
+        "usatoIn": []
+      },
+      {
+        "id": "riso",
+        "nome": "Riso (carnaroli, arborio, parboiled)",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 350,
+          "cho": 79,
+          "proteine": 7,
+          "grassi": 0.6
+        },
+        "passo": 10,
+        "quantitaTipica": 120,
+        "sinonimi": [
+          "risotto"
+        ],
+        "usatoIn": [
+          "P2"
+        ]
+      },
+      {
+        "id": "riso-basmati",
+        "nome": "Riso basmati",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 350,
+          "cho": 78,
+          "proteine": 8,
+          "grassi": 0.8
+        },
+        "passo": 10,
+        "quantitaTipica": 120,
+        "sinonimi": [
+          "basmati"
+        ],
+        "usatoIn": [
+          "C9",
+          "P13",
+          "P16",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa"
+        ]
+      },
+      {
+        "id": "riso-integrale",
+        "nome": "Riso integrale",
+        "categoria": "cereali e derivati",
+        "unita": "g",
+        "per100": {
+          "kcal": 350,
+          "cho": 73,
+          "proteine": 7.5,
+          "grassi": 2.8
+        },
+        "passo": 10,
+        "quantitaTipica": 120,
+        "sinonimi": [],
+        "usatoIn": []
+      },
+      {
+        "id": "cornetto-farcito-da-bar",
+        "nome": "Cornetto alla crema o al cioccolato da bar",
+        "categoria": "pane e prodotti da forno",
+        "unita": "g",
+        "per100": {
+          "kcal": 400,
+          "cho": 49,
+          "proteine": 7,
+          "grassi": 19
+        },
+        "passo": 5,
+        "quantitaTipica": 75,
+        "sinonimi": [
+          "brioche alla crema",
+          "croissant al cioccolato"
+        ],
+        "usatoIn": [
+          "COL-SG-crema"
+        ]
+      },
+      {
+        "id": "cornetto-semplice-da-bar",
+        "nome": "Cornetto semplice da bar",
+        "categoria": "pane e prodotti da forno",
+        "unita": "g",
+        "per100": {
+          "kcal": 420,
+          "cho": 47,
+          "proteine": 8,
+          "grassi": 22
+        },
+        "passo": 5,
+        "quantitaTipica": 60,
+        "sinonimi": [
+          "brioche",
+          "croissant"
+        ],
+        "usatoIn": [
+          "COL-SG",
+          "COL-SG+"
+        ]
+      },
+      {
+        "id": "crackers-integrali",
+        "nome": "Crackers integrali",
+        "categoria": "pane e prodotti da forno",
+        "unita": "g",
+        "per100": {
+          "kcal": 420,
+          "cho": 66,
+          "proteine": 11,
+          "grassi": 12
+        },
+        "passo": 5,
+        "quantitaTipica": 30,
+        "sinonimi": [
+          "crackers"
+        ],
+        "usatoIn": []
+      },
+      {
+        "id": "fette-biscottate-integrali",
+        "nome": "Fette biscottate integrali",
+        "categoria": "pane e prodotti da forno",
+        "unita": "pz",
+        "grammiPerPezzo": 9.5,
+        "per100": {
+          "kcal": 393,
+          "cho": 63,
+          "proteine": 13,
+          "grassi": 6.6
+        },
+        "passo": 1,
+        "quantitaTipica": 3,
+        "sinonimi": [
+          "fette"
+        ],
+        "usatoIn": [
+          "B1+",
+          "B10+",
+          "B2",
+          "B2+",
+          "B3+",
+          "B4+",
+          "B5",
+          "B5+",
+          "B6+",
+          "B7",
+          "B7+",
+          "B7rid",
+          "B8+",
+          "B9",
+          "B9+",
+          "COL-SG+",
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "SER-PB1",
+          "SER-PB2",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "gallette-di-mais",
+        "nome": "Gallette di mais",
+        "categoria": "pane e prodotti da forno",
+        "unita": "pz",
+        "grammiPerPezzo": 8,
+        "per100": {
+          "kcal": 380,
+          "cho": 80,
+          "proteine": 8,
+          "grassi": 2.5
+        },
+        "passo": 1,
+        "quantitaTipica": 4,
+        "sinonimi": [
+          "gallette"
+        ],
+        "usatoIn": [],
+        "nota": "Valori medi: da sostituire con l'etichetta delle gallette di mais bio Pam."
+      },
+      {
+        "id": "pane-comune",
+        "nome": "Pane comune (tipo 0)",
+        "categoria": "pane e prodotti da forno",
+        "unita": "g",
+        "per100": {
+          "kcal": 270,
+          "cho": 55,
+          "proteine": 8.5,
+          "grassi": 1.5
+        },
+        "passo": 10,
+        "quantitaTipica": 60,
+        "sinonimi": [
+          "pane",
+          "pane bianco",
+          "rosetta",
+          "casereccio"
+        ],
+        "usatoIn": [
+          "C1",
+          "C10",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C15",
+          "C16",
+          "C17",
+          "C18",
+          "C19",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C5",
+          "C5-zuppa",
+          "C6",
+          "C7",
+          "C8",
+          "C9",
+          "P1",
+          "P10",
+          "P12",
+          "P13",
+          "P14+pane",
+          "P15",
+          "P16",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P9",
+          "S2"
+        ]
+      },
+      {
+        "id": "pane-integrale",
+        "nome": "Pane integrale",
+        "categoria": "pane e prodotti da forno",
+        "unita": "g",
+        "per100": {
+          "kcal": 240,
+          "cho": 42,
+          "proteine": 9,
+          "grassi": 2.5
+        },
+        "passo": 10,
+        "quantitaTipica": 60,
+        "sinonimi": [
+          "pane di segale"
+        ],
+        "usatoIn": [
+          "B10",
+          "B10+",
+          "B10rid",
+          "B3",
+          "B3+",
+          "B3rid",
+          "B4",
+          "B4+",
+          "B4rid",
+          "B6",
+          "B6+",
+          "B6rid",
+          "B8",
+          "B8+",
+          "B8rid",
+          "SER-PB4",
+          "SER-SAL"
+        ]
+      },
+      {
+        "id": "piadina-classica",
+        "nome": "Piadina classica",
+        "categoria": "pane e prodotti da forno",
+        "unita": "g",
+        "per100": {
+          "kcal": 310,
+          "cho": 50,
+          "proteine": 8.5,
+          "grassi": 8
+        },
+        "passo": 10,
+        "quantitaTipica": 110,
+        "sinonimi": [
+          "piadina romagnola"
+        ],
+        "usatoIn": [
+          "P14",
+          "P14+pane"
+        ],
+        "nota": "Valori medi: sostituirli con l'etichetta della marca che compri. Una piadina pesa circa 100-125 g."
+      },
+      {
+        "id": "pizza-margherita-pizzeria",
+        "nome": "Pizza margherita (pizzeria)",
+        "categoria": "pane e prodotti da forno",
+        "unita": "g",
+        "per100": {
+          "kcal": 265,
+          "cho": 33,
+          "proteine": 11,
+          "grassi": 9
+        },
+        "passo": 10,
+        "quantitaTipica": 300,
+        "sinonimi": [
+          "pizza"
+        ],
+        "usatoIn": [
+          "S1",
+          "S1+"
+        ]
+      },
+      {
+        "id": "ceci-lessati",
+        "nome": "Ceci lessati",
+        "categoria": "legumi",
+        "unita": "g",
+        "per100": {
+          "kcal": 118,
+          "cho": 18,
+          "proteine": 7.5,
+          "grassi": 2.2
+        },
+        "passo": 10,
+        "quantitaTipica": 230,
+        "sinonimi": [
+          "ceci in scatola"
+        ],
+        "usatoIn": [
+          "C11",
+          "C12",
+          "C18",
+          "C5",
+          "C6",
+          "P1",
+          "P11",
+          "P8",
+          "P8-fiocchi"
+        ]
+      },
+      {
+        "id": "edamame-sgusciati",
+        "nome": "Edamame (sgusciati)",
+        "categoria": "legumi",
+        "unita": "g",
+        "per100": {
+          "kcal": 120,
+          "cho": 9,
+          "proteine": 11,
+          "grassi": 5
+        },
+        "passo": 10,
+        "quantitaTipica": 60,
+        "sinonimi": [
+          "soia verde"
+        ],
+        "usatoIn": [
+          "S4",
+          "S4+"
+        ]
+      },
+      {
+        "id": "fagioli-borlotti-lessati",
+        "nome": "Fagioli borlotti lessati",
+        "categoria": "legumi",
+        "unita": "g",
+        "per100": {
+          "kcal": 100,
+          "cho": 16,
+          "proteine": 7,
+          "grassi": 0.5
+        },
+        "passo": 10,
+        "quantitaTipica": 230,
+        "sinonimi": [
+          "borlotti"
+        ],
+        "usatoIn": [
+          "C12",
+          "C14",
+          "C5",
+          "P1"
+        ]
+      },
+      {
+        "id": "fagioli-cannellini-lessati",
+        "nome": "Fagioli cannellini lessati",
+        "categoria": "legumi",
+        "unita": "g",
+        "per100": {
+          "kcal": 95,
+          "cho": 14,
+          "proteine": 7,
+          "grassi": 0.5
+        },
+        "passo": 10,
+        "quantitaTipica": 230,
+        "sinonimi": [
+          "cannellini",
+          "fagioli bianchi"
+        ],
+        "usatoIn": [
+          "C12",
+          "C14",
+          "C5",
+          "P1"
+        ]
+      },
+      {
+        "id": "lenticchie-lessate",
+        "nome": "Lenticchie lessate",
+        "categoria": "legumi",
+        "unita": "g",
+        "per100": {
+          "kcal": 105,
+          "cho": 17,
+          "proteine": 8,
+          "grassi": 0.5
+        },
+        "passo": 10,
+        "quantitaTipica": 230,
+        "sinonimi": [
+          "lenticchie"
+        ],
+        "usatoIn": [
+          "C12",
+          "C5",
+          "P1"
+        ]
+      },
+      {
+        "id": "piselli-surgelati",
+        "nome": "Piselli (surgelati)",
+        "categoria": "legumi",
+        "unita": "g",
+        "per100": {
+          "kcal": 70,
+          "cho": 11,
+          "proteine": 5.5,
+          "grassi": 0.4
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "piselli"
+        ],
+        "usatoIn": [
+          "C15"
+        ],
+        "nota": "Contano come legumi, non come verdura."
+      },
+      {
+        "id": "asparagi",
+        "nome": "Asparagi",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 25,
+          "cho": 3,
+          "proteine": 3,
+          "grassi": 0.2
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "barbabietole-cotte-al-vapore",
+        "nome": "Barbabietole rosse cotte al vapore",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 45,
+          "cho": 9,
+          "proteine": 1.6,
+          "grassi": 0.1
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "barbabietola",
+          "rape rosse"
+        ],
+        "usatoIn": [
+          "C17",
+          "P16"
+        ],
+        "nota": "Verdura amidacea: 200 g portano circa 18 g di CHO. Valori medi: da sostituire con l'etichetta Bianchi."
+      },
+      {
+        "id": "bietole",
+        "nome": "Bietole",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 20,
+          "cho": 3,
+          "proteine": 1.5,
+          "grassi": 0.1
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "bieta",
+          "coste"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C5",
+          "C5-zuppa",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "broccoli",
+        "nome": "Broccoli",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 30,
+          "cho": 3,
+          "proteine": 3,
+          "grassi": 0.4
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "broccolo"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "carciofi",
+        "nome": "Carciofi",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 40,
+          "cho": 2.5,
+          "proteine": 2.7,
+          "grassi": 0.2
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "carciofo"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "carote",
+        "nome": "Carote",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 35,
+          "cho": 7.5,
+          "proteine": 1,
+          "grassi": 0.2
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "carota"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C19",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C5",
+          "C5-zuppa",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "cavolfiore",
+        "nome": "Cavolfiore",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 25,
+          "cho": 3,
+          "proteine": 3,
+          "grassi": 0.2
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "cetrioli",
+        "nome": "Cetrioli",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 15,
+          "cho": 2,
+          "proteine": 0.7,
+          "grassi": 0.1
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "cetriolo"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P11",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "cicoria",
+        "nome": "Cicoria",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 15,
+          "cho": 1,
+          "proteine": 1.5,
+          "grassi": 0.2
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "catalogna"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "cipolla",
+        "nome": "Cipolla",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 30,
+          "cho": 6,
+          "proteine": 1,
+          "grassi": 0.1
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "cipolla rossa"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C5",
+          "C5-zuppa",
+          "C6",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "fagiolini",
+        "nome": "Fagiolini",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 25,
+          "cho": 3.5,
+          "proteine": 2,
+          "grassi": 0.1
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "finocchi",
+        "nome": "Finocchi",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 15,
+          "cho": 1,
+          "proteine": 1.2,
+          "grassi": 0
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "finocchio"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C19",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "funghi-champignon",
+        "nome": "Funghi champignon",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 22,
+          "cho": 0.5,
+          "proteine": 3,
+          "grassi": 0.3
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "funghi"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "lattuga",
+        "nome": "Insalata (lattuga, iceberg, misticanza)",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 15,
+          "cho": 2,
+          "proteine": 1.5,
+          "grassi": 0.3
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "insalata",
+          "misticanza"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C17",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C6",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P16",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "melanzane",
+        "nome": "Melanzane",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 20,
+          "cho": 2.6,
+          "proteine": 1.1,
+          "grassi": 0.1
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "melanzana"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "passata-di-pomodoro",
+        "nome": "Passata di pomodoro",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 30,
+          "cho": 6,
+          "proteine": 1.3,
+          "grassi": 0.2
+        },
+        "passo": 10,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "salsa di pomodoro",
+          "sugo"
+        ],
+        "usatoIn": [
+          "C15",
+          "C7",
+          "P1",
+          "P12"
+        ]
+      },
+      {
+        "id": "patate",
+        "nome": "Patate",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 77,
+          "cho": 16,
+          "proteine": 2,
+          "grassi": 0.1
+        },
+        "passo": 10,
+        "quantitaTipica": 250,
+        "sinonimi": [
+          "patata"
+        ],
+        "usatoIn": [
+          "C1",
+          "C12",
+          "C13",
+          "C16",
+          "C17",
+          "C2",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P17",
+          "P3"
+        ],
+        "nota": "Contano come amido, non come verdura."
+      },
+      {
+        "id": "peperoni",
+        "nome": "Peperoni",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 26,
+          "cho": 4.5,
+          "proteine": 1,
+          "grassi": 0.3
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "peperone"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "C9",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P11",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "pomodori",
+        "nome": "Pomodori",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 19,
+          "cho": 3.5,
+          "proteine": 1,
+          "grassi": 0.2
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "pomodoro",
+          "insalata di pomodori"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "pomodorini",
+        "nome": "Pomodorini",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 20,
+          "cho": 3.5,
+          "proteine": 1,
+          "grassi": 0.2
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "ciliegini",
+          "datterini"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C19",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C6",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P11",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "rucola",
+        "nome": "Rucola",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 28,
+          "cho": 2,
+          "proteine": 2.6,
+          "grassi": 0.7
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C17",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P16",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "sedano",
+        "nome": "Sedano",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 20,
+          "cho": 2.4,
+          "proteine": 1.1,
+          "grassi": 0.2
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C5",
+          "C5-zuppa",
+          "C6",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "spinaci",
+        "nome": "Spinaci",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 23,
+          "cho": 1.5,
+          "proteine": 3,
+          "grassi": 0.4
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "spinaci surgelati"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P14",
+          "P14+pane",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "pomodoro-salvia-cipolla",
+        "nome": "Sugo di pomodoro, salvia e cipolla",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 25,
+          "cho": 4,
+          "proteine": 1,
+          "grassi": 0.2
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [],
+        "usatoIn": [
+          "C14"
+        ]
+      },
+      {
+        "id": "valeriana",
+        "nome": "Valeriana",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 20,
+          "cho": 1,
+          "proteine": 2,
+          "grassi": 0.4
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "songino"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C17",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P16",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "verza",
+        "nome": "Verza",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 20,
+          "cho": 2.5,
+          "proteine": 2,
+          "grassi": 0.1
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "cavolo verza"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "zucca",
+        "nome": "Zucca",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 32,
+          "cho": 7.5,
+          "proteine": 1,
+          "grassi": 0.1
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "zucca gialla",
+          "delica"
+        ],
+        "usatoIn": [
+          "C18",
+          "P15"
+        ],
+        "nota": "Verdura amidacea: ha piu' CHO delle altre verdure."
+      },
+      {
+        "id": "zucchine",
+        "nome": "Zucchine",
+        "categoria": "verdure",
+        "unita": "g",
+        "per100": {
+          "kcal": 15,
+          "cho": 1.5,
+          "proteine": 1.3,
+          "grassi": 0.1
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "zucchina"
+        ],
+        "usatoIn": [
+          "C1",
+          "C10",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C16",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C7",
+          "C8",
+          "C9",
+          "P1",
+          "P1-fiocchi",
+          "P10",
+          "P12",
+          "P13",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa",
+          "P9"
+        ]
+      },
+      {
+        "id": "albicocche-secche",
+        "nome": "Albicocche secche",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 240,
+          "cho": 55,
+          "proteine": 3.5,
+          "grassi": 0.5
+        },
+        "passo": 5,
+        "quantitaTipica": 10,
+        "sinonimi": [],
+        "usatoIn": [
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID",
+          "RID-latte",
+          "RID-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "ananas",
+        "nome": "Ananas",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 45,
+          "cho": 10,
+          "proteine": 0.5,
+          "grassi": 0.1
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [],
+        "usatoIn": [
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "arancia",
+        "nome": "Arancia",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 40,
+          "cho": 8.5,
+          "proteine": 0.9,
+          "grassi": 0.2
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "arance"
+        ],
+        "usatoIn": [
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "avocado",
+        "nome": "Avocado",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 160,
+          "cho": 2,
+          "proteine": 2,
+          "grassi": 15
+        },
+        "passo": 10,
+        "quantitaTipica": 60,
+        "sinonimi": [],
+        "usatoIn": [
+          "C19",
+          "P16"
+        ]
+      },
+      {
+        "id": "banana",
+        "nome": "Banana",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 90,
+          "cho": 21,
+          "proteine": 1.2,
+          "grassi": 0.3
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "banane"
+        ],
+        "usatoIn": [
+          "B1",
+          "B1+",
+          "B10",
+          "B10+",
+          "B10rid",
+          "B1rid",
+          "B2",
+          "B2+",
+          "B2rid",
+          "B3",
+          "B3+",
+          "B3rid",
+          "B4",
+          "B4+",
+          "B4rid",
+          "B5+",
+          "B6",
+          "B6+",
+          "B6rid",
+          "B7+",
+          "B8",
+          "B8+",
+          "B8rid",
+          "B9",
+          "B9+",
+          "B9rid",
+          "C3",
+          "COL-SG+",
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "preCorsa",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "cachi",
+        "nome": "Cachi",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 65,
+          "cho": 16,
+          "proteine": 0.6,
+          "grassi": 0.3
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "kaki"
+        ],
+        "usatoIn": [
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "fichi",
+        "nome": "Fichi freschi",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 50,
+          "cho": 11,
+          "proteine": 0.9,
+          "grassi": 0.2
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [],
+        "usatoIn": [
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "fichi-secchi",
+        "nome": "Fichi secchi",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 250,
+          "cho": 58,
+          "proteine": 3.5,
+          "grassi": 1
+        },
+        "passo": 5,
+        "quantitaTipica": 10,
+        "sinonimi": [],
+        "usatoIn": [
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID",
+          "RID-latte",
+          "RID-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "fragole",
+        "nome": "Fragole",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 30,
+          "cho": 5.5,
+          "proteine": 0.9,
+          "grassi": 0.4
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [],
+        "usatoIn": [
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "frutti-di-bosco",
+        "nome": "Frutti di bosco",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 40,
+          "cho": 7,
+          "proteine": 1,
+          "grassi": 0.4
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "mirtilli",
+          "lamponi",
+          "more"
+        ],
+        "usatoIn": [
+          "B10",
+          "B10+",
+          "B10rid",
+          "B5",
+          "B5+",
+          "B5rid"
+        ]
+      },
+      {
+        "id": "kiwi",
+        "nome": "Kiwi",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 55,
+          "cho": 10,
+          "proteine": 1,
+          "grassi": 0.6
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [],
+        "usatoIn": [
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "mandarini",
+        "nome": "Mandarini e clementine",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 50,
+          "cho": 11,
+          "proteine": 0.8,
+          "grassi": 0.2
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "clementina",
+          "mandarino"
+        ],
+        "usatoIn": [
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "mela",
+        "nome": "Mela",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 52,
+          "cho": 13,
+          "proteine": 0.3,
+          "grassi": 0.2
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "mele"
+        ],
+        "usatoIn": [
+          "B3",
+          "B3+",
+          "B3rid",
+          "B7",
+          "B7+",
+          "B7rid",
+          "B8",
+          "B8+",
+          "B8rid",
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "SER-PB4",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "melone",
+        "nome": "Melone",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 33,
+          "cho": 7.5,
+          "proteine": 0.8,
+          "grassi": 0.2
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [],
+        "usatoIn": [
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "pera",
+        "nome": "Pera",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 55,
+          "cho": 13,
+          "proteine": 0.3,
+          "grassi": 0.1
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "pere"
+        ],
+        "usatoIn": [
+          "B3",
+          "B3+",
+          "B3rid",
+          "B7",
+          "B7+",
+          "B7rid",
+          "B8",
+          "B8+",
+          "B8rid",
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "pesca",
+        "nome": "Pesca",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 35,
+          "cho": 8,
+          "proteine": 0.8,
+          "grassi": 0.1
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "pesche",
+          "nettarina"
+        ],
+        "usatoIn": [
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "prugne",
+        "nome": "Prugne",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 45,
+          "cho": 10.5,
+          "proteine": 0.8,
+          "grassi": 0.1
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "susine"
+        ],
+        "usatoIn": [
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "prugne-secche",
+        "nome": "Prugne secche",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 240,
+          "cho": 55,
+          "proteine": 2.5,
+          "grassi": 0.4
+        },
+        "passo": 5,
+        "quantitaTipica": 10,
+        "sinonimi": [],
+        "usatoIn": [
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID",
+          "RID-latte",
+          "RID-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "uva",
+        "nome": "Uva",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 65,
+          "cho": 16,
+          "proteine": 0.5,
+          "grassi": 0.1
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [],
+        "usatoIn": [
+          "C3",
+          "P14",
+          "P14+",
+          "P14+pane",
+          "intero",
+          "soloFrutto"
+        ]
+      },
+      {
+        "id": "uvetta",
+        "nome": "Uvetta",
+        "categoria": "frutta",
+        "unita": "g",
+        "per100": {
+          "kcal": 300,
+          "cho": 72,
+          "proteine": 2.5,
+          "grassi": 0.5
+        },
+        "passo": 5,
+        "quantitaTipica": 10,
+        "sinonimi": [
+          "uva passa",
+          "uva sultanina"
+        ],
+        "usatoIn": [
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID",
+          "RID-latte",
+          "RID-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "anacardi",
+        "nome": "Anacardi",
+        "categoria": "frutta secca e semi",
+        "unita": "g",
+        "per100": {
+          "kcal": 590,
+          "cho": 27,
+          "proteine": 18,
+          "grassi": 46
+        },
+        "passo": 5,
+        "quantitaTipica": 20,
+        "sinonimi": [],
+        "usatoIn": [
+          "B1",
+          "B1+",
+          "B1rid",
+          "B2",
+          "B2+",
+          "B2rid",
+          "B3",
+          "B3+",
+          "B3rid",
+          "B4",
+          "B4+",
+          "B4rid",
+          "B5",
+          "B5+",
+          "B5rid",
+          "B7",
+          "B7+",
+          "B7rid",
+          "B8",
+          "B8+",
+          "B8rid",
+          "B9",
+          "B9+",
+          "B9rid",
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID",
+          "RID-latte",
+          "RID-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "burro-d-arachidi",
+        "nome": "Burro d'arachidi (100% arachidi)",
+        "categoria": "frutta secca e semi",
+        "unita": "g",
+        "per100": {
+          "kcal": 600,
+          "cho": 12,
+          "proteine": 25,
+          "grassi": 50
+        },
+        "passo": 5,
+        "quantitaTipica": 15,
+        "sinonimi": [
+          "arachidi",
+          "peanut butter"
+        ],
+        "usatoIn": [
+          "B6",
+          "B6+",
+          "B6rid",
+          "SER-PB1",
+          "SER-PB2",
+          "SER-PB3",
+          "SER-PB4"
+        ]
+      },
+      {
+        "id": "mandorle",
+        "nome": "Mandorle",
+        "categoria": "frutta secca e semi",
+        "unita": "g",
+        "per100": {
+          "kcal": 600,
+          "cho": 4.6,
+          "proteine": 21,
+          "grassi": 52
+        },
+        "passo": 5,
+        "quantitaTipica": 20,
+        "sinonimi": [],
+        "usatoIn": [
+          "B1",
+          "B1+",
+          "B1rid",
+          "B2",
+          "B2+",
+          "B2rid",
+          "B3",
+          "B3+",
+          "B3rid",
+          "B4",
+          "B4+",
+          "B4rid",
+          "B5",
+          "B5+",
+          "B5rid",
+          "B7",
+          "B7+",
+          "B7rid",
+          "B8",
+          "B8+",
+          "B8rid",
+          "B9",
+          "B9+",
+          "B9rid",
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID",
+          "RID-latte",
+          "RID-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia",
+          "intero"
+        ]
+      },
+      {
+        "id": "nocciole",
+        "nome": "Nocciole",
+        "categoria": "frutta secca e semi",
+        "unita": "g",
+        "per100": {
+          "kcal": 650,
+          "cho": 6,
+          "proteine": 14,
+          "grassi": 62
+        },
+        "passo": 5,
+        "quantitaTipica": 20,
+        "sinonimi": [],
+        "usatoIn": [
+          "B1",
+          "B1+",
+          "B1rid",
+          "B2",
+          "B2+",
+          "B2rid",
+          "B3",
+          "B3+",
+          "B3rid",
+          "B4",
+          "B4+",
+          "B4rid",
+          "B5",
+          "B5+",
+          "B5rid",
+          "B7",
+          "B7+",
+          "B7rid",
+          "B8",
+          "B8+",
+          "B8rid",
+          "B9",
+          "B9+",
+          "B9rid",
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID",
+          "RID-latte",
+          "RID-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "noci",
+        "nome": "Noci",
+        "categoria": "frutta secca e semi",
+        "unita": "g",
+        "per100": {
+          "kcal": 680,
+          "cho": 5,
+          "proteine": 15,
+          "grassi": 67
+        },
+        "passo": 5,
+        "quantitaTipica": 15,
+        "sinonimi": [
+          "gherigli"
+        ],
+        "usatoIn": [
+          "B1",
+          "B1+",
+          "B1rid",
+          "B2",
+          "B2+",
+          "B2rid",
+          "B3",
+          "B3+",
+          "B3rid",
+          "B4",
+          "B4+",
+          "B4rid",
+          "B5",
+          "B5+",
+          "B5rid",
+          "B7",
+          "B7+",
+          "B7rid",
+          "B8",
+          "B8+",
+          "B8rid",
+          "B9",
+          "B9+",
+          "B9rid",
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID",
+          "RID-latte",
+          "RID-soia",
+          "SER-SAL",
+          "STD",
+          "STD-latte",
+          "STD-soia",
+          "serale"
+        ]
+      },
+      {
+        "id": "pistacchi",
+        "nome": "Pistacchi (sgusciati)",
+        "categoria": "frutta secca e semi",
+        "unita": "g",
+        "per100": {
+          "kcal": 600,
+          "cho": 18,
+          "proteine": 20,
+          "grassi": 50
+        },
+        "passo": 5,
+        "quantitaTipica": 20,
+        "sinonimi": [],
+        "usatoIn": [
+          "B1",
+          "B1+",
+          "B1rid",
+          "B2",
+          "B2+",
+          "B2rid",
+          "B3",
+          "B3+",
+          "B3rid",
+          "B4",
+          "B4+",
+          "B4rid",
+          "B5",
+          "B5+",
+          "B5rid",
+          "B7",
+          "B7+",
+          "B7rid",
+          "B8",
+          "B8+",
+          "B8rid",
+          "B9",
+          "B9+",
+          "B9rid",
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID",
+          "RID-latte",
+          "RID-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "semi-di-chia",
+        "nome": "Semi di chia",
+        "categoria": "frutta secca e semi",
+        "unita": "g",
+        "per100": {
+          "kcal": 490,
+          "cho": 8,
+          "proteine": 17,
+          "grassi": 31
+        },
+        "passo": 5,
+        "quantitaTipica": 30,
+        "sinonimi": [
+          "chia"
+        ],
+        "usatoIn": [
+          "B10",
+          "B10+",
+          "B10rid"
+        ]
+      },
+      {
+        "id": "bevanda-di-soia-non-zuccherata",
+        "nome": "Bevanda di soia non zuccherata",
+        "categoria": "latte e yogurt",
+        "unita": "ml",
+        "per100": {
+          "kcal": 33,
+          "cho": 0.5,
+          "proteine": 3.3,
+          "grassi": 1.8
+        },
+        "passo": 50,
+        "quantitaTipica": 250,
+        "sinonimi": [
+          "latte di soia"
+        ],
+        "usatoIn": [
+          "B10",
+          "B10+",
+          "B10rid",
+          "B2",
+          "B2+",
+          "B2rid",
+          "MAGG-soia",
+          "RID-soia",
+          "STD-soia"
+        ],
+        "nota": "La versione zuccherata ha circa 2,5 g di CHO per 100 ml."
+      },
+      {
+        "id": "latte-intero",
+        "nome": "Latte intero",
+        "categoria": "latte e yogurt",
+        "unita": "ml",
+        "per100": {
+          "kcal": 64,
+          "cho": 4.8,
+          "proteine": 3.3,
+          "grassi": 3.6
+        },
+        "passo": 50,
+        "quantitaTipica": 250,
+        "sinonimi": [],
+        "usatoIn": []
+      },
+      {
+        "id": "latte-parzialmente-scremato",
+        "nome": "Latte parzialmente scremato",
+        "categoria": "latte e yogurt",
+        "unita": "ml",
+        "per100": {
+          "kcal": 46,
+          "cho": 5,
+          "proteine": 3.3,
+          "grassi": 1.6
+        },
+        "passo": 50,
+        "quantitaTipica": 250,
+        "sinonimi": [
+          "latte"
+        ],
+        "usatoIn": [
+          "B1",
+          "B1+",
+          "B1rid",
+          "B6",
+          "B6+",
+          "B6rid",
+          "MAGG-latte",
+          "RID-latte",
+          "SER-PB1",
+          "SER-PB2",
+          "SER-PB3",
+          "STD-latte"
+        ]
+      },
+      {
+        "id": "skyr",
+        "nome": "Skyr",
+        "categoria": "latte e yogurt",
+        "unita": "g",
+        "per100": {
+          "kcal": 63,
+          "cho": 4,
+          "proteine": 11,
+          "grassi": 0.2
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [],
+        "usatoIn": [
+          "B5",
+          "B5+",
+          "B5rid"
+        ]
+      },
+      {
+        "id": "yogurt-di-soia-non-zuccherato",
+        "nome": "Yogurt di soia non zuccherato",
+        "categoria": "latte e yogurt",
+        "unita": "g",
+        "per100": {
+          "kcal": 50,
+          "cho": 2,
+          "proteine": 4,
+          "grassi": 2.5
+        },
+        "passo": 10,
+        "quantitaTipica": 125,
+        "sinonimi": [
+          "yogurt vegetale"
+        ],
+        "usatoIn": [
+          "B9",
+          "B9+",
+          "B9rid"
+        ]
+      },
+      {
+        "id": "yogurt-greco-0",
+        "nome": "Yogurt greco 0%",
+        "categoria": "latte e yogurt",
+        "unita": "g",
+        "per100": {
+          "kcal": 57,
+          "cho": 4,
+          "proteine": 10,
+          "grassi": 0.2
+        },
+        "passo": 10,
+        "quantitaTipica": 170,
+        "sinonimi": [
+          "greco magro"
+        ],
+        "usatoIn": [
+          "B1",
+          "B1+",
+          "B1rid",
+          "COL-SG+",
+          "MAGG",
+          "RID",
+          "STD"
+        ]
+      },
+      {
+        "id": "yogurt-greco",
+        "nome": "Yogurt greco 2%",
+        "categoria": "latte e yogurt",
+        "unita": "g",
+        "per100": {
+          "kcal": 75,
+          "cho": 4,
+          "proteine": 9,
+          "grassi": 2
+        },
+        "passo": 10,
+        "quantitaTipica": 170,
+        "sinonimi": [
+          "greco"
+        ],
+        "usatoIn": [
+          "serale"
+        ]
+      },
+      {
+        "id": "edamer",
+        "nome": "Edamer a fette",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 355,
+          "cho": 1,
+          "proteine": 25,
+          "grassi": 28
+        },
+        "passo": 5,
+        "quantitaTipica": 50,
+        "sinonimi": [
+          "edam"
+        ],
+        "usatoIn": [
+          "P14",
+          "P14+pane"
+        ]
+      },
+      {
+        "id": "emmental",
+        "nome": "Emmental a fette",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 380,
+          "cho": 0,
+          "proteine": 29,
+          "grassi": 29
+        },
+        "passo": 5,
+        "quantitaTipica": 50,
+        "sinonimi": [
+          "emmentaler"
+        ],
+        "usatoIn": [
+          "P14",
+          "P14+pane"
+        ]
+      },
+      {
+        "id": "feta",
+        "nome": "Feta",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 260,
+          "cho": 1.5,
+          "proteine": 15,
+          "grassi": 21
+        },
+        "passo": 5,
+        "quantitaTipica": 55,
+        "sinonimi": [],
+        "usatoIn": [
+          "C18",
+          "P11"
+        ]
+      },
+      {
+        "id": "fiocchi-di-latte",
+        "nome": "Fiocchi di latte",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 98,
+          "cho": 3.3,
+          "proteine": 11.5,
+          "grassi": 4.3
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "cottage cheese"
+        ],
+        "usatoIn": [
+          "B7",
+          "B7+",
+          "B7rid",
+          "P1-fiocchi",
+          "P10",
+          "P8-fiocchi"
+        ]
+      },
+      {
+        "id": "fiocchi-di-latte-magri-vasetto-175",
+        "nome": "Fiocchi di latte magri con yogurt (vasetto 175 g)",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 63,
+          "cho": 2.5,
+          "proteine": 12,
+          "grassi": 0.5
+        },
+        "passo": 25,
+        "quantitaTipica": 175,
+        "sinonimi": [
+          "fiocchi magri"
+        ],
+        "usatoIn": [],
+        "nota": "Valori dell'etichetta del vasetto da 175 g."
+      },
+      {
+        "id": "fontal",
+        "nome": "Fontal a fette",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 360,
+          "cho": 0,
+          "proteine": 26,
+          "grassi": 28
+        },
+        "passo": 5,
+        "quantitaTipica": 50,
+        "sinonimi": [],
+        "usatoIn": [
+          "P14",
+          "P14+pane"
+        ]
+      },
+      {
+        "id": "mozzarella",
+        "nome": "Mozzarella vaccina",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 253,
+          "cho": 0.7,
+          "proteine": 18.7,
+          "grassi": 19.5
+        },
+        "passo": 10,
+        "quantitaTipica": 125,
+        "sinonimi": [
+          "fior di latte"
+        ],
+        "usatoIn": [
+          "C4",
+          "P4"
+        ]
+      },
+      {
+        "id": "parmigiano",
+        "nome": "Parmigiano Reggiano",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 392,
+          "cho": 0,
+          "proteine": 33,
+          "grassi": 28
+        },
+        "passo": 5,
+        "quantitaTipica": 20,
+        "sinonimi": [
+          "grana",
+          "parmigiano",
+          "grana padano"
+        ],
+        "usatoIn": [
+          "B8",
+          "B8+",
+          "B8rid",
+          "C15",
+          "C3",
+          "C5",
+          "C5-zuppa",
+          "P15",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "SER-SAL"
+        ]
+      },
+      {
+        "id": "primo-sale",
+        "nome": "Primo sale",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 280,
+          "cho": 1,
+          "proteine": 20,
+          "grassi": 22
+        },
+        "passo": 10,
+        "quantitaTipica": 100,
+        "sinonimi": [],
+        "usatoIn": [
+          "C4",
+          "P4"
+        ]
+      },
+      {
+        "id": "ricotta-di-pecora",
+        "nome": "Ricotta di pecora",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 157,
+          "cho": 4.2,
+          "proteine": 9.5,
+          "grassi": 11.5
+        },
+        "passo": 10,
+        "quantitaTipica": 190,
+        "sinonimi": [],
+        "usatoIn": [
+          "C4-pecora"
+        ]
+      },
+      {
+        "id": "ricotta-salata",
+        "nome": "Ricotta salata",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 280,
+          "cho": 1,
+          "proteine": 22,
+          "grassi": 20
+        },
+        "passo": 5,
+        "quantitaTipica": 50,
+        "sinonimi": [],
+        "usatoIn": []
+      },
+      {
+        "id": "ricotta-vaccina",
+        "nome": "Ricotta vaccina",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 146,
+          "cho": 3.5,
+          "proteine": 9,
+          "grassi": 11
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "ricotta"
+        ],
+        "usatoIn": [
+          "B3",
+          "B3+",
+          "B3rid",
+          "C4-ricotta",
+          "P12",
+          "P15",
+          "P4-ricotta"
+        ]
+      },
+      {
+        "id": "scamorza",
+        "nome": "Scamorza",
+        "categoria": "formaggi",
+        "unita": "g",
+        "per100": {
+          "kcal": 330,
+          "cho": 1,
+          "proteine": 25,
+          "grassi": 25
+        },
+        "passo": 5,
+        "quantitaTipica": 30,
+        "sinonimi": [
+          "provola"
+        ],
+        "usatoIn": [
+          "C10"
+        ]
+      },
+      {
+        "id": "sottilette",
+        "nome": "Sottilette classiche",
+        "categoria": "formaggi",
+        "unita": "pz",
+        "grammiPerPezzo": 20,
+        "per100": {
+          "kcal": 280,
+          "cho": 4,
+          "proteine": 13,
+          "grassi": 22
+        },
+        "passo": 1,
+        "quantitaTipica": 2,
+        "sinonimi": [
+          "formaggio fuso"
+        ],
+        "usatoIn": [],
+        "nota": "Formaggio fuso: meta' delle proteine dei formaggi a fette stagionati."
+      },
+      {
+        "id": "uova",
+        "nome": "Uova",
+        "categoria": "uova",
+        "unita": "pz",
+        "grammiPerPezzo": 55,
+        "per100": {
+          "kcal": 143,
+          "cho": 0.7,
+          "proteine": 12.6,
+          "grassi": 9.5
+        },
+        "passo": 1,
+        "quantitaTipica": 2,
+        "sinonimi": [
+          "uovo"
+        ],
+        "usatoIn": [
+          "B4",
+          "B4+",
+          "B4rid",
+          "C10",
+          "C14",
+          "C19",
+          "C3"
+        ],
+        "nota": "55 g = uovo medio senza guscio."
+      },
+      {
+        "id": "alici",
+        "nome": "Alici",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 96,
+          "cho": 0,
+          "proteine": 16.8,
+          "grassi": 2.6
+        },
+        "passo": 10,
+        "quantitaTipica": 180,
+        "sinonimi": [
+          "acciughe"
+        ],
+        "usatoIn": [
+          "C2"
+        ]
+      },
+      {
+        "id": "baccala-ammollato",
+        "nome": "Baccala' ammollato",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 95,
+          "cho": 0,
+          "proteine": 21.6,
+          "grassi": 0.8
+        },
+        "passo": 10,
+        "quantitaTipica": 160,
+        "sinonimi": [
+          "stoccafisso"
+        ],
+        "usatoIn": [
+          "C11"
+        ]
+      },
+      {
+        "id": "branzino",
+        "nome": "Branzino",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 110,
+          "cho": 0,
+          "proteine": 18.5,
+          "grassi": 4
+        },
+        "passo": 10,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "spigola"
+        ],
+        "usatoIn": [
+          "C1",
+          "P5"
+        ]
+      },
+      {
+        "id": "calamari",
+        "nome": "Calamari",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 80,
+          "cho": 1.5,
+          "proteine": 15,
+          "grassi": 1.4
+        },
+        "passo": 10,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "totani"
+        ],
+        "usatoIn": [
+          "C7"
+        ]
+      },
+      {
+        "id": "gamberi",
+        "nome": "Gamberi",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 85,
+          "cho": 0,
+          "proteine": 19,
+          "grassi": 0.8
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "gamberetti"
+        ],
+        "usatoIn": [
+          "C9",
+          "P7"
+        ]
+      },
+      {
+        "id": "mazzancolle",
+        "nome": "Mazzancolle",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 90,
+          "cho": 0,
+          "proteine": 19,
+          "grassi": 1.3
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [],
+        "usatoIn": [
+          "P7"
+        ]
+      },
+      {
+        "id": "merluzzo",
+        "nome": "Merluzzo",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 82,
+          "cho": 0,
+          "proteine": 18,
+          "grassi": 0.7
+        },
+        "passo": 10,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "nasello"
+        ],
+        "usatoIn": [
+          "C1",
+          "C11",
+          "P5"
+        ]
+      },
+      {
+        "id": "orata",
+        "nome": "Orata",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 120,
+          "cho": 0,
+          "proteine": 20,
+          "grassi": 4.5
+        },
+        "passo": 10,
+        "quantitaTipica": 200,
+        "sinonimi": [],
+        "usatoIn": [
+          "C1",
+          "P5"
+        ]
+      },
+      {
+        "id": "platessa",
+        "nome": "Platessa",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 86,
+          "cho": 0,
+          "proteine": 18,
+          "grassi": 1.5
+        },
+        "passo": 10,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "sogliola"
+        ],
+        "usatoIn": [
+          "C1",
+          "P5"
+        ]
+      },
+      {
+        "id": "polpo",
+        "nome": "Polpo",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 70,
+          "cho": 1.5,
+          "proteine": 13,
+          "grassi": 1
+        },
+        "passo": 10,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "polipo"
+        ],
+        "usatoIn": [
+          "C8"
+        ]
+      },
+      {
+        "id": "salmone-affumicato",
+        "nome": "Salmone affumicato",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 147,
+          "cho": 0,
+          "proteine": 25,
+          "grassi": 4.5
+        },
+        "passo": 10,
+        "quantitaTipica": 60,
+        "sinonimi": [],
+        "usatoIn": [
+          "P9"
+        ]
+      },
+      {
+        "id": "salmone-fresco",
+        "nome": "Salmone fresco",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 185,
+          "cho": 0,
+          "proteine": 20,
+          "grassi": 12
+        },
+        "passo": 10,
+        "quantitaTipica": 180,
+        "sinonimi": [
+          "salmone"
+        ],
+        "usatoIn": [
+          "C2",
+          "P9"
+        ]
+      },
+      {
+        "id": "sardine",
+        "nome": "Sardine",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 129,
+          "cho": 0,
+          "proteine": 20.8,
+          "grassi": 4.5
+        },
+        "passo": 10,
+        "quantitaTipica": 180,
+        "sinonimi": [],
+        "usatoIn": [
+          "C2"
+        ]
+      },
+      {
+        "id": "sashimi-di-salmone",
+        "nome": "Sashimi di salmone",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 200,
+          "cho": 0,
+          "proteine": 20,
+          "grassi": 13
+        },
+        "passo": 10,
+        "quantitaTipica": 90,
+        "sinonimi": [
+          "sashimi"
+        ],
+        "usatoIn": [
+          "S4",
+          "S4+"
+        ]
+      },
+      {
+        "id": "seppie",
+        "nome": "Seppie",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 72,
+          "cho": 0.7,
+          "proteine": 14,
+          "grassi": 1.5
+        },
+        "passo": 10,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "seppia"
+        ],
+        "usatoIn": [
+          "C15",
+          "C7"
+        ]
+      },
+      {
+        "id": "sgombro",
+        "nome": "Sgombro",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 170,
+          "cho": 0,
+          "proteine": 18,
+          "grassi": 11
+        },
+        "passo": 10,
+        "quantitaTipica": 180,
+        "sinonimi": [
+          "maccarello"
+        ],
+        "usatoIn": [
+          "C2"
+        ]
+      },
+      {
+        "id": "tonno-al-naturale",
+        "nome": "Tonno al naturale (sgocciolato)",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 110,
+          "cho": 0,
+          "proteine": 25,
+          "grassi": 1
+        },
+        "passo": 10,
+        "quantitaTipica": 120,
+        "sinonimi": [
+          "tonno"
+        ],
+        "usatoIn": [
+          "C15",
+          "C6",
+          "P16",
+          "P2",
+          "P6"
+        ],
+        "nota": "Valori medi: da sostituire con l'etichetta del tonno al naturale Pam."
+      },
+      {
+        "id": "tonno-sott-olio",
+        "nome": "Tonno sott'olio (sgocciolato)",
+        "categoria": "pesce",
+        "unita": "g",
+        "per100": {
+          "kcal": 190,
+          "cho": 0,
+          "proteine": 25,
+          "grassi": 10
+        },
+        "passo": 10,
+        "quantitaTipica": 80,
+        "sinonimi": [],
+        "usatoIn": []
+      },
+      {
+        "id": "bresaola",
+        "nome": "Bresaola",
+        "categoria": "carne e salumi",
+        "unita": "g",
+        "per100": {
+          "kcal": 151,
+          "cho": 0.4,
+          "proteine": 32,
+          "grassi": 2.6
+        },
+        "passo": 10,
+        "quantitaTipica": 30,
+        "sinonimi": [],
+        "usatoIn": [
+          "B8",
+          "B8+",
+          "B8rid"
+        ]
+      },
+      {
+        "id": "petto-di-pollo",
+        "nome": "Petto di pollo",
+        "categoria": "carne e salumi",
+        "unita": "g",
+        "per100": {
+          "kcal": 110,
+          "cho": 0,
+          "proteine": 23,
+          "grassi": 1.5
+        },
+        "passo": 10,
+        "quantitaTipica": 180,
+        "sinonimi": [
+          "pollo",
+          "pollo ai ferri"
+        ],
+        "usatoIn": [
+          "C13",
+          "P13",
+          "P3"
+        ]
+      },
+      {
+        "id": "petto-di-tacchino",
+        "nome": "Petto di tacchino",
+        "categoria": "carne e salumi",
+        "unita": "g",
+        "per100": {
+          "kcal": 107,
+          "cho": 0,
+          "proteine": 24,
+          "grassi": 1
+        },
+        "passo": 10,
+        "quantitaTipica": 180,
+        "sinonimi": [
+          "fesa di tacchino",
+          "tacchino"
+        ],
+        "usatoIn": [
+          "C13",
+          "P13"
+        ]
+      },
+      {
+        "id": "prosciutto-crudo-sgrassato",
+        "nome": "Prosciutto crudo sgrassato",
+        "categoria": "carne e salumi",
+        "unita": "g",
+        "per100": {
+          "kcal": 180,
+          "cho": 0.3,
+          "proteine": 28,
+          "grassi": 7
+        },
+        "passo": 5,
+        "quantitaTipica": 35,
+        "sinonimi": [
+          "crudo"
+        ],
+        "usatoIn": []
+      },
+      {
+        "id": "olio-evo",
+        "nome": "Olio extravergine d'oliva",
+        "categoria": "grassi e condimenti",
+        "unita": "g",
+        "per100": {
+          "kcal": 899,
+          "cho": 0,
+          "proteine": 0,
+          "grassi": 99.9
+        },
+        "passo": 5,
+        "quantitaTipica": 10,
+        "sinonimi": [
+          "olio",
+          "olio evo"
+        ],
+        "usatoIn": [
+          "C1",
+          "C10",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C15",
+          "C16",
+          "C17",
+          "C18",
+          "C2",
+          "C3",
+          "C4",
+          "C4-pecora",
+          "C4-ricotta",
+          "C5",
+          "C6",
+          "C7",
+          "C8",
+          "C9",
+          "P1",
+          "P1-fiocchi",
+          "P11",
+          "P12",
+          "P13",
+          "P14",
+          "P14+pane",
+          "P15",
+          "P16",
+          "P17",
+          "P2",
+          "P3",
+          "P4",
+          "P4-ricotta",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P8-fiocchi",
+          "P9"
+        ],
+        "nota": "1 cucchiaio = circa 10 g."
+      },
+      {
+        "id": "pesto",
+        "nome": "Pesto alla genovese",
+        "categoria": "grassi e condimenti",
+        "unita": "g",
+        "per100": {
+          "kcal": 450,
+          "cho": 5,
+          "proteine": 5,
+          "grassi": 45
+        },
+        "passo": 5,
+        "quantitaTipica": 30,
+        "sinonimi": [
+          "pesto"
+        ],
+        "usatoIn": [
+          "P10"
+        ]
+      },
+      {
+        "id": "composta-albicocche",
+        "nome": "Composta 100% frutta (albicocche)",
+        "categoria": "zuccheri e dolcificanti",
+        "unita": "g",
+        "per100": {
+          "kcal": 150,
+          "cho": 36,
+          "proteine": 0.5,
+          "grassi": 0.2
+        },
+        "passo": 5,
+        "quantitaTipica": 40,
+        "sinonimi": [
+          "marmellata",
+          "confettura"
+        ],
+        "usatoIn": [
+          "B10",
+          "B10+",
+          "B3",
+          "B3+",
+          "B4",
+          "B4+",
+          "B6",
+          "B6+",
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ],
+        "nota": "Solo prodotti 100% frutta, senza polioli."
+      },
+      {
+        "id": "composta-ciliegie",
+        "nome": "Composta 100% frutta (ciliegie)",
+        "categoria": "zuccheri e dolcificanti",
+        "unita": "g",
+        "per100": {
+          "kcal": 155,
+          "cho": 37,
+          "proteine": 0.5,
+          "grassi": 0.2
+        },
+        "passo": 5,
+        "quantitaTipica": 40,
+        "sinonimi": [
+          "marmellata"
+        ],
+        "usatoIn": [
+          "B10",
+          "B10+",
+          "B3",
+          "B3+",
+          "B4",
+          "B4+",
+          "B6",
+          "B6+",
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "composta-frutti-di-bosco",
+        "nome": "Composta 100% frutta (frutti di bosco)",
+        "categoria": "zuccheri e dolcificanti",
+        "unita": "g",
+        "per100": {
+          "kcal": 150,
+          "cho": 35,
+          "proteine": 0.7,
+          "grassi": 0.3
+        },
+        "passo": 5,
+        "quantitaTipica": 40,
+        "sinonimi": [
+          "marmellata"
+        ],
+        "usatoIn": [
+          "B10",
+          "B10+",
+          "B3",
+          "B3+",
+          "B4",
+          "B4+",
+          "B6",
+          "B6+",
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "miele",
+        "nome": "Miele",
+        "categoria": "zuccheri e dolcificanti",
+        "unita": "g",
+        "per100": {
+          "kcal": 304,
+          "cho": 80,
+          "proteine": 0.3,
+          "grassi": 0
+        },
+        "passo": 5,
+        "quantitaTipica": 15,
+        "sinonimi": [],
+        "usatoIn": [
+          "B1",
+          "B1+",
+          "B5",
+          "B5+",
+          "B5rid",
+          "B7",
+          "B7+",
+          "B7rid"
+        ]
+      },
+      {
+        "id": "zucchero",
+        "nome": "Zucchero",
+        "categoria": "zuccheri e dolcificanti",
+        "unita": "g",
+        "per100": {
+          "kcal": 392,
+          "cho": 100,
+          "proteine": 0,
+          "grassi": 0
+        },
+        "passo": 5,
+        "quantitaTipica": 5,
+        "sinonimi": [],
+        "usatoIn": []
+      },
+      {
+        "id": "acqua",
+        "nome": "Acqua",
+        "categoria": "bevande",
+        "unita": "ml",
+        "per100": {
+          "kcal": 0,
+          "cho": 0,
+          "proteine": 0,
+          "grassi": 0
+        },
+        "passo": 100,
+        "quantitaTipica": 250,
+        "sinonimi": [],
+        "usatoIn": [
+          "preCorsa"
+        ]
+      },
+      {
+        "id": "birra-chiara-5",
+        "nome": "Birra chiara 5%",
+        "categoria": "bevande",
+        "unita": "ml",
+        "per100": {
+          "kcal": 43,
+          "cho": 3.6,
+          "proteine": 0.4,
+          "grassi": 0
+        },
+        "passo": 50,
+        "quantitaTipica": 500,
+        "sinonimi": [
+          "birra"
+        ],
+        "usatoIn": [
+          "S1",
+          "S1+"
+        ],
+        "nota": "Circa 2/3 delle kcal vengono dall'alcol, non dai CHO."
+      },
+      {
+        "id": "caffe",
+        "nome": "Caffe' (espresso, senza zucchero)",
+        "categoria": "bevande",
+        "unita": "ml",
+        "per100": {
+          "kcal": 2,
+          "cho": 0.3,
+          "proteine": 0.1,
+          "grassi": 0
+        },
+        "passo": 10,
+        "quantitaTipica": 30,
+        "sinonimi": [
+          "espresso"
+        ],
+        "usatoIn": [
+          "preCorsa"
+        ]
+      },
+      {
+        "id": "cappuccino",
+        "nome": "Cappuccino (latte parzialmente scremato)",
+        "categoria": "bevande",
+        "unita": "ml",
+        "per100": {
+          "kcal": 35,
+          "cho": 3,
+          "proteine": 2.4,
+          "grassi": 1.2
+        },
+        "passo": 10,
+        "quantitaTipica": 180,
+        "sinonimi": [
+          "cappuccio"
+        ],
+        "usatoIn": [
+          "COL-SG",
+          "COL-SG+",
+          "COL-SG-crema"
+        ]
+      },
+      {
+        "id": "bastoncini-di-pesce-fritti",
+        "nome": "Bastoncini di pesce (fritti in padella)",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "g",
+        "per100": {
+          "kcal": 240,
+          "cho": 17,
+          "proteine": 12,
+          "grassi": 13
+        },
+        "passo": 25,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "bastoncini",
+          "fish sticks"
+        ],
+        "usatoIn": [
+          "C16"
+        ],
+        "nota": "Un bastoncino pesa circa 25-30 g. Al forno: circa 195 kcal e 8 g di grassi per 100 g."
+      },
+      {
+        "id": "burger-vegetale-di-soia",
+        "nome": "Burger vegetale di soia",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "g",
+        "per100": {
+          "kcal": 200,
+          "cho": 6,
+          "proteine": 17,
+          "grassi": 11
+        },
+        "passo": 10,
+        "quantitaTipica": 160,
+        "sinonimi": [
+          "burger soia",
+          "hamburger vegetale"
+        ],
+        "usatoIn": [
+          "C17",
+          "P17"
+        ],
+        "nota": "Valori medi: da sostituire con l'etichetta della marca che compri (cerca almeno 15 g di proteine per 100 g)."
+      },
+      {
+        "id": "gamberi-saltati-con-verdure",
+        "nome": "Gamberi saltati con verdure (ristorante cinese)",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "g",
+        "per100": {
+          "kcal": 110,
+          "cho": 5,
+          "proteine": 9,
+          "grassi": 6
+        },
+        "passo": 10,
+        "quantitaTipica": 200,
+        "sinonimi": [],
+        "usatoIn": [
+          "S3"
+        ]
+      },
+      {
+        "id": "hummus",
+        "nome": "Hummus",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "g",
+        "per100": {
+          "kcal": 240,
+          "cho": 12,
+          "proteine": 7,
+          "grassi": 18
+        },
+        "passo": 10,
+        "quantitaTipica": 80,
+        "sinonimi": [
+          "crema di ceci"
+        ],
+        "usatoIn": [
+          "C19",
+          "P16"
+        ],
+        "nota": "Varia molto tra marche (170-300 kcal/100 g): meglio usare l'etichetta."
+      },
+      {
+        "id": "involtino-primavera",
+        "nome": "Involtino primavera",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "g",
+        "per100": {
+          "kcal": 250,
+          "cho": 25,
+          "proteine": 5,
+          "grassi": 14
+        },
+        "passo": 10,
+        "quantitaTipica": 80,
+        "sinonimi": [
+          "involtino"
+        ],
+        "usatoIn": [
+          "S3"
+        ]
+      },
+      {
+        "id": "nigiri",
+        "nome": "Nigiri",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "pz",
+        "grammiPerPezzo": 35,
+        "per100": {
+          "kcal": 129,
+          "cho": 20,
+          "proteine": 7,
+          "grassi": 1.5
+        },
+        "passo": 1,
+        "quantitaTipica": 8,
+        "sinonimi": [
+          "sushi"
+        ],
+        "usatoIn": [
+          "S4",
+          "S4+"
+        ]
+      },
+      {
+        "id": "ravioli-al-vapore",
+        "nome": "Ravioli al vapore",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "g",
+        "per100": {
+          "kcal": 200,
+          "cho": 26,
+          "proteine": 8,
+          "grassi": 6
+        },
+        "passo": 25,
+        "quantitaTipica": 100,
+        "sinonimi": [
+          "ravioli cinesi",
+          "dim sum"
+        ],
+        "usatoIn": [
+          "S3"
+        ],
+        "nota": "Un raviolo pesa circa 25 g."
+      },
+      {
+        "id": "riso-alla-cantonese",
+        "nome": "Riso alla cantonese (cotto)",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "g",
+        "per100": {
+          "kcal": 170,
+          "cho": 25,
+          "proteine": 4.5,
+          "grassi": 5.5
+        },
+        "passo": 10,
+        "quantitaTipica": 250,
+        "sinonimi": [
+          "riso cantonese"
+        ],
+        "usatoIn": [
+          "S3"
+        ]
+      },
+      {
+        "id": "uramaki",
+        "nome": "Uramaki",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "pz",
+        "grammiPerPezzo": 30,
+        "per100": {
+          "kcal": 150,
+          "cho": 20,
+          "proteine": 5,
+          "grassi": 6
+        },
+        "passo": 1,
+        "quantitaTipica": 8,
+        "sinonimi": [
+          "california roll",
+          "sushi"
+        ],
+        "usatoIn": [
+          "S4",
+          "S4+"
+        ],
+        "nota": "I pezzi fritti (tempura, crunch) hanno circa il doppio dei grassi."
+      },
+      {
+        "id": "verdure-fritte-in-pastella",
+        "nome": "Verdure fritte in pastella",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "g",
+        "per100": {
+          "kcal": 230,
+          "cho": 20,
+          "proteine": 3.5,
+          "grassi": 15
+        },
+        "passo": 10,
+        "quantitaTipica": 250,
+        "sinonimi": [
+          "fritto di verdure",
+          "fiori di zucca fritti"
+        ],
+        "usatoIn": [
+          "S2"
+        ]
+      },
+      {
+        "id": "zuppa-di-ceci-pam",
+        "nome": "Zuppa di ceci Pam (pronta da scaldare)",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "g",
+        "per100": {
+          "kcal": 102,
+          "cho": 7.4,
+          "proteine": 4.1,
+          "grassi": 5.3
+        },
+        "passo": 50,
+        "quantitaTipica": 500,
+        "sinonimi": [
+          "zuppa di ceci"
+        ],
+        "usatoIn": [
+          "C5-zuppa",
+          "P8-zuppa"
+        ],
+        "nota": "Valori dell'etichetta, lattina da 500 g. Contiene gia' l'olio."
+      },
+      {
+        "id": "zuppa-di-miso",
+        "nome": "Zuppa di miso",
+        "categoria": "prodotti pronti e di marca",
+        "unita": "ml",
+        "per100": {
+          "kcal": 20,
+          "cho": 2,
+          "proteine": 1.5,
+          "grassi": 0.6
+        },
+        "passo": 50,
+        "quantitaTipica": 200,
+        "sinonimi": [
+          "miso"
+        ],
+        "usatoIn": [
+          "S4",
+          "S4+"
+        ]
+      },
+      {
+        "id": "cacao-amaro-in-polvere",
+        "nome": "Cacao amaro in polvere",
+        "categoria": "dolci",
+        "unita": "g",
+        "per100": {
+          "kcal": 360,
+          "cho": 11,
+          "proteine": 20,
+          "grassi": 22
+        },
+        "passo": 2,
+        "quantitaTipica": 8,
+        "sinonimi": [
+          "cacao"
+        ],
+        "usatoIn": [
+          "B9",
+          "B9+",
+          "B9rid"
+        ]
+      },
+      {
+        "id": "cioccolato-fondente-70-85",
+        "nome": "Cioccolato fondente 70-85%",
+        "categoria": "dolci",
+        "unita": "g",
+        "per100": {
+          "kcal": 580,
+          "cho": 30,
+          "proteine": 9,
+          "grassi": 45
+        },
+        "passo": 5,
+        "quantitaTipica": 25,
+        "sinonimi": [
+          "cioccolato"
+        ],
+        "usatoIn": []
+      },
+      {
+        "id": "coppa-al-cacao-con-panna",
+        "nome": "Coppa al cacao con panna (Milk)",
+        "categoria": "dolci",
+        "unita": "g",
+        "per100": {
+          "kcal": 93,
+          "cho": 16.4,
+          "proteine": 1.3,
+          "grassi": 2.5
+        },
+        "passo": 10,
+        "quantitaTipica": 100,
+        "sinonimi": [
+          "coppa malu'",
+          "budino al cacao"
+        ],
+        "usatoIn": [
+          "D2"
+        ],
+        "nota": "Valori dell'etichetta Milk per 100 g."
+      },
+      {
+        "id": "crostata-di-marmellata",
+        "nome": "Crostata di marmellata",
+        "categoria": "dolci",
+        "unita": "g",
+        "per100": {
+          "kcal": 400,
+          "cho": 60,
+          "proteine": 6,
+          "grassi": 15
+        },
+        "passo": 10,
+        "quantitaTipica": 100,
+        "sinonimi": [
+          "crostata"
+        ],
+        "usatoIn": [
+          "D6"
+        ]
+      },
+      {
+        "id": "gelato-artigianale-con-cono",
+        "nome": "Gelato artigianale con cono",
+        "categoria": "dolci",
+        "unita": "g",
+        "per100": {
+          "kcal": 210,
+          "cho": 29,
+          "proteine": 3.5,
+          "grassi": 9
+        },
+        "passo": 10,
+        "quantitaTipica": 150,
+        "sinonimi": [
+          "gelato"
+        ],
+        "usatoIn": [
+          "D5"
+        ],
+        "nota": "Gusti alla frutta: circa 150 kcal e 3 g di grassi per 100 g."
+      },
+      {
+        "id": "gocce-di-cioccolato-fondente",
+        "nome": "Gocce di cioccolato fondente",
+        "categoria": "dolci",
+        "unita": "g",
+        "per100": {
+          "kcal": 500,
+          "cho": 60,
+          "proteine": 5,
+          "grassi": 27
+        },
+        "passo": 5,
+        "quantitaTipica": 5,
+        "sinonimi": [],
+        "usatoIn": [
+          "MAGG",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID",
+          "RID-latte",
+          "RID-soia",
+          "STD",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "maritozzo-con-panna",
+        "nome": "Maritozzo con panna",
+        "categoria": "dolci",
+        "unita": "g",
+        "per100": {
+          "kcal": 350,
+          "cho": 35,
+          "proteine": 6.5,
+          "grassi": 20
+        },
+        "passo": 10,
+        "quantitaTipica": 130,
+        "sinonimi": [
+          "maritozzo"
+        ],
+        "usatoIn": [
+          "D4"
+        ]
+      },
+      {
+        "id": "pastarelle",
+        "nome": "Pastarelle (bigne', cannoli, crostatine)",
+        "categoria": "dolci",
+        "unita": "g",
+        "per100": {
+          "kcal": 340,
+          "cho": 40,
+          "proteine": 6,
+          "grassi": 17
+        },
+        "passo": 10,
+        "quantitaTipica": 120,
+        "sinonimi": [
+          "paste mignon",
+          "pasticcini"
+        ],
+        "usatoIn": [
+          "D3"
+        ]
+      },
+      {
+        "id": "tiramisu",
+        "nome": "Tiramisu'",
+        "categoria": "dolci",
+        "unita": "g",
+        "per100": {
+          "kcal": 290,
+          "cho": 27,
+          "proteine": 6,
+          "grassi": 18
+        },
+        "passo": 10,
+        "quantitaTipica": 120,
+        "sinonimi": [],
+        "usatoIn": [
+          "D1"
+        ]
+      },
+      {
+        "id": "aglio-e-peperoncino",
+        "nome": "Aglio e peperoncino",
+        "categoria": "altro",
+        "unita": "g",
+        "per100": {
+          "kcal": 130,
+          "cho": 30,
+          "proteine": 6,
+          "grassi": 0.5
+        },
+        "passo": 1,
+        "quantitaTipica": 5,
+        "sinonimi": [
+          "aglio"
+        ],
+        "usatoIn": [
+          "P7"
+        ]
+      },
+      {
+        "id": "curry",
+        "nome": "Curry in polvere",
+        "categoria": "altro",
+        "unita": "g",
+        "per100": {
+          "kcal": 325,
+          "cho": 26,
+          "proteine": 14,
+          "grassi": 14
+        },
+        "passo": 1,
+        "quantitaTipica": 2,
+        "sinonimi": [
+          "spezie"
+        ],
+        "usatoIn": [
+          "P8",
+          "P8-fiocchi",
+          "P8-zuppa"
+        ]
+      },
+      {
+        "id": "prezzemolo-e-limone",
+        "nome": "Prezzemolo e limone",
+        "categoria": "altro",
+        "unita": "g",
+        "per100": {
+          "kcal": 30,
+          "cho": 5,
+          "proteine": 2,
+          "grassi": 0.5
+        },
+        "passo": 1,
+        "quantitaTipica": 10,
+        "sinonimi": [],
+        "usatoIn": [
+          "C8"
+        ]
+      },
+      {
+        "id": "proteine-in-polvere",
+        "nome": "Proteine in polvere (whey)",
+        "categoria": "altro",
+        "unita": "g",
+        "per100": {
+          "kcal": 380,
+          "cho": 6,
+          "proteine": 78,
+          "grassi": 6
+        },
+        "passo": 5,
+        "quantitaTipica": 15,
+        "sinonimi": [
+          "whey",
+          "proteine"
+        ],
+        "usatoIn": [
+          "B10",
+          "B10+",
+          "B10rid",
+          "B2",
+          "B2+",
+          "B2rid",
+          "B6",
+          "B6+",
+          "B6rid",
+          "B9",
+          "B9+",
+          "B9rid",
+          "MAGG-latte",
+          "MAGG-soia",
+          "RID-latte",
+          "RID-soia",
+          "SER-PB2",
+          "STD-latte",
+          "STD-soia"
+        ]
+      },
+      {
+        "id": "rosmarino-aglio-limone",
+        "nome": "Rosmarino, aglio, limone",
+        "categoria": "altro",
+        "unita": "g",
+        "per100": {
+          "kcal": 60,
+          "cho": 10,
+          "proteine": 2,
+          "grassi": 1
+        },
+        "passo": 1,
+        "quantitaTipica": 10,
+        "sinonimi": [],
+        "usatoIn": [
+          "C11"
+        ]
+      }
+    ]
+  },
   "disclaimer": "Piano alimentare a base settimanale, costruito sul programma di allenamento specifico dell'atleta. Non sostituisce il parere del medico curante."
 }

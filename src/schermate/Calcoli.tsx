@@ -172,6 +172,22 @@ export function Calcoli() {
           </p>
         </Sezione>
 
+        <Sezione titolo="Calcolatore del pasto">
+          <p>
+            Somma gli alimenti scelti con i valori per 100 g della banca dati ({dati.bancaAlimenti.alimenti.length} alimenti) e
+            confronta il totale con il pasto del piano (se manca, con la merenda media). Un valore e' fuori quando lo scarto
+            supera il piu' grande tra la percentuale e il minimo in grammi:
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            {Object.entries(regole.calcolatore.tolleranze).map(([n, t]) => (
+              <li key={n}>
+                {n === 'cho' ? 'CHO' : n}: ±{t.percento}%{'minimoGrammi' in t && t.minimoGrammi ? `, almeno ${t.minimoGrammi} g` : ''}
+              </li>
+            ))}
+          </ul>
+          <Nota>{regole.calcolatore._nota}</Nota>
+        </Sezione>
+
         <Sezione titolo="Proteine">
           <ul className="space-y-1">
             {Object.entries(dati.tipiGiornata).map(([tipo, info]) => (

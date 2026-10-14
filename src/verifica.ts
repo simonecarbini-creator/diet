@@ -83,6 +83,25 @@ export function verificaDati(dati: Dati, idExtra: string[] = []): string[] {
     errori.push(`spuntinoSerale.predefinito: "${serale.predefinito}" non trovato`)
   }
 
+  // Banca dati degli alimenti (calcolatore): codici unici, categorie note, valori plausibili.
+  const banca = dati.bancaAlimenti
+  const visti = new Set<string>()
+  for (const a of banca.alimenti) {
+    if (visti.has(a.id)) errori.push(`alimento ${a.id}: codice ripetuto`)
+    visti.add(a.id)
+    if (!banca.categorie.includes(a.categoria)) errori.push(`alimento ${a.id}: categoria "${a.categoria}" sconosciuta`)
+    if (!['g', 'ml', 'pz'].includes(a.unita)) errori.push(`alimento ${a.id}: unita' "${a.unita}" non valida`)
+    if (a.unita === 'pz' && !(a.grammiPerPezzo && a.grammiPerPezzo > 0)) errori.push(`alimento ${a.id}: manca il peso di un pezzo`)
+    const { kcal, cho, proteine, grassi } = a.per100
+    if ([kcal, cho, proteine, grassi].some((v) => v < 0) || cho + proteine + grassi > 100.5) {
+      errori.push(`alimento ${a.id}: valori per 100 g non plausibili`)
+    }
+    if (!(a.passo > 0) || !(a.quantitaTipica > 0)) errori.push(`alimento ${a.id}: passo o porzione tipica mancanti`)
+  }
+  for (const [n, t] of Object.entries(dati.regole.calcolatore.tolleranze)) {
+    if (!(t.percento >= 0)) errori.push(`regole.calcolatore.tolleranze.${n}: percentuale non valida`)
+  }
+
   // Le condizioni delle regole devono essere leggibili dall'app.
   const { regole } = dati
   errori.push(

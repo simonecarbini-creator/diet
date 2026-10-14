@@ -1,0 +1,356 @@
+// Calcolatore del pasto: si sceglie alimento per alimento, con la quantita' sulla rotella,
+// e il box in alto confronta in tempo reale kcal, CHO, proteine e grassi con il pasto del
+// piano (tolleranze in dati.json → regole.calcolatore). Rosso se un valore esce, sopra o sotto.
+import { useEffect, useState } from 'react'
+import {
+  confrontaObiettivo,
+  corrisponde,
+  gruppiAlimenti,
+  totaleComposto,
+  trovaAlimento,
+  unitaBreve,
+  valoriAlimento,
+  valoriSelettore,
+  type ConfrontoNutriente,
+  type Valori,
+  type VoceComposta,
+} from '../calcolatore'
+import { categorieAlimenti, type AlimentoBanca, type Nutriente } from '../dati'
+import { formatNumero, formatScarto } from '../formato'
+import { targetGiorno, valutaAlternativa, type PastoLibero } from '../giornata'
+import { BoxGiornata } from './BoxGiornata'
+import type { ContestoGiornata } from './PannelloScelta'
+import { SelettoreQuantita } from './SelettoreQuantita'
+
+const etichette: Record<Nutriente, string> = { kcal: 'kcal', cho: 'CHO', proteine: 'PRO', grassi: 'grassi' }
+const unitaNutriente = (n: Nutriente) => (n === 'kcal' ? '' : ' g')
+
+type Props = {
+  /** Es. "pranzo". */
+  nomeCategoria: string
+  /** Il pasto con cui confrontarsi: quello del piano (o la merenda media). */
+  obiettivo: { etichetta: string; valori: Partial<Valori> }
+  /** Id del pasto del piano (e della sua base): i suoi alimenti vengono per primi. */
+  idPasto: string[]
+  /** Id di tutti i pasti della stessa categoria: i loro alimenti vengono subito dopo. */
+  idCategoria: string[]
+  giornata?: ContestoGiornata
+  onUsa: (libero: PastoLibero) => void
+  onChiudi: () => void
+}
+
+function BoxObiettivo({ confronti, vuoto }: { confronti: ConfrontoNutriente[]; vuoto: boolean }) {
+  const fuori = confronti.filter((c) => c.esito !== 'dentro')
+  const stato = vuoto ? 'vuoto' : fuori.length > 0 ? 'fuori' : 'dentro'
+  return (
+    <div
+      className={`rounded-xl border-2 p-3 ${
+        stato === 'fuori' ? 'border-ko bg-ko/10' : stato === 'dentro' ? 'border-ok bg-ok/10' : 'border-bordo bg-sfondo'
+      }`}
+    >
+      <div className="grid grid-cols-4 gap-2 text-center">
+        {confronti.map((c) => (
+          <div key={c.nutriente}>
+            <div className="text-xs font-semibold uppercase opacity-70">{etichette[c.nutriente]}</div>
+            <div
+              className={`font-bold leading-tight tabular-nums ${c.nutriente === 'cho' ? 'text-2xl text-cho' : 'text-xl'} ${
+                !vuoto && c.esito !== 'dentro' ? 'text-ko' : ''
+              }`}
+            >
+              {formatNumero(c.attuale)}
+            </div>
+            <div className="text-xs tabular-nums opacity-70">
+              / {formatNumero(c.obiettivo)}
+              {unitaNutriente(c.nutriente)}
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className={`mt-2 text-sm font-semibold ${stato === 'fuori' ? 'text-ko' : stato === 'dentro' ? 'text-ok' : 'opacity-70'}`}>
+        {stato === 'vuoto'
+          ? 'Aggiungi gli alimenti: i totali crescono qui.'
+          : stato === 'dentro'
+            ? '✓ Nel target del pasto'
+            : `✗ ${fuori
+                .map((c) => `${etichette[c.nutriente]} ${formatScarto(c.scarto, c.nutriente === 'kcal' ? 'kcal' : 'g')}`)
+                .join(' · ')}`}
+      </p>
+    </div>
+  )
+}
+
+/** Foglio con la rotella: quantita' e valori di quell'alimento, poi Aggiungi o Togli. */
+function SceltaQuantita({
+  alimento,
+  iniziale,
+  gia,
+  onConferma,
+  onTogli,
+  onChiudi,
+}: {
+  alimento: AlimentoBanca
+  iniziale: number
+  gia: boolean
+  onConferma: (quantita: number) => void
+  onTogli: () => void
+  onChiudi: () => void
+}) {
+  const [quantita, setQuantita] = useState(iniziale)
+  const v = valoriAlimento(alimento, quantita)
+  const unita = unitaBreve(alimento)
+  return (
+    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/50" onClick={onChiudi}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={alimento.nome}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-xl rounded-t-2xl bg-superficie px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-bold leading-snug">{alimento.nome}</h3>
+            <p className="text-xs opacity-70">
+              per 100 {alimento.unita === 'ml' ? 'ml' : 'g'}: {formatNumero(alimento.per100.cho)} g CHO ·{' '}
+              {formatNumero(alimento.per100.kcal)} kcal
+              {alimento.unita === 'pz' && ` · 1 pz = ${formatNumero(alimento.grammiPerPezzo ?? 0)} g`}
+            </p>
+          </div>
+          <button type="button" onClick={onChiudi} aria-label="Chiudi" className="-mr-2 -mt-2 flex h-11 w-11 shrink-0 items-center justify-center text-2xl">
+            ✕
+          </button>
+        </div>
+        {alimento.nota && <p className="mt-1 text-xs opacity-70">{alimento.nota}</p>}
+
+        <div className="mt-3">
+          <SelettoreQuantita valori={valoriSelettore(alimento)} valore={quantita} unita={unita} onCambia={setQuantita} />
+        </div>
+
+        <div className="mt-3 grid grid-cols-4 gap-2 rounded-xl bg-sfondo p-2 text-center">
+          {(['cho', 'kcal', 'proteine', 'grassi'] as const).map((n) => (
+            <div key={n}>
+              <div className="text-xs font-semibold uppercase opacity-70">{etichette[n]}</div>
+              <div className={`font-bold tabular-nums ${n === 'cho' ? 'text-2xl text-cho' : 'text-lg'}`}>{formatNumero(Math.round(v[n]))}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className={`mt-3 grid gap-2 ${gia ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          {gia && (
+            <button type="button" onClick={onTogli} className="rounded-xl border border-ko p-3.5 font-semibold text-ko">
+              Togli
+            </button>
+          )}
+          <button type="button" onClick={() => onConferma(quantita)} className="rounded-xl bg-cho p-3.5 text-lg font-bold text-white">
+            {gia ? 'Aggiorna' : 'Aggiungi'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, giornata, onUsa, onChiudi }: Props) {
+  const [voci, setVoci] = useState<VoceComposta[]>([])
+  const [cerca, setCerca] = useState('')
+  const [categoria, setCategoria] = useState<string | null>(null)
+  const [aperto, setAperto] = useState<AlimentoBanca | null>(null)
+
+  // Sotto il calcolatore la pagina non deve scorrere.
+  useEffect(() => {
+    const precedente = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = precedente
+    }
+  }, [])
+
+  const totale = totaleComposto(voci)
+  const confronti = confrontaObiettivo(obiettivo.valori, totale)
+  const inRicerca = cerca.trim().length >= 2
+  const filtra = (a: AlimentoBanca) => (!categoria || a.categoria === categoria) && (!inRicerca || corrisponde(a, cerca))
+  const gruppi = gruppiAlimenti(idPasto, idCategoria)
+    .map((g) => ({ ...g, alimenti: g.alimenti.filter(filtra) }))
+    .filter((g) => g.alimenti.length > 0)
+  const titoli = {
+    pasto: `Nel pasto ${obiettivo.etichetta}`,
+    categoria: `Negli altri pasti (${nomeCategoria})`,
+    altri: 'Altri alimenti',
+  }
+  const quantitaDi = (id: string) => voci.find((v) => v.id === id)?.quantita
+  const target = giornata ? targetGiorno(giornata.piano) : null
+
+  function usa() {
+    const testo = voci
+      .map((v) => {
+        const a = trovaAlimento(v.id)
+        return a ? `${a.nome} ${formatNumero(v.quantita)} ${unitaBreve(a)}` : ''
+      })
+      .filter(Boolean)
+      .join(' · ')
+    onUsa({
+      testo,
+      kcal: Math.round(totale.kcal),
+      cho: Math.round(totale.cho),
+      proteine: Math.round(totale.proteine),
+      grassi: Math.round(totale.grassi),
+      composto: voci,
+    })
+  }
+
+  return (
+    <div role="dialog" aria-modal="true" aria-label={`Componi il ${nomeCategoria}`} className="fixed inset-0 z-[60] flex flex-col bg-sfondo">
+      <header className="shrink-0 border-b border-bordo bg-superficie px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-bold">Componi il pasto</h2>
+            <p className="text-sm opacity-70">
+              Obiettivo: {obiettivo.etichetta}. Rosso se un valore esce dalla tolleranza, sopra o sotto.
+            </p>
+          </div>
+          <button type="button" onClick={onChiudi} aria-label="Chiudi" className="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-2xl">
+            ✕
+          </button>
+        </div>
+        <div className="mt-2">
+          <BoxObiettivo confronti={confronti} vuoto={voci.length === 0} />
+        </div>
+      </header>
+
+      <div className="flex-1 overflow-y-auto px-4 py-3">
+        {voci.length > 0 && (
+          <section className="mb-4">
+            <h3 className="mb-1 text-xs font-semibold uppercase opacity-70">Nel piatto</h3>
+            <ul className="divide-y divide-bordo rounded-xl border border-bordo bg-superficie">
+              {voci.map((v) => {
+                const a = trovaAlimento(v.id)
+                if (!a) return null
+                return (
+                  <li key={v.id} className="flex items-center gap-2 pl-3">
+                    <button type="button" onClick={() => setAperto(a)} className="flex min-w-0 flex-1 items-center gap-3 py-2.5 text-left">
+                      <span className="min-w-0 flex-1 truncate font-medium">{a.nome}</span>
+                      <span className="shrink-0 tabular-nums opacity-70">
+                        {formatNumero(v.quantita)} {unitaBreve(a)}
+                      </span>
+                      <span className="w-16 shrink-0 text-right font-bold tabular-nums text-cho">
+                        {formatNumero(Math.round(valoriAlimento(a, v.quantita).cho))} g
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setVoci(voci.filter((x) => x.id !== v.id))}
+                      aria-label={`Togli ${a.nome}`}
+                      className="flex h-11 w-10 shrink-0 items-center justify-center opacity-50"
+                    >
+                      ✕
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+            {target && giornata && (
+              <BoxGiornata
+                titolo="La giornata con questo pasto"
+                totale={valutaAlternativa(giornata.senzaQuesto, { cho: Math.round(totale.cho), kcal: Math.round(totale.kcal) }, target)}
+                target={target}
+              />
+            )}
+          </section>
+        )}
+
+        <label className="relative block">
+          <span className="sr-only">Cerca un alimento</span>
+          <input
+            type="search"
+            value={cerca}
+            onChange={(e) => setCerca(e.target.value)}
+            placeholder="Cerca un alimento…"
+            className="block w-full rounded-xl border border-bordo bg-superficie py-3 pl-10 pr-3 outline-none focus:border-cho"
+          />
+          <svg viewBox="0 0 24 24" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 opacity-50" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+        </label>
+        <div className="-mx-4 mt-2 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {[null, ...categorieAlimenti()].map((c) => (
+            <button
+              key={c ?? 'tutte'}
+              type="button"
+              aria-pressed={categoria === c}
+              onClick={() => setCategoria(c)}
+              className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm ${
+                categoria === c ? 'border-cho bg-cho text-white' : 'border-bordo bg-superficie'
+              }`}
+            >
+              {c ?? 'tutte'}
+            </button>
+          ))}
+        </div>
+
+        {gruppi.length === 0 && <p className="mt-4 text-sm opacity-70">Nessun alimento trovato.</p>}
+        {gruppi.map((g) => (
+          <section key={g.titolo} className="mt-4">
+            <h3 className="mb-1 text-xs font-semibold uppercase opacity-70">{titoli[g.titolo]}</h3>
+            <ul className="divide-y divide-bordo rounded-xl border border-bordo bg-superficie">
+              {g.alimenti.map((a) => {
+                const q = quantitaDi(a.id)
+                return (
+                  <li key={a.id}>
+                    <button type="button" onClick={() => setAperto(a)} className="flex w-full items-center gap-3 px-3 py-2.5 text-left">
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-medium leading-snug">{a.nome}</span>
+                        <span className="block text-xs opacity-70">
+                          {formatNumero(a.per100.cho)} g CHO · {formatNumero(a.per100.kcal)} kcal per 100 {a.unita === 'ml' ? 'ml' : 'g'}
+                        </span>
+                      </span>
+                      {q !== undefined ? (
+                        <span className="shrink-0 rounded-full bg-cho px-2.5 py-1 text-sm font-bold text-white tabular-nums">
+                          ✓ {formatNumero(q)} {unitaBreve(a)}
+                        </span>
+                      ) : (
+                        <span className="shrink-0 text-2xl leading-none text-cho" aria-hidden="true">
+                          +
+                        </span>
+                      )}
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
+
+      <footer className="shrink-0 border-t border-bordo bg-superficie px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
+        <button
+          type="button"
+          disabled={voci.length === 0}
+          onClick={usa}
+          className="w-full rounded-xl bg-cho p-4 text-lg font-bold text-white disabled:opacity-40"
+        >
+          {voci.length === 0 ? 'Scegli almeno un alimento' : `Usa per oggi · ${formatNumero(Math.round(totale.cho))} g CHO`}
+        </button>
+      </footer>
+
+      {aperto && (
+        <SceltaQuantita
+          key={aperto.id}
+          alimento={aperto}
+          iniziale={quantitaDi(aperto.id) ?? aperto.quantitaTipica}
+          gia={quantitaDi(aperto.id) !== undefined}
+          onChiudi={() => setAperto(null)}
+          onTogli={() => {
+            setVoci(voci.filter((x) => x.id !== aperto.id))
+            setAperto(null)
+          }}
+          onConferma={(quantita) => {
+            const esiste = voci.some((x) => x.id === aperto.id)
+            setVoci(esiste ? voci.map((x) => (x.id === aperto.id ? { ...x, quantita } : x)) : [...voci, { id: aperto.id, quantita }])
+            setAperto(null)
+          }}
+        />
+      )}
+    </div>
+  )
+}
