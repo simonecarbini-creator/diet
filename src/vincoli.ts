@@ -2,7 +2,8 @@
 // - regole.vincoliSettimanali con "pasti" e "minimo"/"massimo" (es. pesce grasso C2 o P9
 //   almeno 3 volte; carne P13 o C13 al massimo 1 volta in totale);
 // - soloTipiGiornata e incompatibileCon sui singoli pranzi e cene.
-import { dati, trovaPasto, type Giorno, type Vincolo } from './dati'
+import { dati, trovaPasto, type CategoriaConId, type Giorno, type Vincolo } from './dati'
+import { comeLibero, type PastoLibero } from './giornata'
 import { formatDataBreve } from './formato'
 
 export type EsitoVincolo = {
@@ -14,8 +15,39 @@ export type EsitoVincolo = {
   dettaglio?: string
 }
 
-/** Pranzo e cena effettivi di un giorno; null se non contano (es. pasto libero). */
-export type PastiDelGiorno = { pranzo: string | null; cena: string | null }
+/**
+ * Pranzo e cena effettivi di un giorno; null se non c'e' un pasto del piano (es. pasto libero).
+ * Per i pasti composti con il calcolatore, gli alimenti scelti (codici della banca dati).
+ */
+export type PastiDelGiorno = {
+  pranzo: string | null
+  cena: string | null
+  alimenti?: { pranzo?: string[]; cena?: string[] }
+}
+
+/** Pranzo e cena effettivi dal piano e dallo stato del giorno (sostituzioni, pasti liberi o composti). */
+export function pastiEffettiviDi(
+  giorno: Giorno,
+  stato?: { scelte: Partial<Record<CategoriaConId, string>>; liberi?: Partial<Record<string, string | PastoLibero>> },
+): PastiDelGiorno {
+  const libero = (c: 'pranzo' | 'cena') => {
+    const l = stato?.liberi?.[c]
+    return l === undefined ? undefined : comeLibero(l)
+  }
+  const composti = (c: 'pranzo' | 'cena') => libero(c)?.composto?.map((v) => v.id)
+  return {
+    pranzo: libero('pranzo') !== undefined ? null : (stato?.scelte.pranzo ?? giorno.pranzo),
+    cena: libero('cena') !== undefined ? null : (stato?.scelte.cena ?? giorno.cena),
+    alimenti: { pranzo: composti('pranzo'), cena: composti('cena') },
+  }
+}
+
+/** Il vincolo riguarda questo alimento in questo pasto? (dati.json: alimenti e alimentiNeiPasti) */
+function contaAlimento(vincolo: Vincolo, pasto: string, alimenti: string[] | undefined): boolean {
+  if (!vincolo.alimenti || !alimenti?.length) return false
+  if (vincolo.alimentiNeiPasti && !vincolo.alimentiNeiPasti.includes(pasto)) return false
+  return alimenti.some((id) => vincolo.alimenti?.includes(id))
+}
 
 export type ConteggioVincolo = {
   vincolo: Vincolo
@@ -57,11 +89,16 @@ export function conteggiVincoli(
 ): Record<string, ConteggioVincolo> {
   const conteggi: Record<string, ConteggioVincolo> = {}
   for (const vincolo of vincoliConLimite()) {
-    const occorrenze = giorni.flatMap((g) =>
-      basiDelGiorno(pastiDelGiorno(g))
-        .filter((id) => vincolo.pasti?.includes(id))
-        .map(() => g.data),
-    )
+    // Pranzo e cena contano una volta ciascuno: per il pasto del piano o per gli alimenti composti.
+    const occorrenze = giorni.flatMap((g) => {
+      const p = pastiDelGiorno(g)
+      return (['pranzo', 'cena'] as const)
+        .filter((c) => {
+          const id = p[c]
+          return (id !== null && vincolo.pasti?.includes(idBase(c, id))) || contaAlimento(vincolo, c, p.alimenti?.[c])
+        })
+        .map(() => g.data)
+    })
     conteggi[vincolo.id] = { vincolo, volte: occorrenze.length, giorni: [...new Set(occorrenze)], ...limiti(vincolo) }
   }
   return conteggi
@@ -150,4 +187,47 @@ export function frazioneLimite(conteggio: ConteggioVincolo, volte = conteggio.vo
 
 export function oltreMassimo(conteggio: ConteggioVincolo, volte = conteggio.volte): boolean {
   return conteggio.massimo !== undefined && volte > conteggio.massimo
+}
+
+// --- Calcolatore: alimenti che andrebbero contro il piano ---------------------------
+
+export type AvvisoAlimento = { livello: 'sconsigliato' | 'info'; testo: string }
+
+export type ContestoAvvisi = {
+  categoria: CategoriaConId
+  tipoGiorno: string
+  tipoDomani?: string
+  /** Conteggi dei vincoli negli altri giorni della settimana (pranzi e cene). */
+  conteggiAltri?: Record<string, ConteggioVincolo>
+}
+
+const prima = (t: string) => t.charAt(0).toUpperCase() + t.slice(1)
+const volteTesto = (n: number) => `${n} ${n === 1 ? 'volta' : 'volte'}`
+
+/**
+ * Per un alimento del calcolatore, le regole della settimana che lo riguardano in questo pasto:
+ * sconsigliato se supererebbe un massimo, se il tipo di giornata non e' ammesso o se e' la sera
+ * prima di un giorno che lo esclude; un'informazione se conta per un minimo (es. omega-3).
+ */
+export function avvisiAlimento(alimentoId: string, contesto: ContestoAvvisi): AvvisoAlimento[] {
+  const avvisi: AvvisoAlimento[] = []
+  for (const v of dati.regole.vincoliSettimanali) {
+    if (!contaAlimento(v, contesto.categoria, [alimentoId])) continue
+    const nome = nomeVincolo(v)
+    const volte = contesto.conteggiAltri?.[v.id]?.volte ?? 0
+    if (v.massimo !== undefined && contesto.conteggiAltri && volte + 1 > v.massimo) {
+      avvisi.push({ livello: 'sconsigliato', testo: `${nome}: gia' ${volteTesto(volte)} questa settimana (massimo ${v.massimo})` })
+    }
+    if (v.soloTipiGiornata && !v.soloTipiGiornata.includes(contesto.tipoGiorno)) {
+      avvisi.push({ livello: 'sconsigliato', testo: `${nome}: solo nei giorni ${v.soloTipiGiornata.join(' e ')}` })
+    }
+    if (v.seraPrimaDiTipo && contesto.categoria === 'cena' && contesto.tipoDomani === v.seraPrimaDiTipo) {
+      avvisi.push({ livello: 'sconsigliato', testo: prima(v.regola) })
+    }
+    if (v.minimo !== undefined && contesto.conteggiAltri) {
+      const stato = volte >= v.minimo ? `gia' raggiunto: ${volte} su ${v.minimo}` : `${volte} su ${v.minimo}`
+      avvisi.push({ livello: 'info', testo: `${nome}: conta per il minimo (${stato} negli altri giorni)` })
+    }
+  }
+  return avvisi
 }

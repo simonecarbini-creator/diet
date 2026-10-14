@@ -52,6 +52,8 @@ type Props = {
   tipoGiorno: string
   /** Pranzi e cene: i vincoli settimanali contati negli altri giorni della settimana. */
   conteggiAltri?: Record<string, ConteggioVincolo>
+  /** Tipo del giorno dopo: per le regole della sera prima (es. crucifere prima di un ROSSO). */
+  tipoDomani?: string
   /** Per dire dove arriva la giornata con ogni alternativa. */
   giornata?: ContestoGiornata
   onScegli: (id: string | null) => void
@@ -81,6 +83,7 @@ export function PannelloScelta({
   voce,
   tipoGiorno,
   conteggiAltri,
+  tipoDomani,
   giornata,
   onScegli,
   onLibero,
@@ -426,6 +429,7 @@ export function PannelloScelta({
           idPasto={riferimento ? [riferimento.id, ...(riferimento.base ? [riferimento.base] : [])] : []}
           idCategoria={pasti.map((p) => p.id)}
           giornata={giornata}
+          contestoAvvisi={{ categoria, tipoGiorno, tipoDomani, conteggiAltri }}
           onChiudi={() => setCalcolatore(false)}
           onUsa={(libero) => {
             setCalcolatore(false)

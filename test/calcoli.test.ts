@@ -20,7 +20,7 @@ import { proponiSettimana, type GiornoInserito } from '../src/motore'
 import { verificaDati } from '../src/verifica'
 import { formatScarto } from '../src/formato'
 import { confrontaObiettivo, gruppiAlimenti, totaleComposto, valoriAlimento, trovaAlimento, valoriSelettore, corrisponde } from '../src/calcolatore'
-import { conteggiVincoli, controllaVincoli } from '../src/vincoli'
+import { avvisiAlimento, conteggiVincoli, controllaVincoli, pastiEffettiviDi } from '../src/vincoli'
 
 function giorno(data: string) {
   const trovato = cercaGiorno(data)
@@ -51,7 +51,8 @@ describe('valori dei pasti: quelli mostrati sono quelli di dati.json', () => {
   it.each([
     ['colazione', 'STD', 90, 700],
     ['colazione', 'MAGG', 121, 840],
-    ['colazione', 'RID', 62, 590],
+    // Correzioni del nutrizionista del 2026-10-14 (somma degli alimenti con la banca dati).
+    ['colazione', 'RID', 59, 540],
     ['colazione', 'B1', 95, 680],
     ['colazione', 'B1+', 125, 822],
     ['colazione', 'B1rid', 71, 562],
@@ -59,15 +60,16 @@ describe('valori dei pasti: quelli mostrati sono quelli di dati.json', () => {
     ['pranzo', 'P1', 166, 1090],
     ['pranzo', 'P1rid', 116, 840],
     // P3+ corretto il 2026-10-10: +100 g di patate = +16 g CHO su P3 (108), non +25.
-    ['pranzo', 'P3+', 124, 1110],
-    ['pranzo', 'P2rid', 84, 730],
-    ['pranzo', 'P3rid', 70, 850],
-    ['pranzo', 'P8-zuppa', 167, 1130],
-    ['pranzo', 'P8-fiocchi', 150, 1090],
-    ['cena', 'C1rid', 64, 680],
+    ['pranzo', 'P3+', 122, 980],
+    ['pranzo', 'P2rid', 85, 710],
+    ['pranzo', 'P3rid', 68, 720],
+    ['pranzo', 'P8-zuppa', 164, 1100],
+    // P8-fiocchi: 140 g di riso + 280 g di ceci + 100 g di fiocchi di latte = 169 g, non 150.
+    ['pranzo', 'P8-fiocchi', 169, 1040],
+    ['cena', 'C1rid', 60, 650],
     ['cena', 'C2rid', 50, 670],
-    ['cena', 'C3', 79, 770],
-    ['cena', 'C3+', 99, 870],
+    ['cena', 'C3', 80, 840],
+    ['cena', 'C3+', 102, 950],
     ['merenda', 'M2', 62, 360],
     ['merenda', 'Mrid', 18, 155],
     ['merenda', 'Mrid-yogurt', 23, 190],
@@ -95,27 +97,30 @@ describe('valori dei pasti: quelli mostrati sono quelli di dati.json', () => {
 })
 
 describe('totali della giornata', () => {
-  it('lunedì 5 ottobre: 368 g CHO e 2755 kcal di pasti, merenda da scegliere', () => {
+  // Solo frutto corretto a 80 kcal (era 95): 2755 - 15 = 2740.
+  it('lunedì 5 ottobre: 368 g CHO e 2740 kcal di pasti, merenda da scegliere', () => {
     const totali = totaliPasti(vociDelGiorno(giorno('2026-10-05')))
     expect(totali.cho).toBe(368)
-    expect(totali.kcal).toBe(2755)
+    expect(totali.kcal).toBe(2740)
     expect(totali.pastiMancanti).toEqual(['merenda'])
   })
 
   // Spuntino serale predefinito SER-PB2 (27 g, 320 kcal): 2 g e 20 kcal più dello yogurt (25 g, 300 kcal).
-  it('venerdì 9 ottobre con P1, C3+ e SER-PB2: 429 g CHO e 3345 kcal', () => {
+  // C3+ corretta a 102 g e 950 kcal (era 99 / 870): 429 + 3 = 432, 3345 + 80 = 3425.
+  it('venerdì 9 ottobre con P1, C3+ e SER-PB2: 432 g CHO e 3425 kcal', () => {
     const totali = totaliPasti(vociDelGiorno(giorno('2026-10-09')))
-    expect(totali.cho).toBe(429)
-    expect(totali.kcal).toBe(3345)
+    expect(totali.cho).toBe(432)
+    expect(totali.kcal).toBe(3425)
   })
 
-  // Mrid 155 kcal (era 160), C1rid 680 (era 640), P1 con la passata (+60): 2625 - 5 + 40 + 60 = 2720.
-  it('sabato 10 ottobre (GRIGIO): niente pre-corsa, 358 g CHO e 2720 kcal', () => {
+  // Con le correzioni del 14 ottobre: C1rid 60 g e 650 kcal (era 64 / 680), solo frutto 80 kcal (era 95):
+  // 358 - 4 = 354 g, 2720 - 30 - 15 = 2675 kcal.
+  it('sabato 10 ottobre (GRIGIO): niente pre-corsa, 354 g CHO e 2675 kcal', () => {
     const voci = vociDelGiorno(giorno('2026-10-10'))
     expect(voci.some((v) => v.categoria === 'preCorsa')).toBe(false)
     const totali = totaliPasti(voci)
-    expect(totali.cho).toBe(358)
-    expect(totali.kcal).toBe(2720)
+    expect(totali.cho).toBe(354)
+    expect(totali.kcal).toBe(2675)
   })
 
   it('una merenda scelta entra nel totale', () => {
@@ -166,14 +171,14 @@ describe('target quando si cambia un pasto', () => {
     const voci = vociDelGiorno(giorno('2026-10-05'))
     const senza = totaliSenza(voci, 'pranzo')
 
-    it('senza pranzo: 277 g CHO e 2093 kcal (merenda stimata compresa)', () => {
-      expect(senza).toEqual({ cho: 368 - 148 + 57, kcal: 2755 - 1030 + 368 })
+    it('senza pranzo: 277 g CHO e 2078 kcal (merenda stimata compresa)', () => {
+      expect(senza).toEqual({ cho: 368 - 148 + 57, kcal: 2740 - 1030 + 368 })
     })
 
     it.each([
       ['P2', 425, true],
       ['P1', 443, true],
-      ['P3', 385, false],
+      ['P3', 383, false],
       ['P4', 402, false],
       ['P8', 457, false],
     ] as const)('%s porta la giornata a %i g CHO (nel target: %s)', (id, cho, nel) => {
@@ -288,11 +293,11 @@ describe('sgarri (al posto di pranzo o cena)', () => {
     expect(idAlternative('cena')).not.toContain('D1')
     expect(idAlternative('pranzo')).not.toContain('D1')
   })
-  // Piano con M2: 430 g CHO, 3115 kcal. Con S1 al posto di C4 (85 g, 820 kcal): 462 g e 3305 kcal,
-  // oltre il 5% (tolleranza 409–452 g e 2959–3271 kcal).
+  // Piano con M2: 430 g CHO, 3100 kcal. Con S1 al posto di C4 (85 g, 820 kcal): 462 g e 3290 kcal,
+  // oltre il 5% (tolleranza 409–452 g e 2945–3255 kcal).
   it('pizza a cena al posto di C4, tutto spuntato: non rispettato (462 g su 430)', () => {
-    const r = valutaAlternativa(totaliSenza(vociDelGiorno(lunedi, { merenda: 'M2' }), 'cena'), trovaPasto('cena', 'S1')!, targetGiorno({ cho: 430, kcal: 3115 }))
-    expect(r).toMatchObject({ cho: 462, kcal: 3305 })
+    const r = valutaAlternativa(totaliSenza(vociDelGiorno(lunedi, { merenda: 'M2' }), 'cena'), trovaPasto('cena', 'S1')!, targetGiorno({ cho: 430, kcal: 3100 }))
+    expect(r).toMatchObject({ cho: 462, kcal: 3290 })
     expect(esitoGiorno(lunedi, { scelte: { merenda: 'M2', cena: 'S1' }, consumati: tutti }).esito).toBe('nonRispettato')
   })
   it('una sostituzione normale (C10 al posto di C4), tutto spuntato: resta rispettato', () => {
@@ -306,9 +311,9 @@ describe('proteine delle versioni ridotte e maggiorate', () => {
     ['pranzo', 'P2rid', 40],
     ['pranzo', 'P3rid', 53],
     ['pranzo', 'P3+', 60],
-    ['cena', 'C1rid', 46],
+    ['cena', 'C1rid', 48],
     ['cena', 'C2rid', 43],
-    ['cena', 'C3+', 42],
+    ['cena', 'C3+', 43],
   ] as const)('%s %s: %i g', (categoria, id, proteine) => {
     expect(trovaPasto(categoria, id)?.proteine).toBe(proteine)
   })
@@ -320,9 +325,9 @@ describe('proteine delle versioni ridotte e maggiorate', () => {
 })
 
 describe('correzioni del 10 ottobre', () => {
-  // 1 ottobre (pranzo P3+): 403 - 9 = 394 g CHO, 3240 - 20 = 3220 kcal nel calendario.
-  it('1 ottobre con P3+: calendario 394 g CHO e 3220 kcal', () => {
-    expect(giorno('2026-10-01')).toMatchObject({ cho: 394, kcal: 3220 })
+  // 1 ottobre (pranzo P3+): 394 - 2 = 392 g CHO, 3220 - 130 = 3090 kcal (P3+ corretto il 14 ottobre).
+  it('1 ottobre con P3+: calendario 392 g CHO e 3090 kcal', () => {
+    expect(giorno('2026-10-01')).toMatchObject({ cho: 392, kcal: 3090 })
   })
   it('P8-zuppa senza olio aggiunto e P8-fiocchi senza la nota della zuppa', () => {
     expect(trovaPasto('pranzo', 'P8-zuppa')?.alimenti.map((a) => a.nome)).not.toContain('Olio EVO')
@@ -338,15 +343,15 @@ describe('versioni calcolate il 10 ottobre (prima solo nel testo)', () => {
     ['pranzo', 'P4-ricotta', 1040, 131, 44],
     ['cena', 'C4-ricotta', 860, 93, 37],
     ['cena', 'C4-pecora', 790, 92, 33],
-    ['cena', 'C5-zuppa', 870, 85, 38],
+    ['cena', 'C5-zuppa', 850, 87, 37],
     ['cena', 'S4+', 1100, 125, 63],
     ['colazione', 'COL-SG-crema', 370, 43, 9],
     ['colazione', 'STD-latte', 780, 98, 39],
     ['colazione', 'STD-soia', 740, 84, 39],
     ['colazione', 'MAGG-latte', 920, 129, 41],
     ['colazione', 'MAGG-soia', 880, 115, 41],
-    ['colazione', 'RID-latte', 670, 70, 35],
-    ['colazione', 'RID-soia', 630, 56, 35],
+    ['colazione', 'RID-latte', 620, 67, 36],
+    ['colazione', 'RID-soia', 590, 53, 36],
   ] as const)('%s %s: %i kcal, %i g CHO, %i g pro', (categoria, id, kcal, cho, proteine) => {
     expect(idAlternative(categoria)).toContain(id)
     expect(trovaPasto(categoria, id)).toMatchObject({ kcal, cho, proteine })
@@ -375,8 +380,8 @@ describe('merenda ridotta', () => {
     expect(trovaPasto('merenda', 'Mrid')).toMatchObject({ proteine: 7, versione: 'ridotto' })
     expect(trovaPasto('merenda', 'Mrid-yogurt')).toMatchObject({ kcal: 190, cho: 23, proteine: 13, versione: 'ridotto' })
   })
-  it('sabato 10 con Mrid-yogurt: 5 g CHO in più (363 g)', () => {
-    expect(totaliPasti(vociDelGiorno(giorno('2026-10-10'), { merenda: 'Mrid-yogurt' })).cho).toBe(363)
+  it('sabato 10 con Mrid-yogurt: 5 g CHO in più (359 g invece di 354)', () => {
+    expect(totaliPasti(vociDelGiorno(giorno('2026-10-10'), { merenda: 'Mrid-yogurt' })).cho).toBe(359)
   })
 })
 
@@ -398,21 +403,21 @@ describe('spuntino serale', () => {
     expect(serale?.pasto?.id).toBe('SER-PB2')
     expect(serale?.idPiano).toBe('SER-PB2')
   })
-  // 9 ottobre (ROSSO, con spuntino serale): pasti 429 g con SER-PB2. Con SER-SAL (17 g al posto di 27): 419 g.
-  it('scelto al posto del piano cambia i totali del giorno (9 ottobre: 429 → 419 g)', () => {
+  // 9 ottobre (ROSSO, con spuntino serale): pasti 432 g con SER-PB2. Con SER-SAL (17 g al posto di 27): 422 g.
+  it('scelto al posto del piano cambia i totali del giorno (9 ottobre: 432 → 422 g)', () => {
     const venerdi = giorno('2026-10-09')
-    expect(totaliPasti(vociDelGiorno(venerdi)).cho).toBe(429)
-    expect(totaliPasti(vociDelGiorno(venerdi, { spuntinoSerale: 'SER-SAL' })).cho).toBe(419)
+    expect(totaliPasti(vociDelGiorno(venerdi)).cho).toBe(432)
+    expect(totaliPasti(vociDelGiorno(venerdi, { spuntinoSerale: 'SER-SAL' })).cho).toBe(422)
   })
 })
 
 describe('proteine del piano nella vista settimanale', () => {
-  it('dal calendario quando le riporta: 9 ottobre 167 g', () => {
-    expect(proteineDelPiano(giorno('2026-10-09'))).toBe(167)
+  it('dal calendario quando le riporta: 9 ottobre 168 g', () => {
+    expect(proteineDelPiano(giorno('2026-10-09'))).toBe(168)
   })
-  it('settimana creata nell\'app senza il campo: somma dei pasti (9 ottobre: 168 g con SER-PB2)', () => {
+  it('settimana creata nell\'app senza il campo: somma dei pasti (9 ottobre: 169 g con SER-PB2)', () => {
     const { proteine: _p, ...senza } = giorno('2026-10-09')
-    expect(proteineDelPiano(senza as ReturnType<typeof giorno>)).toBe(168)
+    expect(proteineDelPiano(senza as ReturnType<typeof giorno>)).toBe(169)
   })
   it.each([
     [142, 'VERDE', 'sopra', 7],
@@ -428,23 +433,23 @@ describe('proteine del piano nella vista settimanale', () => {
   it('5 ottobre (merenda da scegliere): 142 g', () => {
     expect(proteineDelPiano(giorno('2026-10-05'))).toBe(142)
   })
-  // 10 ottobre (GRIGIO, niente pre-corsa): STD 37 + solo frutto 1 + P1 41 + Mrid 7 + C1rid 46 = 132.
-  it('10 ottobre (merenda Mrid assegnata): 132 g, nel target GRIGIO 120-135', () => {
-    expect(proteineDelPiano(giorno('2026-10-10'))).toBe(132)
-    expect(confrontoProteine(132, 'GRIGIO')?.esito).toBe('dentro')
+  // 10 ottobre (GRIGIO, niente pre-corsa): STD 37 + solo frutto 1 + P1 41 + Mrid 7 + C1rid 48 = 134.
+  it('10 ottobre (merenda Mrid assegnata): 134 g, nel target GRIGIO 120-135', () => {
+    expect(proteineDelPiano(giorno('2026-10-10'))).toBe(134)
+    expect(confrontoProteine(134, 'GRIGIO')?.esito).toBe('dentro')
   })
 })
 
-describe('dolci aggiunti a un pasto (5 ottobre, merenda M2: piano 430 g CHO, 3115 kcal)', () => {
+describe('dolci aggiunti a un pasto (5 ottobre, merenda M2: piano 430 g CHO, 3100 kcal)', () => {
   const lunedi = giorno('2026-10-05')
   const tutti = vociDelGiorno(lunedi).map((v) => v.categoria)
 
   it('la coppa al cacao con panna Milk: valori per 100 g dall\'etichetta', () => {
     expect(dolci().find((d) => d.id === 'D2')).toMatchObject({ kcal: 93, cho: 16, proteine: 1 })
   })
-  it('tiramisu a cena (32 g, 350 kcal): la giornata sale a 462 g e 3465 kcal', () => {
+  it('tiramisu a cena (32 g, 350 kcal): la giornata sale a 462 g e 3450 kcal', () => {
     const totali = totaliPasti(vociDelGiorno(lunedi, { merenda: 'M2' }, {}, { cena: 'D1' }))
-    expect([totali.cho, totali.kcal]).toEqual([462, 3465])
+    expect([totali.cho, totali.kcal]).toEqual([462, 3450])
   })
   it('cambiando la cena il dolce resta: senza C4 (85 g) ma con il tiramisu, 377 g', () => {
     expect(totaliSenza(vociDelGiorno(lunedi, { merenda: 'M2' }, {}, { cena: 'D1' }), 'cena').cho).toBe(377)
@@ -539,8 +544,9 @@ describe('settimana 6 (12-18 ottobre)', () => {
     ['2026-10-13', 3565, 470, 145],
     ['2026-10-14', 3585, 468, 150],
     ['2026-10-15', 3275, 416, 138],
-    ['2026-10-16', 3710, 485, 150],
-    ['2026-10-17', 2710, 344, 129],
+    // 16: C3+ corretta (+3 g CHO, +80 kcal, +1 g pro); 17: solo frutto 80 kcal (-15).
+    ['2026-10-16', 3790, 488, 151],
+    ['2026-10-17', 2695, 344, 129],
     ['2026-10-18', 3710, 496, 149],
   ] as const)('%s: somma dei pasti = calendario (%i kcal, %i g CHO, %i g pro)', (data, kcal, cho, proteine) => {
     const g = settimana6.giorni.find((x) => x.data === data)!
@@ -661,5 +667,39 @@ describe('calcolatore del pasto', () => {
     const categorie: CategoriaConId[] = ['colazione', 'spuntino', 'pranzo', 'merenda', 'cena', 'spuntinoSerale']
     const senza = categorie.flatMap((c) => idAlternative(c).filter((id) => trovaPasto(c, id)?.grassi === undefined))
     expect(senza).toEqual([])
+  })
+})
+
+describe('calcolatore: alimenti sconsigliati dalle regole della settimana (settimana 6)', () => {
+  const settimana6 = dati.settimane.find((x) => x.numero === 6)!
+  const altri = (data: string, stati: Record<string, Parameters<typeof pastiEffettiviDi>[1]> = {}) =>
+    conteggiVincoli(settimana6.giorni.filter((g) => g.data !== data), (g) => pastiEffettiviDi(g, stati[g.data]))
+
+  it('carne: nessun P13 o C13 in settimana, il pollo a pranzo giovedi\' 15 va bene', () => {
+    const c = { categoria: 'pranzo' as const, tipoGiorno: 'VERDE', conteggiAltri: altri('2026-10-15') }
+    expect(avvisiAlimento('petto-di-pollo', c)).toEqual([])
+  })
+  it('un pasto composto con il pollo conta come carne: il secondo pollo della settimana e\' sconsigliato', () => {
+    const composto = { scelte: {}, liberi: { cena: { testo: 'pollo', composto: [{ id: 'petto-di-pollo', quantita: 180 }] } } }
+    const conteggi = altri('2026-10-15', { '2026-10-12': composto })
+    expect(conteggi.carne.volte).toBe(1)
+    const a = avvisiAlimento('petto-di-pollo', { categoria: 'pranzo', tipoGiorno: 'VERDE', conteggiAltri: conteggi })
+    expect(a).toEqual([{ livello: 'sconsigliato', testo: "Carne: gia' 1 volta questa settimana (massimo 1)" }])
+  })
+  it('crucifere: sconsigliate a cena lunedi\' 12 (domani ROSSO), non a pranzo', () => {
+    const cena = avvisiAlimento('broccoli', { categoria: 'cena', tipoGiorno: 'VERDE', tipoDomani: 'ROSSO', conteggiAltri: altri('2026-10-12') })
+    expect(cena.map((x) => x.livello)).toEqual(['sconsigliato'])
+    expect(avvisiAlimento('broccoli', { categoria: 'pranzo', tipoGiorno: 'VERDE', tipoDomani: 'ROSSO' })).toEqual([])
+  })
+  it('formaggio a cena: sconsigliato martedi\' 13 (ROSSO), non lunedi\' 12 (VERDE) ne\' a pranzo', () => {
+    const rosso = avvisiAlimento('mozzarella', { categoria: 'cena', tipoGiorno: 'ROSSO', conteggiAltri: altri('2026-10-13') })
+    expect(rosso).toEqual([{ livello: 'sconsigliato', testo: 'Formaggio (C4): solo nei giorni VERDE e GRIGIO' }])
+    expect(avvisiAlimento('mozzarella', { categoria: 'cena', tipoGiorno: 'VERDE', conteggiAltri: altri('2026-10-12') })).toEqual([])
+    expect(avvisiAlimento('mozzarella', { categoria: 'pranzo', tipoGiorno: 'ROSSO' })).toEqual([])
+  })
+  // Pesce grasso nella settimana 6: C2 lunedi', mercoledi' e C2rid sabato = 3; senza sabato 2.
+  it('salmone a cena sabato 17: informazione sul minimo omega-3 (2 su 3 negli altri giorni)', () => {
+    const a = avvisiAlimento('salmone-fresco', { categoria: 'cena', tipoGiorno: 'GRIGIO', conteggiAltri: altri('2026-10-17') })
+    expect(a).toEqual([{ livello: 'info', testo: 'Pesce grasso (omega-3): conta per il minimo (2 su 3 negli altri giorni)' }])
   })
 })

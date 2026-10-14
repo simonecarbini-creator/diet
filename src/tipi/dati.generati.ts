@@ -420,6 +420,7 @@ export type Regole = {
     assegnazionePasti:         AssegnazionePasti;
     vincoliSettimanali:        VincoliSettimanali[];
     calcolatore:               Calcolatore;
+    _notaAlimenti:             string;
 }
 
 export type AssegnazionePasti = {
@@ -611,7 +612,10 @@ export type VincoliSettimanali = {
     motivo?:           string;
     pasti?:            string[];
     minimo?:           number;
+    alimenti?:         string[];
+    alimentiNeiPasti?: string[];
     massimo?:          number;
+    soloTipiGiornata?: string[];
     seraPrimaDiTipo?:  string;
     verdure?:          string[];
     categoriaVerdure?: string;

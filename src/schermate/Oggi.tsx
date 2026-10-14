@@ -9,7 +9,7 @@ import { formatData, formatNumero } from '../formato'
 import { cercaGiorno, confrontoProteine, giornataEquivalente, proteineDelPiano, giornoDopo, indicePastoCorrente, totaliPasti, totaliSenza, vociDelGiorno } from '../giornata'
 import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
 import { settimane } from '../piano'
-import { conteggiVincoli, vincoliSeraPrima, type PastiDelGiorno } from '../vincoli'
+import { conteggiVincoli, pastiEffettiviDi, vincoliSeraPrima, type PastiDelGiorno } from '../vincoli'
 import type { ContestoSettimana } from '../componenti/CardPasto'
 import { dati, isCategoriaConId, isTipoGiornata, type CategoriaPasto } from '../dati'
 
@@ -67,13 +67,7 @@ export function Oggi({ data, ora, passato = false }: Props) {
 
   // Pranzi e cene della settimana (con sostituzioni salvate, senza i pasti liberi)
   // per i contatori dei vincoli settimanali (pesce grasso, formaggio, carne).
-  const pastiEffettivi = (g: typeof giorno): PastiDelGiorno => {
-    const s = g.data === data ? stato : statiAltri[g.data]
-    return {
-      pranzo: s?.liberi?.pranzo !== undefined ? null : (s?.scelte.pranzo ?? g.pranzo),
-      cena: s?.liberi?.cena !== undefined ? null : (s?.scelte.cena ?? g.cena),
-    }
-  }
+  const pastiEffettivi = (g: typeof giorno): PastiDelGiorno => pastiEffettiviDi(g, g.data === data ? stato : statiAltri[g.data])
   const tipoDomani = cercaGiorno(giornoDopo(data))?.giorno.tipo
   const contesto: ContestoSettimana = {
     conteggi: conteggiVincoli(giorniSettimana, pastiEffettivi),

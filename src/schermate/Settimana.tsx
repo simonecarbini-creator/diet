@@ -10,7 +10,7 @@ import { confrontoProteine, esitoGiorno, proteineDelPiano } from '../giornata'
 import { NumeroProteine } from '../componenti/NumeriPasto'
 import { BadgeEsito } from '../componenti/BadgeEsito'
 import { useStatiGiorni, type StatoGiorno } from '../statoGiorno'
-import { controllaVincoli } from '../vincoli'
+import { controllaVincoli, pastiEffettiviDi } from '../vincoli'
 
 /** La settimana richiesta, altrimenti quella che contiene oggi, altrimenti l'ultima. */
 function scegliSettimana(numero: number | null, oggi: string): TipoSettimana | undefined {
@@ -167,15 +167,7 @@ export function Settimana({ numero, oggi }: Props) {
   const indice = elenco.indexOf(settimana)
   const precedente = elenco[indice - 1]
   const successiva = elenco[indice + 1]
-  const pastiEffettivi = Object.fromEntries(
-    giorni.map((g) => [
-      g.data,
-      {
-        pranzo: stati[g.data]?.liberi?.pranzo !== undefined ? null : (stati[g.data]?.scelte.pranzo ?? g.pranzo),
-        cena: stati[g.data]?.liberi?.cena !== undefined ? null : (stati[g.data]?.scelte.cena ?? g.cena),
-      },
-    ]),
-  )
+  const pastiEffettivi = Object.fromEntries(giorni.map((g) => [g.data, pastiEffettiviDi(g, stati[g.data])]))
   const esiti = controllaVincoli(giorni, pastiEffettivi)
   const cambiamenti = giorni.some((g) => Object.keys(stati[g.data]?.scelte ?? {}).length > 0)
 

@@ -186,6 +186,12 @@ export function Calcoli() {
             ))}
           </ul>
           <Nota>{regole.calcolatore._nota}</Nota>
+          <p>
+            Gli alimenti legati alle regole della settimana sono segnalati: sconsigliati se supererebbero un massimo (es.
+            carne), se il tipo di giornata non li ammette (es. formaggio a cena nei giorni ROSSO) o la sera prima di un
+            giorno che li esclude (es. crucifere); con un'indicazione se contano per un minimo (es. pesce grasso). Un pasto
+            composto con quegli alimenti conta nei vincoli della settimana come i pasti del piano.
+          </p>
         </Sezione>
 
         <Sezione titolo="Proteine">

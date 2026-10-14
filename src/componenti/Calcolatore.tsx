@@ -21,6 +21,7 @@ import { targetGiorno, valutaAlternativa, type PastoLibero } from '../giornata'
 import { BoxGiornata } from './BoxGiornata'
 import type { ContestoGiornata } from './PannelloScelta'
 import { SelettoreQuantita } from './SelettoreQuantita'
+import { avvisiAlimento, type AvvisoAlimento, type ContestoAvvisi } from '../vincoli'
 
 const etichette: Record<Nutriente, string> = { kcal: 'kcal', cho: 'CHO', proteine: 'PRO', grassi: 'grassi' }
 const unitaNutriente = (n: Nutriente) => (n === 'kcal' ? '' : ' g')
@@ -35,6 +36,8 @@ type Props = {
   /** Id di tutti i pasti della stessa categoria: i loro alimenti vengono subito dopo. */
   idCategoria: string[]
   giornata?: ContestoGiornata
+  /** Per segnalare gli alimenti che andrebbero contro le regole della settimana. */
+  contestoAvvisi?: ContestoAvvisi
   onUsa: (libero: PastoLibero) => void
   onChiudi: () => void
 }
@@ -79,11 +82,27 @@ function BoxObiettivo({ confronti, vuoto }: { confronti: ConfrontoNutriente[]; v
   )
 }
 
+/** Le regole della settimana che riguardano l'alimento: sconsigliato (rosso) o informazione (verde). */
+function Avvisi({ avvisi, compatti = false }: { avvisi: AvvisoAlimento[]; compatti?: boolean }) {
+  if (avvisi.length === 0) return null
+  return (
+    <span className={`block ${compatti ? 'text-xs' : 'mt-2 space-y-1 text-sm'}`}>
+      {avvisi.map((a) => (
+        <span key={a.testo} className={`block font-semibold ${a.livello === 'sconsigliato' ? 'text-ko' : 'text-ok'}`}>
+          {a.livello === 'sconsigliato' ? '⚠ Sconsigliato: ' : '✓ '}
+          {a.testo}
+        </span>
+      ))}
+    </span>
+  )
+}
+
 /** Foglio con la rotella: quantita' e valori di quell'alimento, poi Aggiungi o Togli. */
 function SceltaQuantita({
   alimento,
   iniziale,
   gia,
+  avvisi,
   onConferma,
   onTogli,
   onChiudi,
@@ -91,6 +110,7 @@ function SceltaQuantita({
   alimento: AlimentoBanca
   iniziale: number
   gia: boolean
+  avvisi: AvvisoAlimento[]
   onConferma: (quantita: number) => void
   onTogli: () => void
   onChiudi: () => void
@@ -121,6 +141,7 @@ function SceltaQuantita({
           </button>
         </div>
         {alimento.nota && <p className="mt-1 text-xs opacity-70">{alimento.nota}</p>}
+        <Avvisi avvisi={avvisi} />
 
         <div className="mt-3">
           <SelettoreQuantita valori={valoriSelettore(alimento)} valore={quantita} unita={unita} onCambia={setQuantita} />
@@ -150,7 +171,7 @@ function SceltaQuantita({
   )
 }
 
-export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, giornata, onUsa, onChiudi }: Props) {
+export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, giornata, contestoAvvisi, onUsa, onChiudi }: Props) {
   const [voci, setVoci] = useState<VoceComposta[]>([])
   const [cerca, setCerca] = useState('')
   const [categoria, setCategoria] = useState<string | null>(null)
@@ -169,8 +190,14 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
   const confronti = confrontaObiettivo(obiettivo.valori, totale)
   const inRicerca = cerca.trim().length >= 2
   const filtra = (a: AlimentoBanca) => (!categoria || a.categoria === categoria) && (!inRicerca || corrisponde(a, cerca))
+  const avvisiDi = (id: string) => (contestoAvvisi ? avvisiAlimento(id, contestoAvvisi) : [])
+  const sconsigliato = (id: string) => avvisiDi(id).some((a) => a.livello === 'sconsigliato')
+  // In ogni gruppo gli alimenti sconsigliati vanno in fondo (restano sceglibili).
   const gruppi = gruppiAlimenti(idPasto, idCategoria)
-    .map((g) => ({ ...g, alimenti: g.alimenti.filter(filtra) }))
+    .map((g) => ({
+      ...g,
+      alimenti: g.alimenti.filter(filtra).sort((a, b) => Number(sconsigliato(a.id)) - Number(sconsigliato(b.id))),
+    }))
     .filter((g) => g.alimenti.length > 0)
   const titoli = {
     pasto: `Nel pasto ${obiettivo.etichetta}`,
@@ -228,7 +255,10 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
                 return (
                   <li key={v.id} className="flex items-center gap-2 pl-3">
                     <button type="button" onClick={() => setAperto(a)} className="flex min-w-0 flex-1 items-center gap-3 py-2.5 text-left">
-                      <span className="min-w-0 flex-1 truncate font-medium">{a.nome}</span>
+                      <span className="min-w-0 flex-1 truncate font-medium">
+                        {sconsigliato(a.id) && <span className="text-ko">⚠ </span>}
+                        {a.nome}
+                      </span>
                       <span className="shrink-0 tabular-nums opacity-70">
                         {formatNumero(v.quantita)} {unitaBreve(a)}
                       </span>
@@ -303,6 +333,7 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
                         <span className="block text-xs opacity-70">
                           {formatNumero(a.per100.cho)} g CHO · {formatNumero(a.per100.kcal)} kcal per 100 {a.unita === 'ml' ? 'ml' : 'g'}
                         </span>
+                        <Avvisi avvisi={avvisiDi(a.id)} compatti />
                       </span>
                       {q !== undefined ? (
                         <span className="shrink-0 rounded-full bg-cho px-2.5 py-1 text-sm font-bold text-white tabular-nums">
@@ -339,6 +370,7 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
           alimento={aperto}
           iniziale={quantitaDi(aperto.id) ?? aperto.quantitaTipica}
           gia={quantitaDi(aperto.id) !== undefined}
+          avvisi={avvisiDi(aperto.id)}
           onChiudi={() => setAperto(null)}
           onTogli={() => {
             setVoci(voci.filter((x) => x.id !== aperto.id))

@@ -334,6 +334,7 @@ export function CardPasto({
           voce={voce}
           tipoGiorno={tipoGiorno}
           conteggiAltri={settimana?.conteggiAltri}
+          tipoDomani={settimana?.tipoDomani}
           giornata={giornata}
           onChiudi={() => setPannello(false)}
           onLibero={(libero) => {
