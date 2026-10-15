@@ -7,10 +7,12 @@ import { useBloccoScorrimento } from '../bloccoScorrimento'
 import { useEffect, useState } from 'react'
 import { dati, idAlternative, trovaPasto, type CategoriaConId, type PastoRisolto } from '../dati'
 import { formatNumero, formatScarto } from '../formato'
-import { merendaMedia, targetGiorno, valutaAlternativa, type PastoLibero, type VocePasto } from '../giornata'
+import { targetGiorno, valutaAlternativa, type PastoLibero, type VocePasto } from '../giornata'
 import { BoxGiornata } from './BoxGiornata'
 import { Calcolatore } from './Calcolatore'
+import { obiettivoDi } from '../calcolatore'
 import { RiassuntoAlimenti } from './Alimenti'
+import { EtichettaProteina } from './EtichettaProteina'
 import { NumeriPasto } from './NumeriPasto'
 import { RigaScorrevole } from './RigaScorrevole'
 import { conteggiDelPasto, frazioneLimite, nomeVincolo, oltreMassimo, type ConteggioVincolo } from '../vincoli'
@@ -187,6 +189,7 @@ export function PannelloScelta({
                   </span>
                 )}
                 <span className="rounded bg-bordo px-1.5 py-0.5 text-xs font-semibold">{opzione.id}</span>
+                <EtichettaProteina tipo={opzione.proteina} />
                 {!opzione.composizione && <span className="font-semibold">{opzione.nome}</span>}
                 {opzione.id === voce.idPiano && (
                   <span className="rounded-full border border-current px-2 py-0.5 text-xs font-semibold uppercase">nel piano</span>
@@ -198,12 +201,18 @@ export function PannelloScelta({
               {opzione.composizione && <p className="mt-1 font-medium leading-snug">{opzione.composizione}</p>}
             </div>
             <div className="shrink-0 text-right">
-              <NumeriPasto cho={opzione.cho} proteine={opzione.proteine} />
-              {riferimento && opzione.id !== riferimento.id && (
-                <div className="mt-0.5 text-xs text-testo opacity-70">
-                  {diff === 0 ? `come ${riferimento.id}` : `${formatScarto(diff, 'g')} di ${riferimento.id}`}
-                </div>
-              )}
+              {/* La differenza dal pasto del piano riguarda i CHO: sta sotto i CHO, prima delle proteine. */}
+              <NumeriPasto
+                cho={opzione.cho}
+                proteine={opzione.proteine}
+                sottoCho={
+                  riferimento && opzione.id !== riferimento.id
+                    ? diff === 0
+                      ? `stessi CHO di ${riferimento.id}`
+                      : `${formatScarto(diff, 'g CHO')} di ${riferimento.id}`
+                    : undefined
+                }
+              />
             </div>
           </div>
 
@@ -408,19 +417,7 @@ export function PannelloScelta({
       {calcolatore && (
         <Calcolatore
           nomeCategoria={nomeCategoria}
-          obiettivo={
-            riferimento
-              ? {
-                  etichetta: `${riferimento.id} del piano`,
-                  valori: {
-                    kcal: riferimento.kcal,
-                    cho: riferimento.cho,
-                    ...(riferimento.proteine !== null ? { proteine: riferimento.proteine } : {}),
-                    ...(riferimento.grassi !== undefined ? { grassi: riferimento.grassi } : {}),
-                  },
-                }
-              : { etichetta: 'merenda media', valori: merendaMedia() }
-          }
+          obiettivo={obiettivoDi(riferimento)}
           idPasto={riferimento ? [riferimento.id, ...(riferimento.base ? [riferimento.base] : [])] : []}
           idCategoria={pasti.map((p) => p.id)}
           giornata={giornata}

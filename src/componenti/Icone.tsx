@@ -1,5 +1,5 @@
 // Icone in SVG (a linea da Lucide, licenza ISC; bilancia fornita dall'utente): prendono il colore del testo.
-import { useId } from 'react'
+import { useId, type ReactNode } from 'react'
 
 type Props = { className?: string; spessore?: number }
 
@@ -79,6 +79,65 @@ export function IconaUguale({ className = 'h-4 w-4', spessore = 2 }: Props) {
     <svg {...base} strokeWidth={spessore} className={className}>
       <path d="M5 9h14" />
       <path d="M5 15h14" />
+    </svg>
+  )
+}
+
+/**
+ * Fonte proteica del pasto (dati.json → tipiProteina): vasetto di yogurt, spicchio di formaggio,
+ * coscia di pollo, pesce, legumi, uovo, mandorla. Disegnate a linea come le altre.
+ */
+export function IconaProteina({ tipo, className = 'h-3.5 w-3.5' }: { tipo: string; className?: string }) {
+  const disegni: Record<string, ReactNode> = {
+    latticini: (
+      <>
+        <path d="M5 4h14v3H5z" />
+        <path d="M6 7l1.5 13h9L18 7" />
+        <path d="M8.5 12h7" />
+      </>
+    ),
+    formaggio: (
+      <>
+        <path d="M3 17l8-11 10 4v7H3z" />
+        <path d="M3 17l8-11" />
+        <circle cx="12.5" cy="13" r="1.2" />
+        <circle cx="17" cy="14.5" r="0.9" />
+      </>
+    ),
+    carne: (
+      <>
+        <ellipse cx="15" cy="9" rx="6" ry="4.5" transform="rotate(-45 15 9)" />
+        <path d="M11 13l-4 4" />
+        <circle cx="5.4" cy="17.2" r="1.6" />
+        <circle cx="6.8" cy="18.6" r="1.6" />
+      </>
+    ),
+    pesce: (
+      <>
+        <path d="M3 12c2.5-4 7-5.5 11.5-4.5 2 .5 3.5 2 4.5 4.5-1 2.5-2.5 4-4.5 4.5C10 17.5 5.5 16 3 12z" />
+        <path d="M19 12l3-3v6z" />
+        <circle cx="7.5" cy="11" r="0.6" />
+      </>
+    ),
+    legumi: (
+      <>
+        <ellipse cx="7" cy="14" rx="3" ry="4" transform="rotate(-20 7 14)" />
+        <ellipse cx="14" cy="8.5" rx="3" ry="4" transform="rotate(25 14 8.5)" />
+        <ellipse cx="16.5" cy="17" rx="3" ry="3.5" />
+      </>
+    ),
+    uova: <path d="M12 3c3.5 0 6.5 5.5 6.5 10a6.5 6.5 0 0 1-13 0C5.5 8.5 8.5 3 12 3z" />,
+    fruttaSecca: (
+      <>
+        <path d="M12 3c4 3 6 7 4.5 11.5C15.5 18 13 21 12 21s-3.5-3-4.5-6.5C6 10 8 6 12 3z" />
+        <path d="M12 7v10" />
+      </>
+    ),
+  }
+  if (!disegni[tipo]) return null
+  return (
+    <svg {...base} strokeWidth={2} className={className}>
+      {disegni[tipo]}
     </svg>
   )
 }

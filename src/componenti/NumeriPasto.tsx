@@ -10,9 +10,11 @@ type Props = {
   /** Testo al posto dei CHO quando mancano: "—" o "ND". */
   mancante?: string
   grande?: boolean
+  /** Riga piccola sotto i CHO, es. "5 g in meno di C2" (riguarda i CHO). */
+  sottoCho?: string
 }
 
-export function NumeriPasto({ cho, proteine, mancante = '—', grande = false }: Props) {
+export function NumeriPasto({ cho, proteine, mancante = '—', grande = false, sottoCho }: Props) {
   return (
     <div className="shrink-0 text-right">
       <div className="text-cho">
@@ -20,6 +22,7 @@ export function NumeriPasto({ cho, proteine, mancante = '—', grande = false }:
           {cho === null ? mancante : formatNumero(cho)}
         </div>
         <div className="text-xs font-semibold">g CHO</div>
+        {sottoCho && <div className="whitespace-nowrap text-xs font-normal text-testo opacity-70">{sottoCho}</div>}
       </div>
       {proteine !== null && <NumeroProteine proteine={proteine} />}
     </div>

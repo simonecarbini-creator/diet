@@ -6,7 +6,7 @@ import { dati, isTipoGiornata, type Giorno, type Settimana as TipoSettimana } fr
 import { formatDataBreve, formatGiornoMese, formatNumero } from '../formato'
 import { link } from '../navigazione'
 import { settimane } from '../piano'
-import { confrontoProteine, esitoGiorno, proteineDelPiano } from '../giornata'
+import { confrontoProteine, esitoGiorno, esitoTarget, proteineDelPiano } from '../giornata'
 import { NumeroProteine } from '../componenti/NumeriPasto'
 import { BadgeEsito } from '../componenti/BadgeEsito'
 import { useStatiGiorni, type StatoGiorno } from '../statoGiorno'
@@ -48,6 +48,25 @@ function Riepilogo({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGiorn
     )
   }
   return <BadgeEsito esito={esito} />
+}
+
+/** Giorni conclusi: ✓ verde se con i pasti effettivi la giornata e' rimasta nel target, ✗ rossa se no. */
+function SegnoTarget({ giorno, stato }: { giorno: Giorno; stato?: StatoGiorno }) {
+  const { esito, cho } = esitoTarget(giorno, stato)
+  const stile = {
+    dentro: { classe: 'bg-ok text-white', segno: '✓', testo: `nel target (${cho} g CHO)` },
+    fuori: { classe: 'bg-ko text-white', segno: '✕', testo: `fuori target (${cho} g CHO su ${giorno.cho})` },
+    nd: { classe: 'bg-bordo text-testo', segno: '?', testo: 'un pasto libero senza valori' },
+  }[esito]
+  return (
+    <span
+      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-sm font-bold ${stile.classe}`}
+      title={stile.testo}
+      aria-label={stile.testo}
+    >
+      {stile.segno}
+    </span>
+  )
 }
 
 /** Riflettore: appena si arriva, oggi si illumina e gli altri giorni si spengono per un attimo. */
@@ -96,6 +115,7 @@ function RigaGiorno({
         />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
+            {giorno.data < oggi && <SegnoTarget giorno={giorno} stato={stato} />}
             <span className="font-bold first-letter:uppercase">{formatDataBreve(giorno.data)}</span>
             <span
               className="rounded px-1.5 py-0.5 text-xs font-semibold text-white"
@@ -204,6 +224,7 @@ export function Settimana({ numero, oggi }: Props) {
       <p className="mt-2 text-xs opacity-70">
         Codici: colazione · pranzo · cena · merenda, poi spuntino serale e gel se previsti. CHO
         e kcal sono quelli del piano; anche le proteine, con ✓ dentro il target del tipo di giornata, ▲ sopra, ▼ sotto.{cambiamenti && ' * = cambiato per quel giorno.'}
+        {' Giorni conclusi: ✓ nel target con i pasti che hai scelto, ✕ fuori target.'}
         {diario && ' Pollice su: tutti i pasti spuntati · pollice giù: solo alcuni · ND: nessuno.'}
       </p>
 

@@ -11,7 +11,7 @@ import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
 import { settimane } from '../piano'
 import { conteggiVincoli, pastiEffettiviDi, vincoliSeraPrima, type PastiDelGiorno } from '../vincoli'
 import type { ContestoSettimana } from '../componenti/CardPasto'
-import { dati, isCategoriaConId, isTipoGiornata, type CategoriaPasto } from '../dati'
+import { dati, idAlternative, isCategoriaConId, isTipoGiornata, type CategoriaPasto } from '../dati'
 
 type Props = {
   data: string
@@ -195,8 +195,20 @@ export function Oggi({ data, ora, passato = false }: Props) {
       {giorno.note && <p className="mt-3 text-sm opacity-80">{giorno.note}</p>}
 
       <section className="mt-5 space-y-3">
-        {voci.map((voce, i) =>
-          voce.libero !== undefined ? (
+        {voci.map((voce, i) => {
+          const giornata = {
+            tipo: giorno.tipo,
+            ricarica: !!giorno.ricarica,
+            senzaQuesto: totaliSenza(voci, voce.categoria),
+            piano: { cho: giorno.cho, kcal: giorno.kcal },
+            merendaStimata:
+              voce.categoria !== 'merenda' && voci.some((v) => v.categoria === 'merenda' && !v.pasto && v.libero === undefined),
+            liberiSenzaValori: totaliPasti(voci.filter((v) => v.categoria !== voce.categoria)).pastiLiberi.length,
+          }
+          const settimanaDelPasto =
+            voce.categoria === 'cena' ? contesto : voce.categoria === 'pranzo' ? { ...contesto, promemoriaSera: [] } : undefined
+          const categoria = voce.categoria
+          return voce.libero !== undefined ? (
             <CardPastoLibero
               key={voce.categoria}
               voce={voce}
@@ -205,6 +217,21 @@ export function Oggi({ data, ora, passato = false }: Props) {
               onConsumato={(consumato) => segnaConsumato(voce.categoria, consumato)}
               onSalva={(libero) => pastoLibero(voce.categoria, libero)}
               onRipristina={ripristinaPasto}
+              calcolatore={
+                isCategoriaConId(categoria)
+                  ? {
+                      nomeCategoria: etichettePasti[categoria].toLowerCase(),
+                      idCategoria: idAlternative(categoria),
+                      giornata,
+                      contestoAvvisi: {
+                        categoria,
+                        tipoGiorno: giorno.tipo,
+                        tipoDomani: settimanaDelPasto?.tipoDomani,
+                        conteggiAltri: settimanaDelPasto?.conteggiAltri,
+                      },
+                    }
+                  : undefined
+              }
             />
           ) : (
           <CardPasto
@@ -213,23 +240,9 @@ export function Oggi({ data, ora, passato = false }: Props) {
             corrente={i === corrente}
             consumato={stato.consumati.includes(voce.categoria)}
             tipoGiorno={giorno.tipo}
-            settimana={
-              voce.categoria === 'cena'
-                ? contesto
-                : voce.categoria === 'pranzo'
-                  ? { ...contesto, promemoriaSera: [] }
-                  : undefined
-            }
+            settimana={settimanaDelPasto}
             nota={stato.note?.[voce.categoria]}
-            giornata={{
-              tipo: giorno.tipo,
-              ricarica: !!giorno.ricarica,
-              senzaQuesto: totaliSenza(voci, voce.categoria),
-              piano: { cho: giorno.cho, kcal: giorno.kcal },
-              merendaStimata:
-                voce.categoria !== 'merenda' && voci.some((v) => v.categoria === 'merenda' && !v.pasto && v.libero === undefined),
-              liberiSenzaValori: totaliPasti(voci.filter((v) => v.categoria !== voce.categoria)).pastiLiberi.length,
-            }}
+            giornata={giornata}
             onAnnota={(testo) => annota(voce.categoria, testo)}
             onConsumato={(consumato) => segnaConsumato(voce.categoria, consumato)}
             onScegli={(id) => {
@@ -243,8 +256,8 @@ export function Oggi({ data, ora, passato = false }: Props) {
                 : undefined
             }
           />
-          ),
-        )}
+          )
+        })}
       </section>
 
       {daTogliere && (

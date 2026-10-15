@@ -1,10 +1,16 @@
-// Pasto libero della giornata di sgarro: al posto del pasto del piano c'è quello che si
-// è mangiato davvero. Kcal, CHO e proteine sono facoltativi: senza, i CHO sono "ND".
+// Pasto al posto di quello del piano: libero (giornata libera, testo e valori facoltativi:
+// senza, i CHO sono "ND") o composto con il calcolatore (alimenti e quantita', valori sempre noti).
+// Il pasto composto si riconosce dal fondo azzurro, mostra i valori rispetto al pasto del piano
+// e si modifica riaprendo il calcolatore con gli stessi alimenti.
 import { useState } from 'react'
+import { confrontaObiettivo, obiettivoDi, type ConfrontoNutriente } from '../calcolatore'
 import type { CategoriaPasto } from '../dati'
 import { formatNumero } from '../formato'
 import { haValori, type PastoLibero, type VocePasto } from '../giornata'
+import type { ContestoAvvisi } from '../vincoli'
+import { Calcolatore } from './Calcolatore'
 import { NumeriPasto } from './NumeriPasto'
+import type { ContestoGiornata } from './PannelloScelta'
 import { bozzaDa, CampiPastoLibero, daBozza, type BozzaLibero } from './CampiPastoLibero'
 
 type Props = {
@@ -14,15 +20,49 @@ type Props = {
   onConsumato: (consumato: boolean) => void
   onSalva: (libero: PastoLibero) => void
   onRipristina: (categoria: CategoriaPasto) => void
+  /** Per riaprire il calcolatore su un pasto composto. */
+  calcolatore?: { nomeCategoria: string; idCategoria: string[]; giornata?: ContestoGiornata; contestoAvvisi?: ContestoAvvisi }
 }
 
-export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSalva, onRipristina }: Props) {
+const etichette = { kcal: 'kcal', cho: 'CHO', proteine: 'PRO', grassi: 'grassi' } as const
+const segni = { sopra: '▲', sotto: '▼', dentro: '✓' } as const
+
+/** Kcal, CHO, PRO e grassi del pasto composto, con il segno rispetto al pasto del piano. */
+function ValoriComposti({ confronti }: { confronti: ConfrontoNutriente[] }) {
+  return (
+    <div className="mx-4 mb-3 grid grid-cols-4 gap-1 rounded-lg bg-superficie/70 px-2 py-1.5 text-center text-xs">
+      {confronti.map((c) => (
+        <div key={c.nutriente}>
+          <div className="font-semibold uppercase opacity-60">{etichette[c.nutriente]}</div>
+          <div className="font-bold tabular-nums">
+            {formatNumero(c.attuale)}{' '}
+            <span
+              className={c.esito === 'dentro' ? 'text-ok' : c.esito === 'sopra' ? 'text-ko' : 'text-pro'}
+              aria-label={c.esito === 'dentro' ? 'nel target' : c.esito === 'sopra' ? 'sopra il piano' : 'sotto il piano'}
+            >
+              {segni[c.esito]}
+            </span>
+          </div>
+          <div className="tabular-nums opacity-60">/ {formatNumero(c.obiettivo)}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSalva, onRipristina, calcolatore }: Props) {
   const libero = voce.libero ?? { testo: '' }
   const daScrivere = libero.testo === ''
   const [bozza, setBozza] = useState<BozzaLibero | null>(daScrivere ? bozzaDa() : null)
   const [aperto, setAperto] = useState(false)
+  const [componi, setComponi] = useState(false)
+  const composto = libero.composto && libero.composto.length > 0 ? libero.composto : null
+  // Il pasto del piano con cui si confronta (sotto il pasto libero c'e' ancora quello previsto).
+  const delPiano = voce.delPiano ?? voce.pasto
+  const obiettivo = obiettivoDi(delPiano)
 
-  const apriModifica = () => setBozza(bozzaDa(libero))
+  // Un pasto composto si modifica con il calcolatore, gli altri con il testo.
+  const apriModifica = () => (composto && calcolatore ? setComponi(true) : setBozza(bozzaDa(libero)))
 
   if (bozza !== null) {
     return (
@@ -56,8 +96,22 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
   }
 
   const conValori = haValori(libero)
+  const confronti =
+    composto && conValori
+      ? confrontaObiettivo(obiettivo.valori, {
+          kcal: libero.kcal ?? 0,
+          cho: libero.cho ?? 0,
+          proteine: libero.proteine ?? 0,
+          grassi: libero.grassi ?? 0,
+        }).filter((c) => c.nutriente !== 'grassi' || libero.grassi !== undefined)
+      : null
   return (
-    <article id={`pasto-${voce.categoria}`} className="scroll-mt-20 rounded-xl border border-bordo bg-superficie">
+    <article
+      id={`pasto-${voce.categoria}`}
+      className={`scroll-mt-20 rounded-xl border ${
+        composto ? 'border-pro/40 bg-[color-mix(in_srgb,var(--pro)_7%,var(--superficie))]' : 'border-bordo bg-superficie'
+      }`}
+    >
       <div className="flex items-start">
         <button
           type="button"
@@ -84,14 +138,16 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
           <div className="min-w-0 flex-1">
             <div className="text-xs font-semibold uppercase tracking-wide opacity-70">
               {etichetta} ·{' '}
-              {libero.composto ? <span className="text-cho">composto</span> : <span className="text-ko">libero</span>}
+              {composto ? <span className="text-pro">composto da te</span> : <span className="text-ko">libero</span>}
             </div>
             {/* Il testo di un pasto composto puo' essere lungo: due righe, tutto quando si apre. */}
             <div className={`font-semibold leading-snug ${aperto ? '' : 'line-clamp-2'}`}>{libero.testo}</div>
             <div className="text-sm opacity-70">
-              {conValori
-                ? `${formatNumero(libero.kcal ?? 0)} kcal`
-                : `al posto di ${voce.pasto?.id ?? 'del pasto del piano'}`}
+              {composto
+                ? `al posto di ${delPiano?.id ?? 'del pasto del piano'}`
+                : conValori
+                  ? `${formatNumero(libero.kcal ?? 0)} kcal`
+                  : `al posto di ${voce.pasto?.id ?? 'del pasto del piano'}`}
             </div>
           </div>
           <NumeriPasto
@@ -102,6 +158,7 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
           />
         </button>
       </div>
+      {confronti && <ValoriComposti confronti={confronti} />}
       {aperto && (
         <div className="grid grid-cols-2 gap-2 border-t border-bordo px-4 pb-4 pt-3">
           <button type="button" onClick={apriModifica} className="rounded-xl border border-bordo p-2.5 font-medium">
@@ -111,6 +168,22 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
             Rimetti il pasto
           </button>
         </div>
+      )}
+      {componi && composto && calcolatore && (
+        <Calcolatore
+          nomeCategoria={calcolatore.nomeCategoria}
+          iniziali={composto}
+          obiettivo={obiettivo}
+          idPasto={delPiano ? [delPiano.id, ...(delPiano.base ? [delPiano.base] : [])] : []}
+          idCategoria={calcolatore.idCategoria}
+          giornata={calcolatore.giornata}
+          contestoAvvisi={calcolatore.contestoAvvisi}
+          onChiudi={() => setComponi(false)}
+          onUsa={(nuovo) => {
+            setComponi(false)
+            onSalva(nuovo)
+          }}
+        />
       )}
     </article>
   )

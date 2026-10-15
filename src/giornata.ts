@@ -338,3 +338,21 @@ export function valutaAlternativa(
   const kcalDentro = kcal >= target.kcal.da && kcal <= target.kcal.a
   return { cho, kcal, choDentro, kcalDentro, nelTarget: choDentro && kcalDentro }
 }
+
+export type EsitoTarget = 'dentro' | 'fuori' | 'nd'
+
+/**
+ * Giorno concluso: con i pasti effettivi (sostituzioni, pasti liberi o composti, dolci) la giornata
+ * resta nel target del piano (CHO e kcal entro la tolleranza)? 'nd' se c'e' un pasto libero senza
+ * valori. La merenda non scelta conta come merenda media, come nel totale del piano.
+ */
+export function esitoTarget(giorno: Giorno, stato?: StatoPerEsito): { esito: EsitoTarget; cho: number; kcal: number } {
+  const voci = vociDelGiorno(giorno, stato?.scelte ?? {}, stato?.liberi ?? {}, stato?.dolci ?? {})
+  const totali = totaliPasti(voci)
+  const stima = totali.pastiMancanti.includes('merenda') ? merendaMedia() : { cho: 0, kcal: 0 }
+  const cho = totali.cho + stima.cho
+  const kcal = totali.kcal + stima.kcal
+  if (totali.pastiLiberi.length > 0) return { esito: 'nd', cho, kcal }
+  const { nelTarget } = valutaAlternativa({ cho, kcal }, { cho: 0, kcal: 0 }, targetGiorno({ cho: giorno.cho, kcal: giorno.kcal }))
+  return { esito: nelTarget ? 'dentro' : 'fuori', cho, kcal }
+}

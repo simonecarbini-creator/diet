@@ -1,7 +1,8 @@
 // Calcolatore del pasto: si compone un pasto alimento per alimento (banca dati di dati.json)
 // e lo si confronta con il pasto del piano, nutriente per nutriente, con le tolleranze
 // di dati.json (regole.calcolatore). Nessun valore nutrizionale qui: solo i conti.
-import { alimentiBanca, dati, tolleranzeCalcolatore, type AlimentoBanca, type Nutriente } from './dati'
+import { alimentiBanca, dati, tolleranzeCalcolatore, type AlimentoBanca, type Nutriente, type PastoRisolto } from './dati'
+import { merendaMedia } from './giornata'
 import { formatNumero } from './formato'
 import { contiene } from './ricerca'
 
@@ -146,4 +147,20 @@ export function fasciaDelPasto(
 ): { cho: { da: number; a: number }; kcal: { da: number; a: number } } {
   const fascia = (t: { da: number; a: number }, altri: number) => ({ da: Math.max(0, t.da - altri), a: Math.max(0, t.a - altri) })
   return { cho: fascia(target.cho, senzaQuesto.cho), kcal: fascia(target.kcal, senzaQuesto.kcal) }
+}
+
+export type Obiettivo = { etichetta: string; valori: Partial<Valori> }
+
+/** Il pasto con cui confrontare quello composto: quello del piano, o la merenda media se non c'e'. */
+export function obiettivoDi(riferimento: PastoRisolto | null | undefined): Obiettivo {
+  if (!riferimento) return { etichetta: 'merenda media', valori: merendaMedia() }
+  return {
+    etichetta: `${riferimento.id} del piano`,
+    valori: {
+      kcal: riferimento.kcal,
+      cho: riferimento.cho,
+      ...(riferimento.proteine !== null ? { proteine: riferimento.proteine } : {}),
+      ...(riferimento.grassi !== undefined ? { grassi: riferimento.grassi } : {}),
+    },
+  }
 }

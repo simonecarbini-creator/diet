@@ -24,6 +24,7 @@ export type Dati = {
     settimane:             Settimane[];
     promemoriaGlicemico:   PromemoriaGlicemico[];
     controlli:             Controlli[];
+    tipiProteina:          TipiProteina;
     bancaAlimenti:         BancaAlimenti;
     disclaimer:            string;
 }
@@ -115,6 +116,7 @@ export type Colazioni = {
     tags:          string[];
     tipoColazione: string;
     orario?:       string;
+    proteina:      string;
     modifiche?:    string;
 }
 
@@ -146,14 +148,15 @@ export type PreCorsaAlimenti = {
 }
 
 export type Spuntini = {
-    id:       string;
-    nome:     string;
-    orario:   string;
-    kcal:     number;
-    cho:      number;
-    proteine: number;
-    alimenti: ModificheGrammiElement[];
-    grassi:   number;
+    id:        string;
+    nome:      string;
+    orario:    string;
+    kcal:      number;
+    cho:       number;
+    proteine:  number;
+    alimenti:  ModificheGrammiElement[];
+    grassi:    number;
+    proteina?: string;
 }
 
 export type ModificheGrammiElement = {
@@ -174,6 +177,7 @@ export type BlocchiSpuntinoSerale = {
     consigli:    string[];
     note:        string;
     grassi:      number;
+    proteina:    string;
 }
 
 export type SpuntinoSeraleAlternative = {
@@ -187,6 +191,7 @@ export type SpuntinoSeraleAlternative = {
     note:     string;
     tags:     string[];
     grassi:   number;
+    proteina: string;
 }
 
 export type AlternativeAlimenti = {
@@ -222,6 +227,7 @@ export type Cene = {
     alimenti:                     CeneAlimenti[];
     ridotto?:                     RidottoClass;
     grassi:                       number;
+    proteina:                     string;
     contaComeOmega3?:             boolean;
     note?:                        string;
     maggiorato?:                  RidottoClass;
@@ -249,6 +255,7 @@ export type RidottoClass = {
     modifiche:       string;
     modificheGrammi: ModificheGrammiElement[];
     grassi:          number;
+    proteina:        string;
 }
 
 export type CeneVarianti = {
@@ -260,6 +267,7 @@ export type CeneVarianti = {
     alimenti: DolciAlimenti[];
     note:     string;
     grassi:   number;
+    proteina: string;
 }
 
 export type DolciAlimenti = {
@@ -310,6 +318,7 @@ export type MerendaRidotta = {
     _nota:        string;
     alternative:  MerendaRidottaAlternative[];
     grassi:       number;
+    proteina:     string;
 }
 
 export type MerendaRidottaAlternative = {
@@ -319,6 +328,7 @@ export type MerendaRidottaAlternative = {
     proteine:     number;
     composizione: string;
     grassi:       number;
+    proteina:     string;
 }
 
 export type MerendaRidottaQuando = {
@@ -334,6 +344,7 @@ export type Merende = {
     composizione: string;
     tags:         string[];
     grassi:       number;
+    proteina?:    string;
 }
 
 export type OrariPasti = {
@@ -360,6 +371,7 @@ export type Pranzi = {
     note:                         string;
     _nota?:                       string;
     grassi:                       number;
+    proteina:                     string;
     tags?:                        string[];
     maggiorato?:                  PranziMaggiorato;
     categoria?:                   string;
@@ -384,6 +396,7 @@ export type PranziMaggiorato = {
     modificheGrammi: ModificheGrammiElement[];
     nota?:           string;
     grassi:          number;
+    proteina:        string;
     aggiunte?:       ModificheGrammiElement[];
 }
 
@@ -396,6 +409,7 @@ export type Ridotto = {
     modificheGrammi: ModificheGrammiElement[];
     rimozioni?:      string[];
     grassi:          number;
+    proteina:        string;
 }
 
 export type PranziVarianti = {
@@ -407,6 +421,7 @@ export type PranziVarianti = {
     alimenti: PreCorsaAlimenti[];
     note:     string;
     grassi:   number;
+    proteina: string;
 }
 
 export type PromemoriaGlicemico = {
@@ -666,17 +681,18 @@ export type Giorni = {
 }
 
 export type Sgarri = {
-    id:       string;
-    nome:     string;
-    momento:  string[];
-    kcal:     number;
-    cho:      number;
-    proteine: number;
-    alimenti: AlternativeAlimenti[];
-    note:     string;
-    tags:     string[];
-    grassi:   number;
-    base?:    string;
+    id:        string;
+    nome:      string;
+    momento:   string[];
+    kcal:      number;
+    cho:       number;
+    proteine:  number;
+    alimenti:  AlternativeAlimenti[];
+    note:      string;
+    tags:      string[];
+    grassi:    number;
+    proteina?: string;
+    base?:     string;
 }
 
 export type Sostituzioni = {
@@ -741,6 +757,17 @@ export type Grigio = {
     choTargetMax:      number;
     proteineTargetMin: number;
     proteineTargetMax: number;
+}
+
+export type TipiProteina = {
+    _nota:       string;
+    latticini:   string;
+    formaggio:   string;
+    carne:       string;
+    pesce:       string;
+    legumi:      string;
+    uova:        string;
+    fruttaSecca: string;
 }
 
 export type Verdure = {

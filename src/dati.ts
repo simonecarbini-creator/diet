@@ -44,6 +44,8 @@ export type PastoRisolto = {
   proteine: number | null
   /** Grassi del pasto (g): obiettivo del calcolatore. Assenti nelle alternative create nell'app. */
   grassi?: number
+  /** Fonte proteica principale (dati.json → tipiProteina): latticini, pesce, carne, legumi... */
+  proteina?: string
   /** Vuoto per le merende, che hanno solo `composizione`. */
   alimenti: Alimento[]
   composizione?: string
@@ -80,6 +82,7 @@ type Versione = {
   cho: number
   proteine?: number
   grassi?: number
+  proteina?: string
   modificheGrammi: { nome: string; grammi: number }[]
   rimozioni?: string[]
   /** Alimenti in piu' rispetto al pasto base (es. P14+: un frutto). */
@@ -142,6 +145,7 @@ function cercaConVersioni(elenco: ConVersioni[], id: string): PastoRisolto | nul
           cho: versione.cho,
           proteine: versione.proteine ?? null,
           grassi: versione.grassi,
+          proteina: versione.proteina ?? ('proteina' in pasto ? (pasto.proteina as string) : undefined),
           alimenti: applicaModifiche(pasto.alimenti, versione),
           notaVersione: versione.nota,
           versione: etichetta,
@@ -175,6 +179,7 @@ function trovaColazione(id: string): PastoRisolto | null {
     cho: colazione.cho,
     proteine: colazione.proteine,
     grassi: colazione.grassi,
+    proteina: colazione.proteina,
     alimenti: colazione.alimenti,
     base: colazione.base !== colazione.id ? colazione.base : undefined,
     quando: colazione.orario ?? base?.orario ?? std?.orario,
@@ -249,6 +254,7 @@ function trovaPastoDelPiano(categoria: CategoriaConId, id: string): PastoRisolto
             cho: merenda.cho,
             proteine: merenda.proteine,
             grassi: merenda.grassi,
+            proteina: 'proteina' in merenda ? (merenda.proteina as string) : undefined,
             alimenti: [],
             composizione: merenda.composizione,
             tags: 'tags' in merenda ? (merenda.tags as string[]) : [],
@@ -329,4 +335,10 @@ export function categorieAlimenti(): string[] {
 
 export function tolleranzeCalcolatore(): Record<Nutriente, Tolleranza> {
   return dati.regole.calcolatore.tolleranze
+}
+
+/** "pesce", "frutta secca"... per la fonte proteica di un pasto. */
+export function etichettaProteina(tipo: string): string | undefined {
+  const t = dati.tipiProteina as Record<string, string>
+  return tipo === '_nota' ? undefined : t[tipo]
 }

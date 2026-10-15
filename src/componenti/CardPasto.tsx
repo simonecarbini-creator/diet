@@ -4,6 +4,7 @@ import { isCategoriaConId, type Vincolo } from '../dati'
 import type { PastoLibero, VocePasto } from '../giornata'
 import { formatNumero, formatScarto } from '../formato'
 import { ElencoAlimenti } from './Alimenti'
+import { EtichettaProteina } from './EtichettaProteina'
 import { NumeriPasto } from './NumeriPasto'
 import { etichettePasti } from '../etichette'
 import { PannelloScelta, type ContestoGiornata } from './PannelloScelta'
@@ -134,6 +135,11 @@ export function CardPasto({
                   {mostraCodice && (
                     <span className="ml-2 whitespace-nowrap rounded bg-bordo px-1.5 py-0.5 text-xs font-medium">
                       {pasto.id}
+                    </span>
+                  )}
+                  {pasto.proteina && (
+                    <span className="ml-1.5">
+                      <EtichettaProteina tipo={pasto.proteina} />
                     </span>
                   )}
                 </div>

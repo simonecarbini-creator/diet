@@ -35,6 +35,8 @@ const unitaNutriente = (n: Nutriente) => (n === 'kcal' ? '' : ' g')
 type Props = {
   /** Es. "pranzo". */
   nomeCategoria: string
+  /** Alimenti gia' scelti (per modificare un pasto composto). */
+  iniziali?: VoceComposta[]
   /** Il pasto con cui confrontarsi: quello del piano (o la merenda media). */
   obiettivo: { etichetta: string; valori: Partial<Valori> }
   /** Id del pasto del piano (e della sua base): i suoi alimenti vengono per primi. */
@@ -241,8 +243,8 @@ function SceltaQuantita({
   )
 }
 
-export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, giornata, contestoAvvisi, onUsa, onChiudi }: Props) {
-  const [voci, setVoci] = useState<VoceComposta[]>([])
+export function Calcolatore({ nomeCategoria, iniziali, obiettivo, idPasto, idCategoria, giornata, contestoAvvisi, onUsa, onChiudi }: Props) {
+  const [voci, setVoci] = useState<VoceComposta[]>(iniziali ?? [])
   const [cerca, setCerca] = useState('')
   const [categoria, setCategoria] = useState<string | null>(null)
   const [aperto, setAperto] = useState<AlimentoBanca | null>(null)

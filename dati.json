@@ -616,7 +616,8 @@
           "freddo"
         ],
         "tipoColazione": "STD",
-        "orario": "al rientro, entro 45' dalla fine della corsa"
+        "orario": "al rientro, entro 45' dalla fine della corsa",
+        "proteina": "latticini"
       },
       {
         "id": "B1",
@@ -661,7 +662,8 @@
           "invernale",
           "curvaDolce"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "proteina": "latticini"
       },
       {
         "id": "B2",
@@ -715,7 +717,8 @@
           "freddo",
           "veloce"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "proteina": "latticini"
       },
       {
         "id": "B3",
@@ -758,7 +761,8 @@
           "veloce",
           "pocheProteine"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "proteina": "formaggio"
       },
       {
         "id": "B4",
@@ -798,7 +802,8 @@
           "uova",
           "sazieta"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "proteina": "uova"
       },
       {
         "id": "B5",
@@ -845,7 +850,8 @@
           "freddo",
           "proteineAlte"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "proteina": "latticini"
       },
       {
         "id": "B6",
@@ -894,7 +900,8 @@
           "veloce",
           "curvaRapida"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "proteina": "latticini"
       },
       {
         "id": "B7",
@@ -936,7 +943,8 @@
           "senzaAvena",
           "veloce"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "proteina": "formaggio"
       },
       {
         "id": "B8",
@@ -984,7 +992,8 @@
           "senzaAvena",
           "veloce"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "proteina": "formaggio"
       },
       {
         "id": "B9",
@@ -1037,7 +1046,8 @@
           "veloce",
           "freddo"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "proteina": "latticini"
       },
       {
         "id": "B10",
@@ -1089,7 +1099,8 @@
           "freddo",
           "fibraAlta"
         ],
-        "tipoColazione": "STD"
+        "tipoColazione": "STD",
+        "proteina": "latticini"
       },
       {
         "id": "MAGG",
@@ -1148,7 +1159,8 @@
           "veloce",
           "freddo"
         ],
-        "tipoColazione": "MAGG"
+        "tipoColazione": "MAGG",
+        "proteina": "latticini"
       },
       {
         "id": "B1+",
@@ -1198,7 +1210,8 @@
           "invernale",
           "curvaDolce"
         ],
-        "tipoColazione": "MAGG"
+        "tipoColazione": "MAGG",
+        "proteina": "latticini"
       },
       {
         "id": "B2+",
@@ -1253,7 +1266,8 @@
           "freddo",
           "veloce"
         ],
-        "tipoColazione": "MAGG"
+        "tipoColazione": "MAGG",
+        "proteina": "latticini"
       },
       {
         "id": "B3+",
@@ -1301,7 +1315,8 @@
           "veloce",
           "pocheProteine"
         ],
-        "tipoColazione": "MAGG"
+        "tipoColazione": "MAGG",
+        "proteina": "formaggio"
       },
       {
         "id": "B4+",
@@ -1346,7 +1361,8 @@
           "uova",
           "sazieta"
         ],
-        "tipoColazione": "MAGG"
+        "tipoColazione": "MAGG",
+        "proteina": "uova"
       },
       {
         "id": "B5+",
@@ -1398,7 +1414,8 @@
           "freddo",
           "proteineAlte"
         ],
-        "tipoColazione": "MAGG"
+        "tipoColazione": "MAGG",
+        "proteina": "latticini"
       },
       {
         "id": "B6+",
@@ -1452,7 +1469,8 @@
           "veloce",
           "curvaRapida"
         ],
-        "tipoColazione": "MAGG"
+        "tipoColazione": "MAGG",
+        "proteina": "latticini"
       },
       {
         "id": "B7+",
@@ -1499,7 +1517,8 @@
           "senzaAvena",
           "veloce"
         ],
-        "tipoColazione": "MAGG"
+        "tipoColazione": "MAGG",
+        "proteina": "formaggio"
       },
       {
         "id": "B8+",
@@ -1552,7 +1571,8 @@
           "senzaAvena",
           "veloce"
         ],
-        "tipoColazione": "MAGG"
+        "tipoColazione": "MAGG",
+        "proteina": "formaggio"
       },
       {
         "id": "B9+",
@@ -1606,7 +1626,8 @@
           "veloce",
           "freddo"
         ],
-        "tipoColazione": "MAGG"
+        "tipoColazione": "MAGG",
+        "proteina": "latticini"
       },
       {
         "id": "B10+",
@@ -1663,7 +1684,8 @@
           "freddo",
           "fibraAlta"
         ],
-        "tipoColazione": "MAGG"
+        "tipoColazione": "MAGG",
+        "proteina": "latticini"
       },
       {
         "id": "RID",
@@ -1710,7 +1732,8 @@
           "veloce",
           "freddo"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "proteina": "latticini"
       },
       {
         "id": "B1rid",
@@ -1752,7 +1775,8 @@
           "invernale",
           "curvaDolce"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "proteina": "latticini"
       },
       {
         "id": "B2rid",
@@ -1803,7 +1827,8 @@
           "freddo",
           "veloce"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "proteina": "latticini"
       },
       {
         "id": "B3rid",
@@ -1843,7 +1868,8 @@
           "veloce",
           "pocheProteine"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "proteina": "formaggio"
       },
       {
         "id": "B4rid",
@@ -1880,7 +1906,8 @@
           "uova",
           "sazieta"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "proteina": "uova"
       },
       {
         "id": "B5rid",
@@ -1924,7 +1951,8 @@
           "freddo",
           "proteineAlte"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "proteina": "latticini"
       },
       {
         "id": "B6rid",
@@ -1970,7 +1998,8 @@
           "veloce",
           "curvaRapida"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "proteina": "latticini"
       },
       {
         "id": "B7rid",
@@ -2013,7 +2042,8 @@
           "senzaAvena",
           "veloce"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "proteina": "formaggio"
       },
       {
         "id": "B8rid",
@@ -2062,7 +2092,8 @@
           "senzaAvena",
           "veloce"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "proteina": "formaggio"
       },
       {
         "id": "B9rid",
@@ -2112,7 +2143,8 @@
           "veloce",
           "freddo"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "proteina": "latticini"
       },
       {
         "id": "B10rid",
@@ -2161,7 +2193,8 @@
           "freddo",
           "fibraAlta"
         ],
-        "tipoColazione": "RID"
+        "tipoColazione": "RID",
+        "proteina": "latticini"
       },
       {
         "id": "COL-SG",
@@ -2188,7 +2221,8 @@
           "bar"
         ],
         "tipoColazione": "RID",
-        "grassi": 16
+        "grassi": 16,
+        "proteina": "latticini"
       },
       {
         "id": "COL-SG+",
@@ -2226,7 +2260,8 @@
           "bar"
         ],
         "tipoColazione": "STD",
-        "grassi": 18
+        "grassi": 18,
+        "proteina": "latticini"
       },
       {
         "id": "STD-latte",
@@ -2281,7 +2316,8 @@
           "freddo"
         ],
         "tipoColazione": "STD",
-        "grassi": 26
+        "grassi": 26,
+        "proteina": "latticini"
       },
       {
         "id": "STD-soia",
@@ -2336,7 +2372,8 @@
           "freddo"
         ],
         "tipoColazione": "STD",
-        "grassi": 28
+        "grassi": 28,
+        "proteina": "latticini"
       },
       {
         "id": "MAGG-latte",
@@ -2396,7 +2433,8 @@
         ],
         "tipoColazione": "MAGG",
         "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
-        "grassi": 27
+        "grassi": 27,
+        "proteina": "latticini"
       },
       {
         "id": "MAGG-soia",
@@ -2456,7 +2494,8 @@
         ],
         "tipoColazione": "MAGG",
         "modifiche": "+ banana 120 g + 1 fetta biscottata integrale",
-        "grassi": 28
+        "grassi": 28,
+        "proteina": "latticini"
       },
       {
         "id": "RID-latte",
@@ -2504,7 +2543,8 @@
         ],
         "tipoColazione": "RID",
         "modifiche": "Niente fette biscottate, niente composta",
-        "grassi": 22
+        "grassi": 22,
+        "proteina": "latticini"
       },
       {
         "id": "RID-soia",
@@ -2552,7 +2592,8 @@
         ],
         "tipoColazione": "RID",
         "modifiche": "Niente fette biscottate, niente composta",
-        "grassi": 23
+        "grassi": 23,
+        "proteina": "latticini"
       },
       {
         "id": "COL-SG-crema",
@@ -2578,7 +2619,8 @@
           "bar"
         ],
         "tipoColazione": "RID",
-        "grassi": 18
+        "grassi": 18,
+        "proteina": "latticini"
       }
     ],
     "tipiColazione": {
@@ -2615,7 +2657,8 @@
             "grammi": 30
           }
         ],
-        "grassi": 15
+        "grassi": 15,
+        "proteina": "fruttaSecca"
       },
       {
         "id": "soloFrutto",
@@ -2683,7 +2726,8 @@
             "burroArachidi",
             "veloce"
           ],
-          "grassi": 15
+          "grassi": 15,
+          "proteina": "latticini"
         },
         {
           "id": "SER-PB2",
@@ -2717,7 +2761,8 @@
             "burroArachidi",
             "proteineAlte"
           ],
-          "grassi": 13
+          "grassi": 13,
+          "proteina": "latticini"
         },
         {
           "id": "SER-PB3",
@@ -2746,7 +2791,8 @@
             "burroArachidi",
             "curvaDolce"
           ],
-          "grassi": 13
+          "grassi": 13,
+          "proteina": "latticini"
         },
         {
           "id": "SER-PB4",
@@ -2775,7 +2821,8 @@
             "senzaLatte",
             "pocheProteine"
           ],
-          "grassi": 12
+          "grassi": 12,
+          "proteina": "fruttaSecca"
         },
         {
           "id": "SER-SAL",
@@ -2803,7 +2850,8 @@
             "salata",
             "senzaLatte"
           ],
-          "grassi": 16
+          "grassi": 16,
+          "proteina": "formaggio"
         }
       ],
       "consigli": [
@@ -2815,7 +2863,8 @@
         "I grassi del burro d'arachidi rallentano l'assorbimento dei carboidrati: copre bene la notte."
       ],
       "note": "E' l'anti-ipoglicemia notturna dopo qualita' e lungo. Prima di dormire guarda la FRECCIA del Libre, non solo il valore.",
-      "grassi": 12
+      "grassi": 12,
+      "proteina": "latticini"
     }
   },
 
@@ -2880,7 +2929,8 @@
             }
           ],
           "note": "I fiocchi di latte hanno ottime proteine ma zero carboidrati: ogni volta che sostituiscono i legumi, alzare la pasta di 40 g e togliere il pane.",
-          "grassi": 29
+          "grassi": 29,
+          "proteina": "formaggio"
         }
       ],
       "ridotto": {
@@ -2898,11 +2948,13 @@
         "rimozioni": [
           "Pane"
         ],
-        "grassi": 27
+        "grassi": 27,
+        "proteina": "legumi"
       },
       "note": "Indice glicemico contenuto e ottimo profilo aminoacidico. La passata di pomodoro aiuta l'assorbimento del ferro.",
       "_nota": "2026-10-14: la passata 200 g fa parte di P1 (prima era la variante P1-passata). Rispetto a prima: +60 kcal, +12 g CHO, +3 g proteine; aggiornati anche P1rid e i giorni del calendario con P1.",
-      "grassi": 29
+      "grassi": 29,
+      "proteina": "legumi"
     },
     {
       "id": "P2",
@@ -2951,14 +3003,16 @@
         "rimozioni": [
           "Pane"
         ],
-        "grassi": 22
+        "grassi": 22,
+        "proteina": "pesce"
       },
       "note": "La piu' comoda in ufficio: si mangia bene anche fredda.",
       "tags": [
         "ufficio",
         "freddo"
       ],
-      "grassi": 27
+      "grassi": 27,
+      "proteina": "pesce"
     },
     {
       "id": "P3",
@@ -3001,7 +3055,8 @@
           }
         ],
         "nota": "Si maggiora uno solo dei due: patate 450 g (pane resta 80 g) OPPURE pane 110 g (patate restano 350 g).",
-        "grassi": 25
+        "grassi": 25,
+        "proteina": "carne"
       },
       "ridotto": {
         "id": "P3rid",
@@ -3019,10 +3074,12 @@
             "grammi": 40
           }
         ],
-        "grassi": 24
+        "grassi": 24,
+        "proteina": "carne"
       },
       "note": "Ha meno CHO delle altre due opzioni: nei giorni ROSSO usare la versione maggiorata.",
-      "grassi": 25
+      "grassi": 25,
+      "proteina": "carne"
     },
     {
       "id": "P4",
@@ -3104,9 +3161,11 @@
             }
           ],
           "note": "La ricotta ha circa 3,5 g di CHO per 100 g: su 180 g sono 6 g, contro 1 g della mozzarella.",
-          "grassi": 38
+          "grassi": 38,
+          "proteina": "formaggio"
         }
-      ]
+      ],
+      "proteina": "formaggio"
     },
     {
       "id": "P5",
@@ -3145,7 +3204,8 @@
       "note": "Il parmigiano sul pesce non e' ortodosso ma funziona: tienilo a 15 g o mettilo solo sulla pasta.",
       "tags": [
         "pesce"
-      ]
+      ],
+      "proteina": "pesce"
     },
     {
       "id": "P6",
@@ -3186,7 +3246,8 @@
         "veloce",
         "pesce",
         "dispensa"
-      ]
+      ],
+      "proteina": "pesce"
     },
     {
       "id": "P7",
@@ -3225,7 +3286,8 @@
       "note": "I gamberi surgelati vanno benissimo e costano la meta': scongelali in frigo la sera prima.",
       "tags": [
         "pesce"
-      ]
+      ],
+      "proteina": "pesce"
     },
     {
       "id": "P8",
@@ -3293,7 +3355,8 @@
             }
           ],
           "note": "Dal nutrizionista: riso a 140 g, aggiungere 100 g di fiocchi di latte a fine pasto (non dentro la zuppa calda: si separano).",
-          "grassi": 20
+          "grassi": 20,
+          "proteina": "legumi"
         },
         {
           "id": "P8-zuppa",
@@ -3321,14 +3384,16 @@
             }
           ],
           "note": "Etichetta della zuppa per 100 g: 102 kcal, 7,4 g CHO, 4,1 g proteine, 5,3 g grassi (circa 26 g di grassi nella lattina). Rispetto a P8: 13 g di CHO in meno e 116 kcal in piu'. Valori validi solo per la zuppa di ceci Pam.",
-          "grassi": 29
+          "grassi": 29,
+          "proteina": "legumi"
         }
       ],
       "note": "Il basmati ha l'indice glicemico piu' basso tra i risi (50-58). Con i ceci si arriva a ~21 g di fibra: curva molto gentile ma pesante sull'intestino — non la sera prima di una seduta.",
       "tags": [
         "legumi",
         "fibraAlta"
-      ]
+      ],
+      "proteina": "legumi"
     },
     {
       "id": "P9",
@@ -3368,7 +3433,8 @@
         "freddo",
         "preparareSeraPrima",
         "pesce"
-      ]
+      ],
+      "proteina": "pesce"
     },
     {
       "id": "P10",
@@ -3405,7 +3471,8 @@
       "tags": [
         "veloce",
         "formaggio"
-      ]
+      ],
+      "proteina": "formaggio"
     },
     {
       "id": "P11",
@@ -3447,7 +3514,8 @@
         "freddo",
         "veloce",
         "legumi"
-      ]
+      ],
+      "proteina": "legumi"
     },
     {
       "id": "P12",
@@ -3491,7 +3559,8 @@
       "soloTipiGiornata": [
         "VERDE",
         "GRIGIO"
-      ]
+      ],
+      "proteina": "formaggio"
     },
     {
       "id": "P13",
@@ -3527,7 +3596,8 @@
       "note": "Alternativa a P3 quando vuoi il riso invece delle patate. Carne limitata per scelta: massimo una volta a settimana tra pranzo e cena.",
       "tags": [
         "carne"
-      ]
+      ],
+      "proteina": "carne"
     },
     {
       "id": "P14",
@@ -3576,7 +3646,8 @@
             "grammi": 150
           }
         ],
-        "grassi": 38
+        "grassi": 38,
+        "proteina": "formaggio"
       },
       "varianti": [
         {
@@ -3614,10 +3685,12 @@
             }
           ],
           "note": "Alternativa a P14+ nei giorni ROSSO: 22 g di CHO in piu' invece dei 18 del frutto.",
-          "grassi": 40
+          "grassi": 40,
+          "proteina": "formaggio"
         }
       ],
-      "grassi": 39
+      "grassi": 39,
+      "proteina": "formaggio"
     },
     {
       "id": "P15",
@@ -3652,7 +3725,8 @@
         }
       ],
       "note": "Qui la zucca e' il condimento (300 g, oltre la porzione di verdura): per questo e' contata a parte. Come contorno resta una verdura amidacea della lista verdure.",
-      "grassi": 32
+      "grassi": 32,
+      "proteina": "formaggio"
     },
     {
       "id": "P16",
@@ -3700,7 +3774,8 @@
         "freddo",
         "barbabietola"
       ],
-      "grassi": 33
+      "grassi": 33,
+      "proteina": "pesce"
     },
     {
       "id": "P17",
@@ -3744,9 +3819,11 @@
             "grammi": 130
           }
         ],
-        "grassi": 36
+        "grassi": 36,
+        "proteina": "legumi"
       },
-      "grassi": 36
+      "grassi": 36,
+      "proteina": "legumi"
     }
   ],
 
@@ -3796,9 +3873,11 @@
             "grammi": 40
           }
         ],
-        "grassi": 22
+        "grassi": 22,
+        "proteina": "pesce"
       },
-      "grassi": 23
+      "grassi": 23,
+      "proteina": "pesce"
     },
     {
       "id": "C2",
@@ -3846,10 +3925,12 @@
             "grammi": 30
           }
         ],
-        "grassi": 33
+        "grassi": 33,
+        "proteina": "pesce"
       },
       "note": "Omega-3 per il recupero. Preferire il vasetto in vetro alla latta, filetti interi e non pezzi.",
-      "grassi": 34
+      "grassi": 34,
+      "proteina": "pesce"
     },
     {
       "id": "C3",
@@ -3895,10 +3976,12 @@
             "grammi": 140
           }
         ],
-        "grassi": 39
+        "grassi": 39,
+        "proteina": "uova"
       },
       "note": "Ha 10 g di CHO in meno di C1: nei giorni ROSSO usa C3+ (40 g di pane in piu', 99 g di CHO).",
-      "grassi": 39
+      "grassi": 39,
+      "proteina": "uova"
     },
     {
       "id": "C4",
@@ -3968,7 +4051,8 @@
             }
           ],
           "note": "8 g di CHO in piu' di C4: la ricotta ha circa 3,5 g di CHO per 100 g, la mozzarella quasi zero.",
-          "grassi": 38
+          "grassi": 38,
+          "proteina": "formaggio"
         },
         {
           "id": "C4-pecora",
@@ -4000,10 +4084,12 @@
             }
           ],
           "note": "7 g di CHO in piu' di C4.",
-          "grassi": 32
+          "grassi": 32,
+          "proteina": "formaggio"
         }
       ],
-      "grassi": 36
+      "grassi": 36,
+      "proteina": "formaggio"
     },
     {
       "id": "C5",
@@ -4070,9 +4156,11 @@
             }
           ],
           "note": "Zuppa per 100 g: 102 kcal, 7,4 g CHO, 4,1 g proteine. Rispetto ai 300 g di legumi lessati: 17 g di CHO in meno. Valori validi solo per la zuppa di ceci Pam: con un'altra zuppa pronta servono i valori della sua etichetta.",
-          "grassi": 34
+          "grassi": 34,
+          "proteina": "legumi"
         }
-      ]
+      ],
+      "proteina": "legumi"
     },
     {
       "id": "C6",
@@ -4115,7 +4203,8 @@
         "legumi",
         "pesce",
         "dispensa"
-      ]
+      ],
+      "proteina": "pesce"
     },
     {
       "id": "C7",
@@ -4155,7 +4244,8 @@
       "tags": [
         "pesce",
         "caldo"
-      ]
+      ],
+      "proteina": "pesce"
     },
     {
       "id": "C8",
@@ -4197,7 +4287,8 @@
         "pesce",
         "preparareInAnticipo",
         "freddo"
-      ]
+      ],
+      "proteina": "pesce"
     },
     {
       "id": "C9",
@@ -4234,7 +4325,8 @@
         "pesce",
         "preGara",
         "choAlti"
-      ]
+      ],
+      "proteina": "pesce"
     },
     {
       "id": "C10",
@@ -4279,7 +4371,8 @@
         "veloce",
         "uova",
         "formaggio"
-      ]
+      ],
+      "proteina": "uova"
     },
     {
       "id": "C11",
@@ -4320,7 +4413,8 @@
         "pesce",
         "legumi",
         "ferro"
-      ]
+      ],
+      "proteina": "pesce"
     },
     {
       "id": "C12",
@@ -4357,7 +4451,8 @@
         "legumi",
         "vegetariana",
         "pocheProteine"
-      ]
+      ],
+      "proteina": "legumi"
     },
     {
       "id": "C13",
@@ -4393,7 +4488,8 @@
       "note": "Carne limitata per scelta: massimo una volta a settimana contando anche P13.",
       "tags": [
         "carne"
-      ]
+      ],
+      "proteina": "carne"
     },
     {
       "id": "C14",
@@ -4435,7 +4531,8 @@
         "dispensa",
         "legumi",
         "uova"
-      ]
+      ],
+      "proteina": "legumi"
     },
     {
       "id": "C15",
@@ -4482,7 +4579,8 @@
         }
       ],
       "note": "Molto proteica. I piselli contano come legumi, non come verdura: se vuoi la verdura aggiungila a parte (insalata, 100-150 g).",
-      "grassi": 21
+      "grassi": 21,
+      "proteina": "pesce"
     },
     {
       "id": "C16",
@@ -4523,7 +4621,8 @@
         "VERDE",
         "GRIGIO"
       ],
-      "grassi": 35
+      "grassi": 35,
+      "proteina": "pesce"
     },
     {
       "id": "C17",
@@ -4562,7 +4661,8 @@
       "tags": [
         "barbabietola"
       ],
-      "grassi": 31
+      "grassi": 31,
+      "proteina": "legumi"
     },
     {
       "id": "C18",
@@ -4593,7 +4693,8 @@
         }
       ],
       "note": "Ha un po' piu' di CHO delle altre cene: va bene anche nei giorni ROSSO. Zucca al forno: caramellizza e la curva sale piu' in fretta che lessa.",
-      "grassi": 28
+      "grassi": 28,
+      "proteina": "legumi"
     },
     {
       "id": "C19",
@@ -4633,7 +4734,8 @@
         "VERDE",
         "GRIGIO"
       ],
-      "grassi": 39
+      "grassi": 39,
+      "proteina": "uova"
     }
   ],
 
@@ -4645,7 +4747,8 @@
       "proteine": 22,
       "composizione": "Pane 60 g + miele 30 g + yogurt greco 170 g",
       "tags": [],
-      "grassi": 2
+      "grassi": 2,
+      "proteina": "latticini"
     },
     {
       "id": "M2",
@@ -4656,7 +4759,8 @@
       "tags": [
         "ufficio"
       ],
-      "grassi": 3
+      "grassi": 3,
+      "proteina": "latticini"
     },
     {
       "id": "M3",
@@ -4665,7 +4769,8 @@
       "proteine": 14,
       "composizione": "Pane 70 g + ricotta 80 g + 1 mela o pera 130 g",
       "tags": [],
-      "grassi": 10
+      "grassi": 10,
+      "proteina": "formaggio"
     },
     {
       "id": "M4",
@@ -4679,7 +4784,8 @@
         "senzaCucchiaio",
         "pocheProteine"
       ],
-      "grassi": 15
+      "grassi": 15,
+      "proteina": "fruttaSecca"
     },
     {
       "id": "M5",
@@ -4691,7 +4797,8 @@
         "salata",
         "senzaYogurt"
       ],
-      "grassi": 2
+      "grassi": 2,
+      "proteina": "carne"
     },
     {
       "id": "M6",
@@ -4703,7 +4810,8 @@
         "ufficio",
         "preparareSeraPrima"
       ],
-      "grassi": 5
+      "grassi": 5,
+      "proteina": "latticini"
     },
     {
       "id": "M7",
@@ -4724,7 +4832,8 @@
       "proteine": 14,
       "composizione": "2 fette di pane integrale + ricotta 100 g + composta 30 g + 1 frutto",
       "tags": [],
-      "grassi": 8
+      "grassi": 8,
+      "proteina": "formaggio"
     },
     {
       "id": "M9",
@@ -4737,7 +4846,8 @@
         "daBere",
         "preparareSeraPrima"
       ],
-      "grassi": 6
+      "grassi": 6,
+      "proteina": "latticini"
     },
     {
       "id": "M10",
@@ -4751,7 +4861,8 @@
         "senzaCucchiaio",
         "ufficio"
       ],
-      "grassi": 11
+      "grassi": 11,
+      "proteina": "formaggio"
     },
     {
       "id": "M11",
@@ -4765,7 +4876,8 @@
         "senzaCucchiaio",
         "pocheProteine"
       ],
-      "grassi": 18
+      "grassi": 18,
+      "proteina": "fruttaSecca"
     },
     {
       "id": "M12",
@@ -4778,7 +4890,8 @@
         "senzaYogurt",
         "senzaCucchiaio"
       ],
-      "grassi": 14
+      "grassi": 14,
+      "proteina": "formaggio"
     }
   ],
   "sgarri": [
@@ -4809,7 +4922,8 @@
         "alcol",
         "grasso"
       ],
-      "grassi": 27
+      "grassi": 27,
+      "proteina": "formaggio"
     },
     {
       "id": "S1+",
@@ -4839,7 +4953,8 @@
         "alcol",
         "grasso"
       ],
-      "grassi": 27
+      "grassi": 27,
+      "proteina": "formaggio"
     },
     {
       "id": "S2",
@@ -4905,7 +5020,8 @@
       "tags": [
         "sgarro"
       ],
-      "grassi": 45
+      "grassi": 45,
+      "proteina": "pesce"
     },
     {
       "id": "S4",
@@ -4945,7 +5061,8 @@
         "sgarro",
         "pesce"
       ],
-      "grassi": 35
+      "grassi": 35,
+      "proteina": "pesce"
     },
     {
       "id": "S4+",
@@ -4986,7 +5103,8 @@
         "sgarro",
         "pesce"
       ],
-      "grassi": 39
+      "grassi": 39,
+      "proteina": "pesce"
     }
   ],
   "dolci": [
@@ -5148,10 +5266,12 @@
         "cho": 23,
         "proteine": 13,
         "composizione": "1 frutto + yogurt greco 0% 100 g + frutta secca 10 g",
-        "grassi": 5
+        "grassi": 5,
+        "proteina": "latticini"
       }
     ],
-    "grassi": 6
+    "grassi": 6,
+    "proteina": "formaggio"
   },
   "merendaNote": [
     "Le merende con tag pocheProteine (M4, M7, M11) vanno usate nei giorni con cena C1, C2 o C4.",
@@ -5640,6 +5760,16 @@
     { "id": "glicemiaLungo", "cosa": "Glicemia prima / durante / dopo il lungo", "frequenza": "ogni lungo", "nota": "sono i dati piu' utili da portare al diabetologo" }
   ],
 
+  "tipiProteina": {
+    "_nota": "Fonte proteica principale di ogni pasto (campo 'proteina'): quella che porta piu' proteine tra i suoi alimenti, calcolata con la banca dati il 2026-10-14; le merende a mano dalla composizione. Si mostra come etichetta con icona sulle card dei pasti.",
+    "latticini": "latticini",
+    "formaggio": "formaggio",
+    "carne": "carne",
+    "pesce": "pesce",
+    "legumi": "legumi",
+    "uova": "uova",
+    "fruttaSecca": "frutta secca"
+  },
   "bancaAlimenti": {
     "_nota": "Valori medi per 100 g (o 100 ml) a crudo, tranne legumi lessati e sgocciolati e prodotti pronti, nella forma in cui si pesano. Per 'pz' i valori sono per 100 g di prodotto e grammiPerPezzo dice quanto pesa un pezzo. Usata dal calcolatore del pasto. Ricevuta il 2026-10-14. Aggiornata il 2026-10-14: mela e pera 12 g di CHO (disponibili, senza fibra), polpo 82 kcal e 15 g di proteine, riferimenti medi per le voci generiche del piano.",
     "categorie": [

@@ -8,6 +8,7 @@ import {
   esitoGiorno,
   giornataEquivalente,
   merendaMedia,
+  esitoTarget,
   proteineDelPiano,
   confrontoProteine,
   targetGiorno,
@@ -19,7 +20,7 @@ import {
 import { proponiSettimana, type GiornoInserito } from '../src/motore'
 import { verificaDati } from '../src/verifica'
 import { formatScarto } from '../src/formato'
-import { confrontaObiettivo, descriviQuantita, fasciaDelPasto, pezziDa, unitaPratica, gruppiAlimenti, totaleComposto, valoriAlimento, trovaAlimento, valoriSelettore, corrisponde } from '../src/calcolatore'
+import { confrontaObiettivo, obiettivoDi, descriviQuantita, fasciaDelPasto, pezziDa, unitaPratica, gruppiAlimenti, totaleComposto, valoriAlimento, trovaAlimento, valoriSelettore, corrisponde } from '../src/calcolatore'
 import { avvisiAlimento, conteggiVincoli, controllaVincoli, pastiEffettiviDi } from '../src/vincoli'
 
 function giorno(data: string) {
@@ -730,5 +731,46 @@ describe('calcolatore: unita\' pratiche e fascia del pasto', () => {
   it('P3 conta nella regola della carne (1 ottobre: P3+ a pranzo)', () => {
     const settimana4 = dati.settimane.find((x) => x.numero === 4)!
     expect(conteggiVincoli(settimana4.giorni, (g) => ({ pranzo: g.pranzo, cena: g.cena })).carne.volte).toBe(1)
+  })
+})
+
+describe('giorni conclusi nella vista settimanale: nel target o no', () => {
+  const lunedi = giorno('2026-10-05')
+  // Piano del 5 ottobre: 426 g CHO, 3095 kcal (target 405-447 g, 2940-3250 kcal).
+  it('senza modifiche: dentro (425 g con la merenda media)', () => {
+    expect(esitoTarget(lunedi)).toMatchObject({ esito: 'dentro', cho: 425 })
+  })
+  // 368 - 85 (C4) + 117 (pizza) + 62 (M2) = 462 g: oltre 447.
+  it('pizza a cena e merenda M2: fuori (462 g)', () => {
+    expect(esitoTarget(lunedi, { scelte: { merenda: 'M2', cena: 'S1' }, consumati: [] })).toMatchObject({ esito: 'fuori', cho: 462 })
+  })
+  it('un pasto libero senza valori: non si puo\' dire (nd)', () => {
+    expect(esitoTarget(lunedi, { scelte: {}, consumati: [], liberi: { cena: { testo: 'pizza' } } }).esito).toBe('nd')
+  })
+})
+
+describe('fonte proteica dei pasti', () => {
+  it.each([
+    ['pranzo', 'P1', 'legumi'],
+    ['pranzo', 'P2', 'pesce'],
+    ['pranzo', 'P3', 'carne'],
+    ['pranzo', 'P3rid', 'carne'],
+    ['cena', 'C3', 'uova'],
+    ['cena', 'C4', 'formaggio'],
+    ['cena', 'C4-ricotta', 'formaggio'],
+    ['colazione', 'STD', 'latticini'],
+    ['merenda', 'M3', 'formaggio'],
+    ['spuntinoSerale', 'SER-PB2', 'latticini'],
+  ] as const)('%s %s: %s', (categoria, id, proteina) => {
+    expect(trovaPasto(categoria, id)?.proteina).toBe(proteina)
+  })
+})
+
+describe('obiettivo del pasto composto', () => {
+  it('il pasto del piano, con i grassi', () => {
+    expect(obiettivoDi(trovaPasto('cena', 'C2'))).toEqual({ etichetta: 'C2 del piano', valori: { kcal: 790, cho: 75, proteine: 47, grassi: 34 } })
+  })
+  it('senza pasto del piano: la merenda media', () => {
+    expect(obiettivoDi(null).valori).toEqual({ kcal: 368, cho: 57, proteine: 16, grassi: 9 })
   })
 })
