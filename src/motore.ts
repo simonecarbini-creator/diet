@@ -217,6 +217,34 @@ function assegnaPasti(dati: Dati, giorni: GiornoProposto[], motivi: Proposta['mo
     }
     g.cena = cena
   })
+
+  // Versioni del tipo di giornata (dati.json → assegnazionePasti.versioneDelTipo): nei giorni ROSSO
+  // la -R di pranzo, cena e spuntino, se il pasto ne ha una (prende il posto anche della maggiorata).
+  const delTipo = a.versioneDelTipo as Record<string, { pranzo?: boolean; cena?: boolean; spuntino?: boolean }>
+  const variantePerTipo = (elenco: Dati['pranzi'] | Dati['cene'], id: string, tipo: string) => {
+    const base = (elenco as { id: string; maggiorato?: { id: string }; varianti?: { id: string; perTipoGiornata?: string }[] }[]).find(
+      (p) => p.id === id || p.maggiorato?.id === id,
+    )
+    return base?.varianti?.find((v) => v.perTipoGiornata === tipo)?.id
+  }
+  giorni.forEach((g, i) => {
+    const regola = delTipo[g.tipo]
+    if (!regola) return
+    const pranzoR = regola.pranzo ? variantePerTipo(dati.pranzi, g.pranzo, g.tipo) : undefined
+    if (pranzoR) {
+      g.pranzo = pranzoR
+      motivi[i].pranzo = `versione per i giorni ${g.tipo}: meno grassi, piu' carboidrati`
+    }
+    const cenaR = regola.cena ? variantePerTipo(dati.cene, g.cena, g.tipo) : undefined
+    if (cenaR) {
+      g.cena = cenaR
+      motivi[i].cena = `${motivi[i].cena}; versione per i giorni ${g.tipo}`
+    }
+    const spuntinoR = regola.spuntino
+      ? dati.blocchi.spuntini.find((s) => 'base' in s && s.base === g.spuntino && 'perTipoGiornata' in s && s.perTipoGiornata === g.tipo)?.id
+      : undefined
+    if (spuntinoR) g.spuntino = spuntinoR
+  })
 }
 
 /** Cosa cambia segnando il lungo domenicale, letto dalle regole (per spiegarlo nel modulo). */

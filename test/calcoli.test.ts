@@ -548,10 +548,10 @@ describe('settimana 6 (12-18 ottobre)', () => {
     ['2026-10-13', 3565, 470, 145],
     ['2026-10-14', 3585, 468, 150],
     ['2026-10-15', 3275, 416, 138],
-    // 16: C3+ corretta (+3 g CHO, +80 kcal, +1 g pro); 17: solo frutto 80 kcal (-15).
-    ['2026-10-16', 3790, 488, 151],
+    // 16 e 18: giorni ROSSO con le versioni -R (P1-R, C3-R, intero-R; P15-R, C18-R, intero-R).
+    ['2026-10-16', 3665, 509, 151],
     ['2026-10-17', 2695, 344, 129],
-    ['2026-10-18', 3710, 496, 149],
+    ['2026-10-18', 3695, 539, 153],
   ] as const)('%s: somma dei pasti = calendario (%i kcal, %i g CHO, %i g pro)', (data, kcal, cho, proteine) => {
     const g = settimana6.giorni.find((x) => x.data === data)!
     expect([g.kcal, g.cho, g.proteine]).toEqual([kcal, cho, proteine])
@@ -780,15 +780,65 @@ describe('obiettivo del pasto composto', () => {
 })
 
 describe('grassi del piano e giorni registrati', () => {
-  // 5 ottobre: pre-corsa 1 + STD 20 + solo frutto 0 + P2 27 + C4 36 + merenda media 9 = 93 g (target 80-90).
-  it('5 ottobre: 93 g di grassi, 3 g sopra il target 80-90', () => {
+  // 5 ottobre: pre-corsa 1 + STD 20 + solo frutto 0 + P2 27 + C4 36 + merenda media 9 = 93 g (target VERDE 95-110).
+  it('5 ottobre: 93 g di grassi, 2 g sotto il target VERDE 95-110', () => {
     expect(grassiDelPiano(giorno('2026-10-05'))).toBe(93)
-    expect(confrontoGrassi(93)).toMatchObject({ min: 80, max: 90, scarto: 3, esito: 'sopra' })
+    expect(confrontoGrassi(93, 'VERDE')).toMatchObject({ min: 95, max: 110, scarto: -2, esito: 'sotto' })
+  })
+  it('dalla settimana 6 i grassi vengono dal calendario: domenica 18 103 g, nel target ROSSO 95-115', () => {
+    expect(grassiDelPiano(giorno('2026-10-18'))).toBe(103)
+    expect(confrontoGrassi(103, 'ROSSO')?.esito).toBe('dentro')
   })
   it('un giorno e\' registrato se c\'e\' almeno un pasto spuntato o cambiato', () => {
     expect(giornoRegistrato(undefined)).toBe(false)
     expect(giornoRegistrato({ scelte: {}, consumati: [] })).toBe(false)
     expect(giornoRegistrato({ scelte: {}, consumati: ['colazione'] })).toBe(true)
     expect(giornoRegistrato({ scelte: { cena: 'C10' }, consumati: [] })).toBe(true)
+  })
+})
+
+describe('giorni ROSSO: versioni -R (meno grassi, piu\' carboidrati)', () => {
+  it.each([
+    ['pranzo', 'P1-R', 1110, 188, 45, 19],
+    ['pranzo', 'P1-fiocchi-R', 990, 151, 52, 19],
+    ['pranzo', 'P15-R', 1020, 164, 41, 22],
+    ['cena', 'C3-R', 900, 102, 42, 35],
+    ['cena', 'C18-R', 870, 127, 37, 24],
+    ['spuntino', 'intero-R', 160, 21, 4, 7],
+  ] as const)('%s %s: %i kcal, %i g CHO, %i g pro, %i g grassi', (categoria, id, kcal, cho, proteine, grassi) => {
+    expect(trovaPasto(categoria, id)).toMatchObject({ kcal, cho, proteine, grassi, perTipoGiornata: 'ROSSO' })
+  })
+  it('target ROSSO: 495-540 g CHO, grassi 95-115 g', () => {
+    expect(dati.tipiGiornata.ROSSO).toMatchObject({ choTargetMin: 495, choTargetMax: 540, grassiTargetMin: 95, grassiTargetMax: 115 })
+  })
+  // Venerdi' 16: P1-R 19 + C3-R 35 + intero-R 7 + STD 20 + pre-corsa 1 + M4 15 + SER-PB1 15 = 112 g di grassi.
+  it('venerdi\' 16: la somma dei grassi dei pasti torna con il calendario (112 g)', () => {
+    const g = giorno('2026-10-16')
+    expect(totaliPasti(vociDelGiorno(g)).grassi).toBe(112)
+    expect(g.grassi).toBe(112)
+  })
+  it('una settimana nuova mette le -R nei giorni ROSSO, non negli altri', () => {
+    const settimana4 = dati.settimane.find((x) => x.numero === 4)!
+    const inseriti = settimana4.giorni.map((g) => ({
+      data: g.data,
+      allenamento: g.allenamento,
+      distanzaKm: g.distanzaKm,
+      durataMinuti: 80,
+      minutiSopraRitmoMedio: 0,
+      lungoDomenicale: !!g.lungoDomenicale,
+    }))
+    const { giorni } = proponiSettimana(dati, inseriti as GiornoInserito[])
+    for (const g of giorni) {
+      if (g.tipo === 'ROSSO') {
+        expect(g.pranzo.endsWith('-R')).toBe(true)
+        expect(g.cena.endsWith('-R')).toBe(true)
+        expect(g.spuntino).toBe('intero-R')
+      } else {
+        expect(g.pranzo.endsWith('-R') || g.cena.endsWith('-R') || g.spuntino.endsWith('-R')).toBe(false)
+      }
+    }
+  })
+  it('nel pannello di un giorno VERDE le -R stanno fra le altre versioni (non ammesse)', () => {
+    expect(trovaPasto('pranzo', 'P1-R')?.soloTipiGiornata).toEqual(['ROSSO'])
   })
 })

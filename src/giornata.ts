@@ -281,13 +281,17 @@ export function confrontoProteine(proteine: number, tipo: string): ConfrontoProt
   return confrontoFascia(proteine, info.proteineTargetMin, info.proteineTargetMax)
 }
 
-/** Grassi del giorno rispetto al target giornaliero (dati.json → target, uguale per tutti i giorni). */
-export function confrontoGrassi(grassi: number): ConfrontoProteine {
-  return confrontoFascia(grassi, dati.target.grassiGrammiDieMin, dati.target.grassiGrammiDieMax)
+/** Grassi del giorno rispetto al target del tipo di giornata (dati.json → tipiGiornata). */
+export function confrontoGrassi(grassi: number, tipo: string): ConfrontoProteine | null {
+  const info = isTipoGiornata(tipo) ? dati.tipiGiornata[tipo] : null
+  if (!info) return null
+  return confrontoFascia(grassi, info.grassiTargetMin, info.grassiTargetMax)
 }
 
 /** Grassi del piano per un giorno: somma dei pasti del piano, con la merenda media se non e' assegnata. */
 export function grassiDelPiano(giorno: Giorno): number {
+  // Il calendario li riporta dalla settimana 6; prima si sommano i pasti.
+  if (typeof giorno.grassi === 'number') return giorno.grassi
   const voci = vociDelGiorno(giorno)
   const merendaDaStimare = voci.some((v) => v.categoria === 'merenda' && !v.pasto)
   return totaliPasti(voci).grassi + (merendaDaStimare ? merendaMedia().grassi : 0)

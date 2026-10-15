@@ -47,16 +47,20 @@
       "choTargetMin": 400,
       "choTargetMax": 425,
       "proteineTargetMin": 120,
-      "proteineTargetMax": 135
+      "proteineTargetMax": 135,
+      "grassiTargetMin": 95,
+      "grassiTargetMax": 110
     },
     "ROSSO": {
       "etichetta": "Qualita' o lungo",
       "colore": "#d13b2e",
       "kcalTarget": 3600,
-      "choTargetMin": 450,
-      "choTargetMax": 495,
+      "choTargetMin": 495,
+      "choTargetMax": 540,
       "proteineTargetMin": 135,
-      "proteineTargetMax": 150
+      "proteineTargetMax": 150,
+      "grassiTargetMin": 95,
+      "grassiTargetMax": 115
     },
     "GRIGIO": {
       "etichetta": "Riposo",
@@ -65,7 +69,9 @@
       "choTargetMin": 250,
       "choTargetMax": 270,
       "proteineTargetMin": 120,
-      "proteineTargetMax": 135
+      "proteineTargetMax": 135,
+      "grassiTargetMin": 75,
+      "grassiTargetMax": 90
     }
   },
 
@@ -377,7 +383,14 @@
         "cena": "ridotto"
       },
       "cenaRidottaDiRiserva": "C1rid",
-      "totalePianoNota": "Se la merenda non e' assegnata, il totale del piano include la media delle merende M1-M12."
+      "totalePianoNota": "Se la merenda non e' assegnata, il totale del piano include la media delle merende M1-M12.",
+      "versioneDelTipo": {
+        "ROSSO": {
+          "pranzo": true,
+          "cena": true,
+          "spuntino": true
+        }
+      }
     },
     "vincoliSettimanali": [
       {
@@ -532,7 +545,17 @@
         }
       }
     },
-    "_notaAlimenti": "Nei vincoli, 'alimenti' (codici di bancaAlimenti) e 'alimentiNeiPasti' dicono quali alimenti del calcolatore contano per la regola e in quali pasti: un pasto composto con quegli alimenti conta come i pasti del vincolo, e il calcolatore li segnala come sconsigliati quando andrebbero contro il piano."
+    "_notaAlimenti": "Nei vincoli, 'alimenti' (codici di bancaAlimenti) e 'alimentiNeiPasti' dicono quali alimenti del calcolatore contano per la regola e in quali pasti: un pasto composto con quegli alimenti conta come i pasti del vincolo, e il calcolatore li segnala come sconsigliati quando andrebbero contro il piano.",
+    "giorniRosso": {
+      "regola": "Nei giorni ROSSO si usano le versioni -R di pranzo, cena e spuntino: meno olio (o mandorle) e piu' pasta, riso o pane.",
+      "pranzo": "usare la versione -R del pranzo (olio -10 g, cereale +30 g). Pranzi con versione -R: P1, P1-fiocchi, P2, P5, P6, P7, P13, P15.",
+      "cena": "usare la versione -R della cena (olio -5 g, pane +40 g). Al posto di C3+ si usa C3-R.",
+      "spuntino": "intero-R (mandorle 15 g invece di 30)",
+      "effetto": "circa -21 g di grassi e +44 g di CHO, kcal quasi invariate",
+      "nonCambia": "colazione, merenda, spuntino serale, pre-corsa e gel restano uguali. I giorni VERDE e GRIGIO non cambiano.",
+      "nota": "Circa 7 g/kg di CHO (prima circa 6,3). Kcal invariate: circa 20 g di grassi in meno (-180 kcal) e circa 45 g di CHO in piu' (+180 kcal).",
+      "target": "2026-10-15: giorni ROSSO con piu' carboidrati e meno grassi (CHO 495-540 g, circa 7 g/kg; grassi 95-115 g; kcal invariate). Grassi per tipo di giornata dal piano della settimana 6."
+    }
   },
 
   "blocchi": {
@@ -2674,6 +2697,32 @@
           }
         ],
         "grassi": 0
+      },
+      {
+        "id": "intero-R",
+        "nome": "Spuntino intero (giorno rosso)",
+        "orario": "10:30",
+        "kcal": 160,
+        "cho": 21,
+        "proteine": 4,
+        "grassi": 7,
+        "alimenti": [
+          {
+            "nome": "Frutto",
+            "grammi": 150
+          },
+          {
+            "nome": "Mandorle",
+            "grammi": 15
+          }
+        ],
+        "note": "Versione per i giorni ROSSO: mandorle 15 g invece di 30.",
+        "base": "intero",
+        "perTipoGiornata": "ROSSO",
+        "proteina": "fruttaSecca",
+        "soloTipiGiornata": [
+          "ROSSO"
+        ]
       }
     ],
     "spuntinoSerale": {
@@ -2931,6 +2980,78 @@
           "note": "I fiocchi di latte hanno ottime proteine ma zero carboidrati: ogni volta che sostituiscono i legumi, alzare la pasta di 40 g e togliere il pane.",
           "grassi": 29,
           "proteina": "formaggio"
+        },
+        {
+          "id": "P1-R",
+          "nome": "Pasta e legumi (giorno rosso)",
+          "kcal": 1110,
+          "cho": 188,
+          "proteine": 45,
+          "grassi": 19,
+          "alimenti": [
+            {
+              "nome": "Pasta",
+              "grammi": 150
+            },
+            {
+              "nome": "Legumi lessati (ceci, lenticchie, fagioli)",
+              "grammi": 230
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 10
+            },
+            {
+              "nome": "Pane",
+              "grammi": 40
+            },
+            {
+              "nome": "Passata di pomodoro",
+              "grammi": 200
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -10 g, pasta +30 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "legumi"
+        },
+        {
+          "id": "P1-fiocchi-R",
+          "nome": "Con fiocchi di latte al posto dei legumi (giorno rosso)",
+          "kcal": 990,
+          "cho": 151,
+          "proteine": 52,
+          "grassi": 19,
+          "alimenti": [
+            {
+              "nome": "Pasta",
+              "grammi": 190
+            },
+            {
+              "nome": "Fiocchi di latte",
+              "grammi": 210
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 10
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -10 g, pasta +30 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "formaggio"
         }
       ],
       "ridotto": {
@@ -3012,7 +3133,45 @@
         "freddo"
       ],
       "grassi": 27,
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "P2-R",
+          "nome": "Cereale e pesce (giorno rosso)",
+          "kcal": 1050,
+          "cho": 172,
+          "proteine": 50,
+          "grassi": 17,
+          "alimenti": [
+            {
+              "nome": "Riso o farro",
+              "grammi": 170
+            },
+            {
+              "nome": "Tonno al naturale",
+              "grammi": 120
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 10
+            },
+            {
+              "nome": "Pane",
+              "grammi": 60
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -10 g, riso o farro +30 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "P3",
@@ -3205,7 +3364,49 @@
       "tags": [
         "pesce"
       ],
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "P5-R",
+          "nome": "Pasta in bianco con pesce bianco e verdure (giorno rosso)",
+          "kcal": 1050,
+          "cho": 162,
+          "proteine": 61,
+          "grassi": 14,
+          "alimenti": [
+            {
+              "nome": "Pasta",
+              "grammi": 180
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 5
+            },
+            {
+              "nome": "Parmigiano",
+              "grammi": 15
+            },
+            {
+              "nome": "Pesce bianco (merluzzo, platessa, orata)",
+              "grammi": 150
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 50
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -10 g, pasta +30 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "P6",
@@ -3247,7 +3448,49 @@
         "pesce",
         "dispensa"
       ],
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "P6-R",
+          "nome": "Pasta al tonno al naturale e verdure (giorno rosso)",
+          "kcal": 1060,
+          "cho": 178,
+          "proteine": 59,
+          "grassi": 10,
+          "alimenti": [
+            {
+              "nome": "Pasta",
+              "grammi": 180
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 5
+            },
+            {
+              "nome": "Tonno al naturale sgocciolato",
+              "grammi": 110
+            },
+            {
+              "nome": "Pomodorini",
+              "grammi": 150
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 70
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -10 g, pasta +30 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "P7",
@@ -3287,7 +3530,48 @@
       "tags": [
         "pesce"
       ],
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "P7-R",
+          "nome": "Pasta aglio e olio con gamberi e verdure (giorno rosso)",
+          "kcal": 1040,
+          "cho": 168,
+          "proteine": 57,
+          "grassi": 13,
+          "alimenti": [
+            {
+              "nome": "Pasta",
+              "grammi": 180
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 8
+            },
+            {
+              "nome": "Aglio e peperoncino"
+            },
+            {
+              "nome": "Gamberi o mazzancolle",
+              "grammi": 150
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 60
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -10 g, pasta +30 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "P8",
@@ -3597,7 +3881,45 @@
       "tags": [
         "carne"
       ],
-      "proteina": "carne"
+      "proteina": "carne",
+      "varianti": [
+        {
+          "id": "P13-R",
+          "nome": "Riso con pollo o tacchino e verdure (giorno rosso)",
+          "kcal": 1030,
+          "cho": 172,
+          "proteine": 55,
+          "grassi": 9,
+          "alimenti": [
+            {
+              "nome": "Riso basmati",
+              "grammi": 180
+            },
+            {
+              "nome": "Petto di pollo o tacchino",
+              "grammi": 150
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 5
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 50
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -10 g, riso basmati +30 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "carne"
+        }
+      ]
     },
     {
       "id": "P14",
@@ -3726,7 +4048,49 @@
       ],
       "note": "Qui la zucca e' il condimento (300 g, oltre la porzione di verdura): per questo e' contata a parte. Come contorno resta una verdura amidacea della lista verdure.",
       "grassi": 32,
-      "proteina": "formaggio"
+      "proteina": "formaggio",
+      "varianti": [
+        {
+          "id": "P15-R",
+          "nome": "Pasta con zucca e ricotta (giorno rosso)",
+          "kcal": 1020,
+          "cho": 164,
+          "proteine": 41,
+          "grassi": 22,
+          "alimenti": [
+            {
+              "nome": "Pasta",
+              "grammi": 160
+            },
+            {
+              "nome": "Zucca",
+              "grammi": 300
+            },
+            {
+              "nome": "Ricotta vaccina",
+              "grammi": 100
+            },
+            {
+              "nome": "Parmigiano",
+              "grammi": 15
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 5
+            },
+            {
+              "nome": "Pane",
+              "grammi": 40
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -10 g, pasta +30 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "formaggio"
+        }
+      ]
     },
     {
       "id": "P16",
@@ -3877,7 +4241,45 @@
         "proteina": "pesce"
       },
       "grassi": 23,
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "C1-R",
+          "nome": "Pesce bianco (giorno rosso)",
+          "kcal": 840,
+          "cho": 109,
+          "proteine": 55,
+          "grassi": 19,
+          "alimenti": [
+            {
+              "nome": "Pesce bianco (merluzzo, orata, branzino)",
+              "grammi": 200
+            },
+            {
+              "nome": "Patate",
+              "grammi": 300
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 10
+            },
+            {
+              "nome": "Pane",
+              "grammi": 100
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "C2",
@@ -3930,7 +4332,45 @@
       },
       "note": "Omega-3 per il recupero. Preferire il vasetto in vetro alla latta, filetti interi e non pezzi.",
       "grassi": 34,
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "C2-R",
+          "nome": "Pesce grasso (giorno rosso)",
+          "kcal": 850,
+          "cho": 97,
+          "proteine": 50,
+          "grassi": 30,
+          "alimenti": [
+            {
+              "nome": "Salmone, sgombro, sardine o alici",
+              "grammi": 180
+            },
+            {
+              "nome": "Patate",
+              "grammi": 250
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 5
+            },
+            {
+              "nome": "Pane",
+              "grammi": 90
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "C3",
@@ -3981,7 +4421,49 @@
       },
       "note": "Ha 10 g di CHO in meno di C1: nei giorni ROSSO usa C3+ (40 g di pane in piu', 99 g di CHO).",
       "grassi": 39,
-      "proteina": "uova"
+      "proteina": "uova",
+      "varianti": [
+        {
+          "id": "C3-R",
+          "nome": "Uova (giorno rosso)",
+          "kcal": 900,
+          "cho": 102,
+          "proteine": 42,
+          "grassi": 35,
+          "alimenti": [
+            {
+              "nome": "Uova",
+              "pezzi": 3
+            },
+            {
+              "nome": "Parmigiano",
+              "grammi": 20
+            },
+            {
+              "nome": "Pane",
+              "grammi": 140
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 10
+            },
+            {
+              "nome": "Frutto",
+              "pezzi": 1
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g. Nei giorni ROSSO sostituisce C3+.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "uova"
+        }
+      ]
     },
     {
       "id": "C4",
@@ -4158,6 +4640,42 @@
           "note": "Zuppa per 100 g: 102 kcal, 7,4 g CHO, 4,1 g proteine. Rispetto ai 300 g di legumi lessati: 17 g di CHO in meno. Valori validi solo per la zuppa di ceci Pam: con un'altra zuppa pronta servono i valori della sua etichetta.",
           "grassi": 34,
           "proteina": "legumi"
+        },
+        {
+          "id": "C5-R",
+          "nome": "Zuppa di legumi con pane e parmigiano (giorno rosso)",
+          "kcal": 830,
+          "cho": 123,
+          "proteine": 42,
+          "grassi": 19,
+          "alimenti": [
+            {
+              "nome": "Legumi lessati (lenticchie, ceci, fagioli, misto)",
+              "grammi": 300
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 7
+            },
+            {
+              "nome": "Parmigiano",
+              "grammi": 20
+            },
+            {
+              "nome": "Verdure nella zuppa",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 120
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "legumi"
         }
       ],
       "proteina": "legumi"
@@ -4204,7 +4722,49 @@
         "pesce",
         "dispensa"
       ],
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "C6-R",
+          "nome": "Insalata di ceci e tonno con pane (giorno rosso)",
+          "kcal": 840,
+          "cho": 115,
+          "proteine": 55,
+          "grassi": 16,
+          "alimenti": [
+            {
+              "nome": "Ceci lessati",
+              "grammi": 220
+            },
+            {
+              "nome": "Tonno al naturale sgocciolato",
+              "grammi": 100
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 7
+            },
+            {
+              "nome": "Pomodorini",
+              "grammi": 150
+            },
+            {
+              "nome": "Verdure (cipolla rossa, sedano, insalata)",
+              "grammi": 150
+            },
+            {
+              "nome": "Pane",
+              "grammi": 120
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "C7",
@@ -4245,7 +4805,49 @@
         "pesce",
         "caldo"
       ],
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "C7-R",
+          "nome": "Calamari o seppie in umido con patate (giorno rosso)",
+          "kcal": 830,
+          "cho": 116,
+          "proteine": 50,
+          "grassi": 15,
+          "alimenti": [
+            {
+              "nome": "Calamari o seppie (anche surgelati)",
+              "grammi": 200
+            },
+            {
+              "nome": "Patate",
+              "grammi": 280
+            },
+            {
+              "nome": "Passata di pomodoro",
+              "grammi": 150
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 10
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 150
+            },
+            {
+              "nome": "Pane",
+              "grammi": 100
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "C8",
@@ -4288,7 +4890,48 @@
         "preparareInAnticipo",
         "freddo"
       ],
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "C8-R",
+          "nome": "Polpo e patate con verdure (giorno rosso)",
+          "kcal": 840,
+          "cho": 115,
+          "proteine": 50,
+          "grassi": 14,
+          "alimenti": [
+            {
+              "nome": "Polpo (anche surgelato gia' lessato)",
+              "grammi": 200
+            },
+            {
+              "nome": "Patate",
+              "grammi": 330
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 10
+            },
+            {
+              "nome": "Prezzemolo e limone"
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 100
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "C9",
@@ -4326,7 +4969,45 @@
         "preGara",
         "choAlti"
       ],
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "C9-R",
+          "nome": "Gamberi saltati con riso basmati (giorno rosso)",
+          "kcal": 870,
+          "cho": 136,
+          "proteine": 50,
+          "grassi": 11,
+          "alimenti": [
+            {
+              "nome": "Gamberi",
+              "grammi": 180
+            },
+            {
+              "nome": "Riso basmati",
+              "grammi": 110
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 7
+            },
+            {
+              "nome": "Verdure (zucchine, piselli, peperoni)",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 80
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "C10",
@@ -4414,7 +5095,48 @@
         "legumi",
         "ferro"
       ],
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "C11-R",
+          "nome": "Merluzzo con ceci e verdure (giorno rosso)",
+          "kcal": 860,
+          "cho": 113,
+          "proteine": 60,
+          "grassi": 17,
+          "alimenti": [
+            {
+              "nome": "Merluzzo o baccala' ammollato",
+              "grammi": 160
+            },
+            {
+              "nome": "Ceci lessati",
+              "grammi": 230
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 7
+            },
+            {
+              "nome": "Rosmarino, aglio, limone"
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 120
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "C12",
@@ -4452,7 +5174,45 @@
         "vegetariana",
         "pocheProteine"
       ],
-      "proteina": "legumi"
+      "proteina": "legumi",
+      "varianti": [
+        {
+          "id": "C12-R",
+          "nome": "Burger di legumi con patate al forno (giorno rosso)",
+          "kcal": 840,
+          "cho": 139,
+          "proteine": 35,
+          "grassi": 15,
+          "alimenti": [
+            {
+              "nome": "Legumi lessati (per i burger)",
+              "grammi": 260
+            },
+            {
+              "nome": "Patate",
+              "grammi": 280
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 10
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 80
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "legumi"
+        }
+      ]
     },
     {
       "id": "C13",
@@ -4489,7 +5249,45 @@
       "tags": [
         "carne"
       ],
-      "proteina": "carne"
+      "proteina": "carne",
+      "varianti": [
+        {
+          "id": "C13-R",
+          "nome": "Petto di pollo o tacchino con patate (giorno rosso)",
+          "kcal": 850,
+          "cho": 115,
+          "proteine": 56,
+          "grassi": 14,
+          "alimenti": [
+            {
+              "nome": "Petto di pollo o tacchino",
+              "grammi": 160
+            },
+            {
+              "nome": "Patate",
+              "grammi": 330
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 10
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 100
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "carne"
+        }
+      ]
     },
     {
       "id": "C14",
@@ -4532,7 +5330,48 @@
         "legumi",
         "uova"
       ],
-      "proteina": "legumi"
+      "proteina": "legumi",
+      "varianti": [
+        {
+          "id": "C14-R",
+          "nome": "Uova e fagioli con pane e verdure (giorno rosso)",
+          "kcal": 880,
+          "cho": 116,
+          "proteine": 45,
+          "grassi": 24,
+          "alimenti": [
+            {
+              "nome": "Uova",
+              "pezzi": 2
+            },
+            {
+              "nome": "Fagioli lessati (cannellini o borlotti)",
+              "grammi": 250
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 7
+            },
+            {
+              "nome": "Pomodoro, salvia, cipolla"
+            },
+            {
+              "nome": "Verdure",
+              "grammi": 200
+            },
+            {
+              "nome": "Pane",
+              "grammi": 125
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "legumi"
+        }
+      ]
     },
     {
       "id": "C15",
@@ -4580,7 +5419,61 @@
       ],
       "note": "Molto proteica. I piselli contano come legumi, non come verdura: se vuoi la verdura aggiungila a parte (insalata, 100-150 g).",
       "grassi": 21,
-      "proteina": "pesce"
+      "proteina": "pesce",
+      "varianti": [
+        {
+          "id": "C15-R",
+          "nome": "Seppie ripiene di tonno con sugo e piselli (giorno rosso)",
+          "kcal": 860,
+          "cho": 110,
+          "proteine": 67,
+          "grassi": 17,
+          "alimenti": [
+            {
+              "nome": "Seppie",
+              "grammi": 200,
+              "note": "pulite"
+            },
+            {
+              "nome": "Tonno al naturale sgocciolato",
+              "grammi": 50,
+              "note": "ripieno"
+            },
+            {
+              "nome": "Pangrattato",
+              "grammi": 20,
+              "note": "ripieno"
+            },
+            {
+              "nome": "Parmigiano",
+              "grammi": 10,
+              "note": "ripieno"
+            },
+            {
+              "nome": "Passata di pomodoro",
+              "grammi": 200
+            },
+            {
+              "nome": "Piselli (surgelati)",
+              "grammi": 150
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 7
+            },
+            {
+              "nome": "Pane",
+              "grammi": 120
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "pesce"
+        }
+      ]
     },
     {
       "id": "C16",
@@ -4662,7 +5555,50 @@
         "barbabietola"
       ],
       "grassi": 31,
-      "proteina": "legumi"
+      "proteina": "legumi",
+      "varianti": [
+        {
+          "id": "C17-R",
+          "nome": "Burger vegetale di soia con barbabietole e patate (giorno rosso)",
+          "kcal": 870,
+          "cho": 114,
+          "proteine": 43,
+          "grassi": 27,
+          "alimenti": [
+            {
+              "nome": "Burger vegetale di soia",
+              "grammi": 160,
+              "note": "2 burger"
+            },
+            {
+              "nome": "Patate",
+              "grammi": 250
+            },
+            {
+              "nome": "Barbabietole cotte al vapore",
+              "grammi": 150
+            },
+            {
+              "nome": "Insalata o rucola",
+              "grammi": 50
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 5
+            },
+            {
+              "nome": "Pane",
+              "grammi": 90
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "legumi"
+        }
+      ]
     },
     {
       "id": "C18",
@@ -4694,7 +5630,45 @@
       ],
       "note": "Ha un po' piu' di CHO delle altre cene: va bene anche nei giorni ROSSO. Zucca al forno: caramellizza e la curva sale piu' in fretta che lessa.",
       "grassi": 28,
-      "proteina": "legumi"
+      "proteina": "legumi",
+      "varianti": [
+        {
+          "id": "C18-R",
+          "nome": "Zucca al forno con ceci e feta (giorno rosso)",
+          "kcal": 870,
+          "cho": 127,
+          "proteine": 37,
+          "grassi": 24,
+          "alimenti": [
+            {
+              "nome": "Zucca",
+              "grammi": 400
+            },
+            {
+              "nome": "Ceci lessati",
+              "grammi": 200
+            },
+            {
+              "nome": "Feta",
+              "grammi": 60
+            },
+            {
+              "nome": "Olio EVO",
+              "grammi": 7
+            },
+            {
+              "nome": "Pane",
+              "grammi": 110
+            }
+          ],
+          "note": "Versione per i giorni ROSSO: olio -5 g, pane +40 g.",
+          "perTipoGiornata": "ROSSO",
+          "soloTipiGiornata": [
+            "ROSSO"
+          ],
+          "proteina": "legumi"
+        }
+      ]
     },
     {
       "id": "C19",
@@ -5615,7 +6589,8 @@
           "kcal": 3320,
           "cho": 432,
           "proteine": 140,
-          "note": "Merenda con poche proteine (M4) perche' la cena C2 ne ha gia' molte. Niente crucifere a cena: domani progressiva."
+          "note": "Merenda con poche proteine (M4) perche' la cena C2 ne ha gia' molte. Niente crucifere a cena: domani progressiva.",
+          "grassi": 114
         },
         {
           "data": "2026-10-13",
@@ -5633,7 +6608,8 @@
           "kcal": 3565,
           "cho": 470,
           "proteine": 145,
-          "note": "18 km: ROSSO per distanza. Circa 90 minuti: gel 30 g/ora. P16 conta come barbabietola. Niente crucifere a cena: domani ripetute."
+          "note": "18 km: ROSSO per distanza. Circa 90 minuti: gel 30 g/ora. P16 conta come barbabietola. Niente crucifere a cena: domani ripetute.",
+          "grassi": 122
         },
         {
           "data": "2026-10-14",
@@ -5651,7 +6627,8 @@
           "kcal": 3585,
           "cho": 468,
           "proteine": 150,
-          "note": "Circa 18 km con 10 km veloci (circa 40 minuti sopra il ritmo medio): colazione STD. Gel circa 40 g."
+          "note": "Circa 18 km con 10 km veloci (circa 40 minuti sopra il ritmo medio): colazione STD. Gel circa 40 g.",
+          "grassi": 123
         },
         {
           "data": "2026-10-15",
@@ -5668,7 +6645,8 @@
           "kcal": 3275,
           "cho": 416,
           "proteine": 138,
-          "note": "C17 conta come barbabietola. Niente crucifere a cena: domani ripetute."
+          "note": "C17 conta come barbabietola. Niente crucifere a cena: domani ripetute.",
+          "grassi": 116
         },
         {
           "data": "2026-10-16",
@@ -5676,17 +6654,18 @@
           "distanzaKm": 11,
           "tipo": "ROSSO",
           "colazione": "STD",
-          "spuntino": "intero",
-          "pranzo": "P1",
-          "cena": "C3+",
+          "spuntino": "intero-R",
+          "pranzo": "P1-R",
+          "cena": "C3-R",
           "merenda": "M4",
           "spuntinoSerale": true,
           "spuntinoSeraleScelta": "SER-PB1",
           "gelCho": 0,
-          "kcal": 3790,
-          "cho": 488,
+          "kcal": 3665,
+          "cho": 509,
           "proteine": 151,
-          "note": "Qualita' breve (circa 65 minuti): niente gel. La glicemia spesso sale durante e subito dopo, il rischio arriva la sera: spuntino serale."
+          "note": "Qualita' breve (circa 65 minuti): niente gel. La glicemia spesso sale durante e subito dopo, il rischio arriva la sera: spuntino serale. Giorno ROSSO con versioni -R: meno grassi, piu' carboidrati.",
+          "grassi": 112
         },
         {
           "data": "2026-10-17",
@@ -5704,7 +6683,8 @@
           "kcal": 2695,
           "cho": 344,
           "proteine": 129,
-          "note": "Riposo di ricarica: domenica la seduta piu' pesante della settimana. Colazione STD e pranzo pieno, si tagliano solo merenda e cena. Barbabietola come verdura a pranzo (terza della settimana). Niente crucifere."
+          "note": "Riposo di ricarica: domenica la seduta piu' pesante della settimana. Colazione STD e pranzo pieno, si tagliano solo merenda e cena. Barbabietola come verdura a pranzo (terza della settimana). Niente crucifere.",
+          "grassi": 88
         },
         {
           "data": "2026-10-18",
@@ -5713,17 +6693,18 @@
           "tipo": "ROSSO",
           "lungoDomenicale": true,
           "colazione": "MAGG",
-          "spuntino": "intero",
-          "pranzo": "P15",
-          "cena": "C18",
+          "spuntino": "intero-R",
+          "pranzo": "P15-R",
+          "cena": "C18-R",
           "merenda": "M4",
           "spuntinoSerale": true,
           "spuntinoSeraleScelta": "SER-PB2",
           "gelCho": 45,
-          "kcal": 3710,
-          "cho": 496,
-          "proteine": 149,
-          "note": "Circa 20 km con 12 km veloci (circa 47 minuti sopra il ritmo medio), la seduta piu' impegnativa della settimana: colazione MAGG. Durata circa 90 minuti: gel 30 g/ora. Spuntino serale obbligatorio."
+          "kcal": 3695,
+          "cho": 539,
+          "proteine": 153,
+          "note": "Circa 20 km con 12 km veloci (circa 47 minuti sopra il ritmo medio), la seduta piu' impegnativa della settimana: colazione MAGG. Durata circa 90 minuti: gel 30 g/ora. Spuntino serale obbligatorio. Giorno ROSSO con versioni -R: meno grassi, piu' carboidrati.",
+          "grassi": 103
         }
       ]
     }

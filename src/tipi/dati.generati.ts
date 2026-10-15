@@ -148,15 +148,19 @@ export type PreCorsaAlimenti = {
 }
 
 export type Spuntini = {
-    id:        string;
-    nome:      string;
-    orario:    string;
-    kcal:      number;
-    cho:       number;
-    proteine:  number;
-    alimenti:  ModificheGrammiElement[];
-    grassi:    number;
-    proteina?: string;
+    id:                string;
+    nome:              string;
+    orario:            string;
+    kcal:              number;
+    cho:               number;
+    proteine:          number;
+    alimenti:          ModificheGrammiElement[];
+    grassi:            number;
+    proteina?:         string;
+    note?:             string;
+    base?:             string;
+    perTipoGiornata?:  string;
+    soloTipiGiornata?: string[];
 }
 
 export type ModificheGrammiElement = {
@@ -228,12 +232,12 @@ export type Cene = {
     ridotto?:                     RidottoClass;
     grassi:                       number;
     proteina:                     string;
+    varianti?:                    CeneVarianti[];
     contaComeOmega3?:             boolean;
     note?:                        string;
     maggiorato?:                  RidottoClass;
     soloTipiGiornata?:            string[];
     incompatibileCon?:            string[];
-    varianti?:                    CeneVarianti[];
     categoria?:                   string;
     tags?:                        string[];
     frequenzaMassimaSettimanale?: number;
@@ -259,21 +263,17 @@ export type RidottoClass = {
 }
 
 export type CeneVarianti = {
-    id:       string;
-    nome:     string;
-    kcal:     number;
-    cho:      number;
-    proteine: number;
-    alimenti: DolciAlimenti[];
-    note:     string;
-    grassi:   number;
-    proteina: string;
-}
-
-export type DolciAlimenti = {
-    nome:   string;
-    grammi: number;
-    note?:  string;
+    id:                string;
+    nome:              string;
+    kcal:              number;
+    cho:               number;
+    proteine:          number;
+    grassi:            number;
+    alimenti:          AlternativeAlimenti[];
+    note:              string;
+    perTipoGiornata?:  string;
+    soloTipiGiornata?: string[];
+    proteina:          string;
 }
 
 export type Controlli = {
@@ -305,6 +305,12 @@ export type Dolci = {
     note:     string;
     tags:     string[];
     grassi:   number;
+}
+
+export type DolciAlimenti = {
+    nome:   string;
+    grammi: number;
+    note?:  string;
 }
 
 export type MerendaRidotta = {
@@ -413,15 +419,23 @@ export type Ridotto = {
 }
 
 export type PranziVarianti = {
-    id:       string;
-    nome:     string;
-    kcal:     number;
-    cho:      number;
-    proteine: number;
-    alimenti: PreCorsaAlimenti[];
-    note:     string;
-    grassi:   number;
-    proteina: string;
+    id:                string;
+    nome:              string;
+    kcal:              number;
+    cho:               number;
+    proteine:          number;
+    alimenti:          PurpleAlimenti[];
+    note:              string;
+    grassi:            number;
+    proteina:          string;
+    perTipoGiornata?:  string;
+    soloTipiGiornata?: string[];
+}
+
+export type PurpleAlimenti = {
+    nome:    string;
+    grammi?: number | null;
+    note?:   string;
 }
 
 export type PromemoriaGlicemico = {
@@ -451,6 +465,7 @@ export type Regole = {
     vincoliSettimanali:        VincoliSettimanali[];
     calcolatore:               Calcolatore;
     _notaAlimenti:             string;
+    giorniRosso:               GiorniRosso;
 }
 
 export type AssegnazionePasti = {
@@ -463,6 +478,7 @@ export type AssegnazionePasti = {
     ricarica:             GiornoGrigio;
     cenaRidottaDiRiserva: string;
     totalePianoNota:      string;
+    versioneDelTipo:      VersioneDelTipo;
 }
 
 export type CeneDistribuite = {
@@ -475,6 +491,16 @@ export type CeneDistribuite = {
 export type GiornoGrigio = {
     pranzo: string;
     cena:   string;
+}
+
+export type VersioneDelTipo = {
+    ROSSO: Rosso;
+}
+
+export type Rosso = {
+    pranzo:   boolean;
+    cena:     boolean;
+    spuntino: boolean;
 }
 
 export type Calcolatore = {
@@ -538,6 +564,17 @@ export type GelInCorsaQuando = {
 export type GiornataLibera = {
     tolleranzaPercento: number;
     nota:               string;
+}
+
+export type GiorniRosso = {
+    regola:    string;
+    pranzo:    string;
+    cena:      string;
+    spuntino:  string;
+    effetto:   string;
+    nonCambia: string;
+    nota:      string;
+    target:    string;
 }
 
 export type LungoDomenicaleAutomatico = {
@@ -677,6 +714,7 @@ export type Giorni = {
     note?:                 string;
     ricarica?:             boolean;
     lungoDomenicale?:      boolean;
+    grassi?:               number;
     spuntinoSeraleScelta?: string;
 }
 
@@ -757,6 +795,8 @@ export type Grigio = {
     choTargetMax:      number;
     proteineTargetMin: number;
     proteineTargetMax: number;
+    grassiTargetMin:   number;
+    grassiTargetMax:   number;
 }
 
 export type TipiProteina = {

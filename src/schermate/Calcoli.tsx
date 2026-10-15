@@ -172,6 +172,18 @@ export function Calcoli() {
           </p>
         </Sezione>
 
+        <Sezione titolo="Giorni ROSSO">
+          <p>{regole.giorniRosso.regola}</p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>Pranzo: {regole.giorniRosso.pranzo}</li>
+            <li>Cena: {regole.giorniRosso.cena}</li>
+            <li>Spuntino: {regole.giorniRosso.spuntino}</li>
+          </ul>
+          <p>Effetto sul giorno: {regole.giorniRosso.effetto}.</p>
+          <Nota>{regole.giorniRosso.nonCambia}</Nota>
+          <Nota>{regole.giorniRosso.target}</Nota>
+        </Sezione>
+
         <Sezione titolo="Calcolatore del pasto">
           <p>
             Somma gli alimenti scelti con i valori per 100 g della banca dati ({dati.bancaAlimenti.alimenti.length} alimenti) e

@@ -73,6 +73,8 @@ type Props = {
  */
 function adattaAOggi(opzione: PastoRisolto, piano: PastoRisolto | null, giornata?: ContestoGiornata): boolean {
   if (opzione.utente) return true
+  // Versioni per un tipo di giornata (es. -R) e pasti ammessi solo in alcuni tipi: fuori da quei giorni in "Altre versioni".
+  if (opzione.perTipoGiornata) return opzione.perTipoGiornata === giornata?.tipo || opzione.id === piano?.id
   if (opzione.tipoColazione) return !piano?.tipoColazione || opzione.tipoColazione === piano.tipoColazione
   if (!opzione.versione) return true
   if (opzione.versione === piano?.versione) return true

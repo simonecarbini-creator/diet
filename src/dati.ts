@@ -46,6 +46,8 @@ export type PastoRisolto = {
   grassi?: number
   /** Fonte proteica principale (dati.json → tipiProteina): latticini, pesce, carne, legumi... */
   proteina?: string
+  /** Versione pensata per un tipo di giornata (es. le -R dei giorni ROSSO: meno grassi, piu' CHO). */
+  perTipoGiornata?: string
   /** Vuoto per le merende, che hanno solo `composizione`. */
   alimenti: Alimento[]
   composizione?: string

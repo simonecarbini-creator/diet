@@ -135,7 +135,7 @@ export function Oggi({ data, ora, passato = false }: Props) {
           </div>
           <div className="text-sm opacity-70">{formatNumero(giorno.kcal)} kcal</div>
           <RigaTarget nome="Proteine" valore={proteineDelPiano(giorno)} confronto={confronto} classe="text-pro" />
-          <RigaTarget nome="Grassi" valore={grassiDelPiano(giorno)} confronto={confrontoGrassi(grassiDelPiano(giorno))} classe="" />
+          <RigaTarget nome="Grassi" valore={grassiDelPiano(giorno)} confronto={confrontoGrassi(grassiDelPiano(giorno), giorno.tipo)} classe="" />
         </div>
         <div className="rounded-xl border border-bordo bg-superficie p-3">
           <div className="text-xs font-semibold uppercase opacity-70">Consumati finora</div>
