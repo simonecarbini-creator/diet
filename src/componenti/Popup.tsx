@@ -1,4 +1,5 @@
-import { useEffect, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
+import { useBloccoScorrimento } from '../bloccoScorrimento'
 
 type Props = {
   titolo: string
@@ -10,13 +11,7 @@ type Props = {
 
 /** Finestra informativa dal basso: si chiude con ✕, "Ho capito" o toccando fuori. */
 export function Popup({ titolo, onChiudi, children, conConferma = true }: Props) {
-  useEffect(() => {
-    const precedente = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = precedente
-    }
-  }, [])
+  useBloccoScorrimento()
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm" onClick={onChiudi}>

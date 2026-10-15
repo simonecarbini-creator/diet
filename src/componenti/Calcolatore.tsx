@@ -1,6 +1,7 @@
 // Calcolatore del pasto: si sceglie alimento per alimento, con la quantita' sulla rotella,
 // e il box in alto confronta in tempo reale kcal, CHO, proteine e grassi con il pasto del
 // piano (tolleranze in dati.json → regole.calcolatore). Rosso se un valore esce, sopra o sotto.
+import { useBloccoScorrimento } from '../bloccoScorrimento'
 import { useCallback, useEffect, useState } from 'react'
 import {
   confrontaObiettivo,
@@ -253,13 +254,7 @@ export function Calcolatore({ nomeCategoria, obiettivo, idPasto, idCategoria, gi
   }
 
   // Sotto il calcolatore la pagina non deve scorrere.
-  useEffect(() => {
-    const precedente = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = precedente
-    }
-  }, [])
+  useBloccoScorrimento()
 
   const vociConAnteprima = anteprima
     ? voci.some((v) => v.id === anteprima.id)

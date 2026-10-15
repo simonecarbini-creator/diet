@@ -1,5 +1,6 @@
 // Menu laterale: si apre da destra con il pulsante ad hamburger, che diventa una X.
 // Animazioni brevi, disattivate con "Riduci movimento" del telefono.
+import { useBloccoScorrimento } from '../bloccoScorrimento'
 import { useEffect } from 'react'
 import { impostaDiario, useDiario } from '../diario'
 import { link } from '../navigazione'
@@ -45,13 +46,9 @@ export function Menu({ aperto, onChiudi }: Props) {
     if (!aperto) return
     const chiudiConEsc = (e: KeyboardEvent) => e.key === 'Escape' && onChiudi()
     window.addEventListener('keydown', chiudiConEsc)
-    const precedente = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      window.removeEventListener('keydown', chiudiConEsc)
-      document.body.style.overflow = precedente
-    }
+    return () => window.removeEventListener('keydown', chiudiConEsc)
   }, [aperto, onChiudi])
+  useBloccoScorrimento(aperto)
 
   return (
     <>

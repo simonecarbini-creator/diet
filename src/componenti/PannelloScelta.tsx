@@ -3,6 +3,7 @@
 // Il pannello è "guidato": dice dove arriva la giornata con ogni alternativa rispetto
 // all'obiettivo di CHO del tipo di giornata, mette prima quelle nel target e sposta in
 // "Altre versioni" quelle pensate per altri giorni (ridotte, maggiorate, altre colazioni).
+import { useBloccoScorrimento } from '../bloccoScorrimento'
 import { useEffect, useState } from 'react'
 import { dati, idAlternative, trovaPasto, type CategoriaConId, type PastoRisolto } from '../dati'
 import { formatNumero, formatScarto } from '../formato'
@@ -115,13 +116,7 @@ export function PannelloScelta({
   }
 
   // Sotto il pannello la pagina non deve scorrere.
-  useEffect(() => {
-    const precedente = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = precedente
-    }
-  }, [])
+  useBloccoScorrimento()
 
   const pasti = idAlternative(categoria)
     .map((id) => trovaPasto(categoria, id))
