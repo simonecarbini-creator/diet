@@ -97,6 +97,8 @@ export type TotaliPasti = {
   cho: number
   /** Somma delle proteine dei pasti che le riportano in dati.json. */
   proteine: number
+  /** Somma dei grassi (pasti del piano, pasti composti, dolci). */
+  grassi: number
   /** Id dei pasti senza proteine in dati.json (es. versioni ridotte e maggiorate). */
   senzaProteine: string[]
   /** Pasti senza valori (da scegliere): la somma è parziale. */
@@ -107,18 +109,20 @@ export type TotaliPasti = {
 
 /** Somma dei pasti assegnati. Il gel in corsa non è un pasto e non entra mai qui. */
 export function totaliPasti(voci: VocePasto[]): TotaliPasti {
-  const totali: TotaliPasti = { kcal: 0, cho: 0, proteine: 0, senzaProteine: [], pastiMancanti: [], pastiLiberi: [] }
+  const totali: TotaliPasti = { kcal: 0, cho: 0, proteine: 0, grassi: 0, senzaProteine: [], pastiMancanti: [], pastiLiberi: [] }
   for (const { categoria, pasto, libero, dolce } of voci) {
     if (dolce) {
       totali.kcal += dolce.kcal
       totali.cho += dolce.cho
       totali.proteine += dolce.proteine ?? 0
+      totali.grassi += dolce.grassi ?? 0
     }
     if (libero !== undefined) {
       if (haValori(libero)) {
         totali.kcal += libero.kcal ?? 0
         totali.cho += libero.cho ?? 0
         totali.proteine += libero.proteine ?? 0
+        totali.grassi += libero.grassi ?? 0
       } else {
         totali.pastiLiberi.push(categoria)
       }
@@ -130,6 +134,7 @@ export function totaliPasti(voci: VocePasto[]): TotaliPasti {
     }
     totali.kcal += pasto.kcal
     totali.cho += pasto.cho
+    totali.grassi += pasto.grassi ?? 0
     if (pasto.proteine === null) totali.senzaProteine.push(pasto.id)
     else totali.proteine += pasto.proteine
   }
@@ -263,14 +268,41 @@ export function proteineDelPiano(giorno: Giorno): number {
 
 export type ConfrontoProteine = { min: number; max: number; scarto: number; esito: 'sotto' | 'dentro' | 'sopra' }
 
+function confrontoFascia(valore: number, min: number, max: number): ConfrontoProteine {
+  if (valore < min) return { min, max, scarto: valore - min, esito: 'sotto' }
+  if (valore > max) return { min, max, scarto: valore - max, esito: 'sopra' }
+  return { min, max, scarto: 0, esito: 'dentro' }
+}
+
 /** Proteine del giorno rispetto al target del tipo di giornata (dati.json → tipiGiornata). */
 export function confrontoProteine(proteine: number, tipo: string): ConfrontoProteine | null {
   const info = isTipoGiornata(tipo) ? dati.tipiGiornata[tipo] : null
   if (!info) return null
-  const { proteineTargetMin: min, proteineTargetMax: max } = info
-  if (proteine < min) return { min, max, scarto: proteine - min, esito: 'sotto' }
-  if (proteine > max) return { min, max, scarto: proteine - max, esito: 'sopra' }
-  return { min, max, scarto: 0, esito: 'dentro' }
+  return confrontoFascia(proteine, info.proteineTargetMin, info.proteineTargetMax)
+}
+
+/** Grassi del giorno rispetto al target giornaliero (dati.json → target, uguale per tutti i giorni). */
+export function confrontoGrassi(grassi: number): ConfrontoProteine {
+  return confrontoFascia(grassi, dati.target.grassiGrammiDieMin, dati.target.grassiGrammiDieMax)
+}
+
+/** Grassi del piano per un giorno: somma dei pasti del piano, con la merenda media se non e' assegnata. */
+export function grassiDelPiano(giorno: Giorno): number {
+  const voci = vociDelGiorno(giorno)
+  const merendaDaStimare = voci.some((v) => v.categoria === 'merenda' && !v.pasto)
+  return totaliPasti(voci).grassi + (merendaDaStimare ? merendaMedia().grassi : 0)
+}
+
+/** Il giorno ha qualcosa di registrato: pasti spuntati, cambiati, liberi o composti, dolci, giornata libera. */
+export function giornoRegistrato(stato?: StatoPerEsito): boolean {
+  if (!stato) return false
+  return (
+    stato.consumati.length > 0 ||
+    Object.keys(stato.scelte).length > 0 ||
+    Object.keys(stato.liberi ?? {}).length > 0 ||
+    Object.values(stato.dolci ?? {}).some(Boolean) ||
+    !!stato.sgarro
+  )
 }
 
 /** Totale del piano per un giorno creato nell'app: somma dei pasti, più la merenda media se non è assegnata. */

@@ -768,6 +768,7 @@ export type TipiProteina = {
     legumi:      string;
     uova:        string;
     fruttaSecca: string;
+    pizza:       string;
 }
 
 export type Verdure = {

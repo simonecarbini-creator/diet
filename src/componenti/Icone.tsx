@@ -126,6 +126,14 @@ export function IconaProteina({ tipo, className = 'h-3.5 w-3.5' }: { tipo: strin
         <ellipse cx="16.5" cy="17" rx="3" ry="3.5" />
       </>
     ),
+    pizza: (
+      <>
+        <path d="M12 21L3.5 6.5a16 16 0 0 1 17 0z" />
+        <path d="M5.3 9.5a13 13 0 0 1 13.4 0" />
+        <circle cx="10.5" cy="12" r="1" />
+        <circle cx="13.5" cy="15.5" r="1" />
+      </>
+    ),
     uova: <path d="M12 3c3.5 0 6.5 5.5 6.5 10a6.5 6.5 0 0 1-13 0C5.5 8.5 8.5 3 12 3z" />,
     fruttaSecca: (
       <>

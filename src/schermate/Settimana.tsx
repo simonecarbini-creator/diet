@@ -6,7 +6,7 @@ import { dati, isTipoGiornata, type Giorno, type Settimana as TipoSettimana } fr
 import { formatDataBreve, formatGiornoMese, formatNumero } from '../formato'
 import { link } from '../navigazione'
 import { settimane } from '../piano'
-import { confrontoProteine, esitoGiorno, esitoTarget, proteineDelPiano } from '../giornata'
+import { confrontoProteine, esitoGiorno, esitoTarget, giornoRegistrato, proteineDelPiano } from '../giornata'
 import { NumeroProteine } from '../componenti/NumeriPasto'
 import { BadgeEsito } from '../componenti/BadgeEsito'
 import { useStatiGiorni, type StatoGiorno } from '../statoGiorno'
@@ -53,6 +53,18 @@ function Riepilogo({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGiorn
 /** Giorni conclusi: ✓ verde se con i pasti effettivi la giornata e' rimasta nel target, ✗ rossa se no. */
 function SegnoTarget({ giorno, stato }: { giorno: Giorno; stato?: StatoGiorno }) {
   const { esito, cho } = esitoTarget(giorno, stato)
+  // Giorno passato senza niente di registrato: non si sa com'e' andato.
+  if (!giornoRegistrato(stato)) {
+    return (
+      <span
+        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-avviso text-sm font-bold text-avviso-testo"
+        title="giorno non registrato"
+        aria-label="giorno non registrato"
+      >
+        ?
+      </span>
+    )
+  }
   const stile = {
     dentro: { classe: 'bg-ok text-white', segno: '✓', testo: `nel target (${cho} g CHO)` },
     fuori: { classe: 'bg-ko text-white', segno: '✕', testo: `fuori target (${cho} g CHO su ${giorno.cho})` },
@@ -224,7 +236,7 @@ export function Settimana({ numero, oggi }: Props) {
       <p className="mt-2 text-xs opacity-70">
         Codici: colazione · pranzo · cena · merenda, poi spuntino serale e gel se previsti. CHO
         e kcal sono quelli del piano; anche le proteine, con ✓ dentro il target del tipo di giornata, ▲ sopra, ▼ sotto.{cambiamenti && ' * = cambiato per quel giorno.'}
-        {' Giorni conclusi: ✓ nel target con i pasti che hai scelto, ✕ fuori target.'}
+        {' Giorni conclusi: ✓ nel target con i pasti registrati, ✕ fuori target, ? non registrato. Sotto le proteine: il piano del giorno rispetto al target del tipo di giornata.'}
         {diario && ' Pollice su: tutti i pasti spuntati · pollice giù: solo alcuni · ND: nessuno.'}
       </p>
 

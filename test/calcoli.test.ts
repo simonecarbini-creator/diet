@@ -9,6 +9,9 @@ import {
   giornataEquivalente,
   merendaMedia,
   esitoTarget,
+  grassiDelPiano,
+  confrontoGrassi,
+  giornoRegistrato,
   proteineDelPiano,
   confrontoProteine,
   targetGiorno,
@@ -761,6 +764,7 @@ describe('fonte proteica dei pasti', () => {
     ['colazione', 'STD', 'latticini'],
     ['merenda', 'M3', 'formaggio'],
     ['spuntinoSerale', 'SER-PB2', 'latticini'],
+    ['cena', 'S1', 'pizza'],
   ] as const)('%s %s: %s', (categoria, id, proteina) => {
     expect(trovaPasto(categoria, id)?.proteina).toBe(proteina)
   })
@@ -772,5 +776,19 @@ describe('obiettivo del pasto composto', () => {
   })
   it('senza pasto del piano: la merenda media', () => {
     expect(obiettivoDi(null).valori).toEqual({ kcal: 368, cho: 57, proteine: 16, grassi: 9 })
+  })
+})
+
+describe('grassi del piano e giorni registrati', () => {
+  // 5 ottobre: pre-corsa 1 + STD 20 + solo frutto 0 + P2 27 + C4 36 + merenda media 9 = 93 g (target 80-90).
+  it('5 ottobre: 93 g di grassi, 3 g sopra il target 80-90', () => {
+    expect(grassiDelPiano(giorno('2026-10-05'))).toBe(93)
+    expect(confrontoGrassi(93)).toMatchObject({ min: 80, max: 90, scarto: 3, esito: 'sopra' })
+  })
+  it('un giorno e\' registrato se c\'e\' almeno un pasto spuntato o cambiato', () => {
+    expect(giornoRegistrato(undefined)).toBe(false)
+    expect(giornoRegistrato({ scelte: {}, consumati: [] })).toBe(false)
+    expect(giornoRegistrato({ scelte: {}, consumati: ['colazione'] })).toBe(true)
+    expect(giornoRegistrato({ scelte: { cena: 'C10' }, consumati: [] })).toBe(true)
   })
 })

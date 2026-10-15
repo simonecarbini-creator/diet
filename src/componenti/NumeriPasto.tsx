@@ -40,14 +40,11 @@ export function NumeroProteine({ proteine, confronto }: { proteine: number; conf
     <div className="mt-1 whitespace-nowrap text-pro">
       <span className="text-base font-bold tabular-nums">{formatNumero(proteine)}</span>
       <span className="text-xs font-semibold"> g PRO</span>
+      {/* Le proteine del piano rispetto al target del tipo di giornata, scritto per esteso. */}
       {confronto && (
-        <span
-          className={`ml-1 text-xs font-bold ${confronto.esito === 'dentro' ? 'text-ok' : 'text-testo opacity-60'}`}
-          title={`target ${confronto.min}–${confronto.max} g`}
-          aria-label={confronto.esito === 'dentro' ? 'nel target' : `${confronto.esito} il target ${confronto.min}–${confronto.max} g`}
-        >
-          {segni[confronto.esito]}
-        </span>
+        <div className={`text-[11px] font-semibold leading-tight ${confronto.esito === 'dentro' ? 'text-ok' : 'text-testo opacity-70'}`}>
+          {segni[confronto.esito]} PRO {confronto.esito === 'dentro' ? 'nel target' : `${confronto.esito} target`} {confronto.min}–{confronto.max}
+        </div>
       )}
     </div>
   )

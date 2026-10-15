@@ -18,6 +18,9 @@
   --ko: #dc2626;
   /* Proteine: blu, ben distinto dal rosa dei CHO. */
   --pro: #3a66c4;
+  /* Giorni non registrati: giallo tenue. */
+  --avviso: #f7e9a8;
+  --avviso-testo: #6b5300;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -32,6 +35,8 @@
     --ok: #4fbf80;
     --ko: #f87171;
     --pro: #8fb0ff;
+    --avviso: #5a4b15;
+    --avviso-testo: #f7e9a8;
   }
 }
 
@@ -45,6 +50,8 @@
   --color-ok: var(--ok);
   --color-ko: var(--ko);
   --color-pro: var(--pro);
+  --color-avviso: var(--avviso);
+  --color-avviso-testo: var(--avviso-testo);
 }
 
 /* Safari su iPhone: nel campo data con altezza fissa il valore finisce in alto.

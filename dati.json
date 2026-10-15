@@ -4923,7 +4923,7 @@
         "grasso"
       ],
       "grassi": 27,
-      "proteina": "formaggio"
+      "proteina": "pizza"
     },
     {
       "id": "S1+",
@@ -4954,7 +4954,7 @@
         "grasso"
       ],
       "grassi": 27,
-      "proteina": "formaggio"
+      "proteina": "pizza"
     },
     {
       "id": "S2",
@@ -5768,7 +5768,8 @@
     "pesce": "pesce",
     "legumi": "legumi",
     "uova": "uova",
-    "fruttaSecca": "frutta secca"
+    "fruttaSecca": "frutta secca",
+    "pizza": "pizza"
   },
   "bancaAlimenti": {
     "_nota": "Valori medi per 100 g (o 100 ml) a crudo, tranne legumi lessati e sgocciolati e prodotti pronti, nella forma in cui si pesano. Per 'pz' i valori sono per 100 g di prodotto e grammiPerPezzo dice quanto pesa un pezzo. Usata dal calcolatore del pasto. Ricevuta il 2026-10-14. Aggiornata il 2026-10-14: mela e pera 12 g di CHO (disponibili, senza fibra), polpo 82 kcal e 15 g di proteine, riferimenti medi per le voci generiche del piano.",

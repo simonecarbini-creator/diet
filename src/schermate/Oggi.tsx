@@ -6,12 +6,35 @@ import { CardPastoLibero } from '../componenti/CardPastoLibero'
 import { Conferma } from '../componenti/Conferma'
 import { etichettePasti } from '../etichette'
 import { formatData, formatNumero } from '../formato'
-import { cercaGiorno, confrontoProteine, giornataEquivalente, proteineDelPiano, giornoDopo, indicePastoCorrente, totaliPasti, totaliSenza, vociDelGiorno } from '../giornata'
+import { cercaGiorno, confrontoGrassi, confrontoProteine, giornataEquivalente, grassiDelPiano, proteineDelPiano, type ConfrontoProteine, giornoDopo, indicePastoCorrente, totaliPasti, totaliSenza, vociDelGiorno } from '../giornata'
 import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
 import { settimane } from '../piano'
 import { conteggiVincoli, pastiEffettiviDi, vincoliSeraPrima, type PastiDelGiorno } from '../vincoli'
 import type { ContestoSettimana } from '../componenti/CardPasto'
 import { dati, idAlternative, isCategoriaConId, isTipoGiornata, type CategoriaPasto } from '../dati'
+
+/** "Proteine 142 g" e sotto "target 120–135 g · 7 g sopra": il riferimento sempre scritto. */
+function RigaTarget({ nome, valore, confronto, classe }: { nome: string; valore: number; confronto: ConfrontoProteine | null; classe: string }) {
+  return (
+    <div className="mt-1 text-sm leading-tight">
+      <span className={`font-semibold ${classe}`}>
+        {nome} {formatNumero(valore)} g
+      </span>
+      {confronto && (
+        <div className="text-xs">
+          <span className="opacity-70">
+            target {confronto.min}–{confronto.max} g ·{' '}
+          </span>
+          <span className={`whitespace-nowrap font-semibold ${confronto.esito === 'dentro' ? 'text-ok' : ''}`}>
+            {confronto.esito === 'dentro'
+              ? 'nel target'
+              : `${formatNumero(Math.abs(confronto.scarto))} g ${confronto.esito === 'sopra' ? 'sopra' : 'sotto'}`}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
 
 type Props = {
   data: string
@@ -110,20 +133,9 @@ export function Oggi({ data, ora, passato = false }: Props) {
             {formatNumero(giorno.cho)}
             <span className="ml-1 text-base">g CHO</span>
           </div>
-          <div className="text-sm">
-            <span className="opacity-70">{formatNumero(giorno.kcal)} kcal · </span>
-            <span className="font-semibold text-pro">{formatNumero(proteineDelPiano(giorno))} g pro</span>
-          </div>
-          {confronto && (
-            <div className="mt-0.5 text-xs">
-              <span className="opacity-70">target pro {confronto.min}–{confronto.max} g · </span>
-              <span className={`whitespace-nowrap font-semibold ${confronto.esito === 'dentro' ? 'text-ok' : ''}`}>
-                {confronto.esito === 'dentro'
-                  ? 'nel target'
-                  : `${formatNumero(Math.abs(confronto.scarto))} g ${confronto.esito === 'sopra' ? 'sopra' : 'sotto'}`}
-              </span>
-            </div>
-          )}
+          <div className="text-sm opacity-70">{formatNumero(giorno.kcal)} kcal</div>
+          <RigaTarget nome="Proteine" valore={proteineDelPiano(giorno)} confronto={confronto} classe="text-pro" />
+          <RigaTarget nome="Grassi" valore={grassiDelPiano(giorno)} confronto={confrontoGrassi(grassiDelPiano(giorno))} classe="" />
         </div>
         <div className="rounded-xl border border-bordo bg-superficie p-3">
           <div className="text-xs font-semibold uppercase opacity-70">Consumati finora</div>
@@ -131,8 +143,12 @@ export function Oggi({ data, ora, passato = false }: Props) {
             {formatNumero(consumati.cho)}
             <span className="ml-1 text-base">g CHO</span>
           </div>
-          <div className="text-sm">
-            <span className="opacity-70">{formatNumero(consumati.kcal)} kcal · </span><span className="font-semibold text-pro">{formatNumero(consumati.proteine)} g pro</span>
+          <div className="text-sm opacity-70">{formatNumero(consumati.kcal)} kcal</div>
+          <div className="mt-1 text-sm leading-tight">
+            <span className="font-semibold text-pro">Proteine {formatNumero(Math.round(consumati.proteine))} g</span>
+          </div>
+          <div className="mt-1 text-sm leading-tight">
+            <span className="font-semibold">Grassi {formatNumero(Math.round(consumati.grassi))} g</span>
           </div>
           {consumati.pastiLiberi.length > 0 && (
             <div className="mt-1 text-xs font-semibold text-ko">
