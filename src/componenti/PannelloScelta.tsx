@@ -13,6 +13,7 @@ import { Calcolatore } from './Calcolatore'
 import { obiettivoDi } from '../calcolatore'
 import { RiassuntoAlimenti } from './Alimenti'
 import { EtichettaProteina } from './EtichettaProteina'
+import { RigaFiltri } from './RigaFiltri'
 import { NumeriPasto } from './NumeriPasto'
 import { RigaScorrevole } from './RigaScorrevole'
 import { conteggiDelPasto, frazioneLimite, nomeVincolo, oltreMassimo, type ConteggioVincolo } from '../vincoli'
@@ -207,6 +208,7 @@ export function PannelloScelta({
               <NumeriPasto
                 cho={opzione.cho}
                 proteine={opzione.proteine}
+                grassi={opzione.grassi ?? null}
                 sottoCho={
                   riferimento && opzione.id !== riferimento.id
                     ? diff === 0
@@ -336,7 +338,7 @@ export function PannelloScelta({
         </button>
 
         {tuttiTag.length > 0 && (
-          <div className="mb-3 flex flex-wrap gap-2">
+          <RigaFiltri className="mb-3">
             {tuttiTag.map((tag) => {
               const attivo = filtri.includes(tag)
               return (
@@ -345,7 +347,7 @@ export function PannelloScelta({
                   type="button"
                   aria-pressed={attivo}
                   onClick={() => setFiltri(attivo ? filtri.filter((f) => f !== tag) : [...filtri, tag])}
-                  className={`rounded-full border px-3 py-1.5 text-sm ${
+                  className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm ${
                     attivo ? 'border-cho bg-cho text-white' : 'border-bordo bg-superficie'
                   }`}
                 >
@@ -353,7 +355,7 @@ export function PannelloScelta({
                 </button>
               )
             })}
-          </div>
+          </RigaFiltri>
         )}
 
         <p className="mb-2 text-sm">

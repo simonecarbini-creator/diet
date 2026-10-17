@@ -1,5 +1,5 @@
 // In alto a destra nelle card dei pasti: i CHO, numero principale grande e rosa, e sotto
-// le proteine, più piccole e in blu.
+// le proteine in blu e i grassi in ambra, più piccoli.
 import { formatNumero } from '../formato'
 import type { ConfrontoProteine } from '../giornata'
 
@@ -7,6 +7,8 @@ type Props = {
   /** null: non disponibile (merenda da scegliere, pasto libero senza valori). */
   cho: number | null
   proteine: number | null
+  /** Grassi, se il pasto li riporta. */
+  grassi?: number | null
   /** Testo al posto dei CHO quando mancano: "—" o "ND". */
   mancante?: string
   grande?: boolean
@@ -14,7 +16,7 @@ type Props = {
   sottoCho?: string
 }
 
-export function NumeriPasto({ cho, proteine, mancante = '—', grande = false, sottoCho }: Props) {
+export function NumeriPasto({ cho, proteine, grassi = null, mancante = '—', grande = false, sottoCho }: Props) {
   return (
     <div className="shrink-0 text-right">
       <div className="text-cho">
@@ -25,6 +27,7 @@ export function NumeriPasto({ cho, proteine, mancante = '—', grande = false, s
         {sottoCho && <div className="whitespace-nowrap text-xs font-normal text-testo opacity-70">{sottoCho}</div>}
       </div>
       {proteine !== null && <NumeroProteine proteine={proteine} />}
+      {grassi !== null && <NumeroGrassi grassi={grassi} />}
     </div>
   )
 }
@@ -46,6 +49,16 @@ export function NumeroProteine({ proteine, confronto }: { proteine: number; conf
           {segni[confronto.esito]} PRO {confronto.esito === 'dentro' ? 'nel target' : `${confronto.esito} target`} {confronto.min}–{confronto.max}
         </div>
       )}
+    </div>
+  )
+}
+
+/** "22 g grassi" in ambra, sotto le proteine. */
+export function NumeroGrassi({ grassi }: { grassi: number }) {
+  return (
+    <div className="mt-0.5 whitespace-nowrap text-grassi">
+      <span className="text-base font-bold tabular-nums">{formatNumero(Math.round(grassi))}</span>
+      <span className="text-xs font-semibold"> g grassi</span>
     </div>
   )
 }

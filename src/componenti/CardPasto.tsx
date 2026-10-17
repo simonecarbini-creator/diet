@@ -5,6 +5,7 @@ import type { PastoLibero, VocePasto } from '../giornata'
 import { formatNumero, formatScarto } from '../formato'
 import { ElencoAlimenti } from './Alimenti'
 import { EtichettaProteina } from './EtichettaProteina'
+import { CorpoPasto } from './CorpoPasto'
 import { NumeriPasto } from './NumeriPasto'
 import { etichettePasti } from '../etichette'
 import { PannelloScelta, type ContestoGiornata } from './PannelloScelta'
@@ -40,8 +41,6 @@ type Props = {
   giornata?: ContestoGiornata
   /** Pranzo e cena: aggiunge (id) o toglie (null) un dolce. */
   onDolce?: (id: string | null) => void
-  /** Giornata libera, pasto ancora da decidere: si conferma (✓) o si toglie (✕). */
-  sgarro?: { onConferma: () => void; onElimina: () => void }
 }
 
 export function CardPasto({
@@ -52,7 +51,6 @@ export function CardPasto({
   settimana,
   nota,
   onAnnota,
-  sgarro,
   giornata,
   onConsumato,
   onScegli,
@@ -68,13 +66,13 @@ export function CardPasto({
   const { pasto, categoria, delPiano } = voce
   const etichetta = etichettePasti[categoria]
   const sceglibile = isCategoriaConId(categoria)
-  // Codici del piano (STD, P1, C2, Mrid…) solo dove il calendario li assegna.
-  const mostraCodice = isCategoriaConId(categoria) && categoria !== 'spuntino'
   // Se il nome ripete la categoria (es. "Pre-corsa"), meglio elencare gli alimenti.
   const titolo =
     pasto?.composizione ??
     (pasto?.nome === etichetta ? pasto.alimenti.map((a) => a.nome).join(' · ') : pasto?.nome)
   const sostituito = delPiano !== undefined
+  // Codici del piano (STD, P1, C2, Mrid…) solo dove il calendario li assegna.
+  const mostraCodice = isCategoriaConId(categoria) && categoria !== 'spuntino'
   // Vincoli con un limite settimanale che riguardano questo pasto (es. C2 → pesce grasso).
   const base = pasto && (categoria === 'pranzo' || categoria === 'cena') ? idBase(categoria, pasto.id) : null
   const contatori = base && settimana ? conteggiDelPasto(settimana.conteggi, base).filter((c) => frazioneLimite(c)) : []
@@ -82,111 +80,52 @@ export function CardPasto({
   return (
     <article
       id={`pasto-${categoria}`}
-      className={`scroll-mt-20 rounded-xl bg-superficie ${
-        sgarro
-          ? 'vibra border-2 border-dashed border-cho'
-          : corrente
-            ? 'border-2 border-cho'
-            : 'border border-bordo'
-      }`}
+      className={`scroll-mt-20 rounded-xl bg-superficie ${corrente ? 'border-2 border-cho' : 'border border-bordo'}`}
     >
-      {/* Giornata libera: finché il pasto non è deciso, funzionano solo ✓ e ✕. */}
-      <div className={`flex items-start ${sgarro ? 'pointer-events-none opacity-40' : ''}`} aria-hidden={sgarro ? true : undefined}>
-        <div className="flex shrink-0 flex-col items-center gap-2 self-stretch py-4 pl-4 pr-1">
-          <button
-            type="button"
-            onClick={() => onConsumato(!consumato)}
-            disabled={!pasto}
-            aria-pressed={consumato}
-            aria-label={consumato ? `${etichetta}: consumato` : `Segna ${etichetta} come consumato`}
-            className={pasto ? '' : 'opacity-30'}
-          >
-            <span
-              className={`flex h-7 w-7 items-center justify-center rounded-full border-2 text-sm font-bold ${
-                consumato ? 'border-cho bg-cho text-white' : 'border-bordo'
-              }`}
-            >
-              {consumato && '✓'}
-            </span>
-          </button>
-        </div>
-
-        <button
-          type="button"
-          // Senza pasto (merenda da scegliere) non c'è niente da aprire: si va dritti alla scelta.
-          onClick={() => (pasto ? setAperto(!aperto) : sceglibile && setPannello(true))}
-          aria-expanded={pasto ? aperto : undefined}
-          className={`flex min-w-0 flex-1 items-start gap-3 py-4 pl-2 pr-4 text-left ${
-            consumato ? 'opacity-60' : ''
-          }`}
-        >
-          <div className="w-11 shrink-0 pt-0.5 text-sm tabular-nums opacity-70">{voce.orario}</div>
-          <div className="min-w-0 flex-1">
-            <div className="text-xs font-semibold uppercase tracking-wide opacity-70">
-              {etichetta}
-              {corrente && <span className="text-cho"> · adesso</span>}
-              {consumato && ' · consumato'}
-              {diario && nota && <span className="text-cho"> · nota</span>}
-            </div>
-            {pasto ? (
-              <>
-                <div className="font-semibold leading-snug">
-                  {titolo}
-                  {mostraCodice && (
-                    <span className="ml-2 whitespace-nowrap rounded bg-bordo px-1.5 py-0.5 text-xs font-medium">
-                      {pasto.id}
-                    </span>
-                  )}
-                  {pasto.proteina && (
-                    <span className="ml-1.5">
-                      <EtichettaProteina tipo={pasto.proteina} />
-                    </span>
-                  )}
-                </div>
-                <div className="text-sm">
-                  <span className="opacity-70">{formatNumero(pasto.kcal)} kcal</span>
-                </div>
-                {sostituito && (
-                  <div className="text-sm font-semibold text-cho">
-                    {delPiano
-                      ? `al posto di ${delPiano.id}: ` +
-                        (pasto.cho === delPiano.cho ? 'stessi CHO' : `${formatScarto(pasto.cho - delPiano.cho, 'g')} di CHO`) +
-                        (pasto.kcal === delPiano.kcal ? '' : `, ${formatScarto(pasto.kcal - delPiano.kcal, 'kcal')}`)
-                      : 'scelta per oggi'}
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="font-semibold">
-                Da scegliere
-                {sceglibile && <span className="text-cho"> ›</span>}
+      <CorpoPasto
+        etichetta={etichetta}
+        orario={voce.orario}
+        dopoEtichetta={
+          <>
+            {corrente && <span className="text-cho"> · adesso</span>}
+            {diario && nota && <span className="text-cho"> · nota</span>}
+          </>
+        }
+        consumato={consumato}
+        spuntabile={!!pasto}
+        onConsumato={onConsumato}
+        // Senza pasto (merenda da scegliere) non c'è niente da aprire: si va dritti alla scelta.
+        onApri={() => (pasto ? setAperto(!aperto) : sceglibile && setPannello(true))}
+        aperto={pasto ? aperto : undefined}
+        numeri={<NumeriPasto cho={pasto?.cho ?? null} proteine={pasto?.proteine ?? null} grassi={pasto?.grassi ?? null} grande />}
+      >
+        {pasto ? (
+          <>
+            <div className="line-clamp-2 font-semibold leading-snug">{titolo}</div>
+            {(mostraCodice || pasto.proteina) && (
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                {mostraCodice && <span className="rounded bg-bordo px-1.5 py-0.5 text-xs font-medium">{pasto.id}</span>}
+                <EtichettaProteina tipo={pasto.proteina} />
               </div>
             )}
+            <div className="mt-1 text-sm opacity-70">{formatNumero(pasto.kcal)} kcal</div>
+            {sostituito && (
+              <div className="text-sm font-semibold text-cho">
+                {delPiano
+                  ? `al posto di ${delPiano.id}: ` +
+                    (pasto.cho === delPiano.cho ? 'stessi CHO' : `${formatScarto(pasto.cho - delPiano.cho, 'g')} di CHO`) +
+                    (pasto.kcal === delPiano.kcal ? '' : `, ${formatScarto(pasto.kcal - delPiano.kcal, 'kcal')}`)
+                  : 'scelta per oggi'}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="font-semibold">
+            Da scegliere
+            {sceglibile && <span className="text-cho"> ›</span>}
           </div>
-          <NumeriPasto cho={pasto?.cho ?? null} proteine={pasto?.proteine ?? null} grande />
-        </button>
-      </div>
-
-      {sgarro && (
-        <div className="flex items-center justify-between gap-3 px-4 pb-3">
-          <button
-            type="button"
-            onClick={sgarro.onConferma}
-            aria-label={`Tieni ${etichetta} come da piano`}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-ok text-base font-bold text-white shadow"
-          >
-            ✓
-          </button>
-          <button
-            type="button"
-            onClick={sgarro.onElimina}
-            aria-label={`Togli ${etichetta} e scrivi cosa hai mangiato`}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-ko text-base font-bold text-white shadow"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+        )}
+      </CorpoPasto>
 
       {/* Il dolce aggiunto resta sempre in vista, con i suoi CHO e il totale con il pasto. */}
       {dolce && (
@@ -199,7 +138,7 @@ export function CardPasto({
             </div>
           </div>
           <NumeriPasto cho={dolce.cho} proteine={dolce.proteine} />
-          {onDolce && !sgarro && (
+          {onDolce && (
             <button
               type="button"
               onClick={() => onDolce(null)}

@@ -69,26 +69,25 @@ export function confrontaObiettivo(obiettivo: Partial<Valori>, attuale: Valori):
   })
 }
 
-export type TitoloGruppo = 'evidenza' | 'pasto' | 'categoria' | 'altri'
+export type TitoloGruppo = 'pasto' | 'categoria' | 'altri'
 
-/**
- * Prima i condimenti in evidenza (dati.json → bancaAlimenti.inEvidenza), poi gli alimenti del pasto
- * del piano, poi quelli degli altri pasti della categoria, poi tutti gli altri.
- */
+/** Prima gli alimenti del pasto del piano, poi quelli degli altri pasti della categoria, poi tutti gli altri. */
 export function gruppiAlimenti(idPasto: string[], idCategoria: string[]): { titolo: TitoloGruppo; alimenti: AlimentoBanca[] }[] {
-  const ordinati = [...alimentiBanca()].sort((a, b) => a.nome.localeCompare(b.nome, 'it'))
-  const inEvidenza = dati.bancaAlimenti.inEvidenza.alimenti
-  const evidenza = inEvidenza.map((id) => ordinati.find((a) => a.id === id)).filter((a): a is AlimentoBanca => !!a)
-  const tutti = ordinati.filter((a) => !inEvidenza.includes(a.id))
+  const tutti = [...alimentiBanca()].sort((a, b) => a.nome.localeCompare(b.nome, 'it'))
   const delPasto = tutti.filter((a) => a.usatoIn.some((id) => idPasto.includes(id)))
   const dellaCategoria = tutti.filter((a) => !delPasto.includes(a) && a.usatoIn.some((id) => idCategoria.includes(id)))
   const altri = tutti.filter((a) => !delPasto.includes(a) && !dellaCategoria.includes(a))
   return [
-    { titolo: 'evidenza' as const, alimenti: evidenza },
     { titolo: 'pasto' as const, alimenti: delPasto },
     { titolo: 'categoria' as const, alimenti: dellaCategoria },
     { titolo: 'altri' as const, alimenti: altri },
   ].filter((g) => g.alimenti.length > 0)
+}
+
+/** Filtro "condimenti" (dati.json → bancaAlimenti.filtroCondimenti): le sue categorie piu' gli alimenti elencati. */
+export function eCondimento(alimento: AlimentoBanca): boolean {
+  const filtro = dati.bancaAlimenti.filtroCondimenti
+  return filtro.categorie.includes(alimento.categoria) || filtro.alimenti.includes(alimento.id)
 }
 
 /** Ricerca per nome e sinonimi (senza accenti, maiuscole indifferenti). */

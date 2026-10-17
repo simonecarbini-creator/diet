@@ -53,11 +53,11 @@ export type Gara = {
 }
 
 export type BancaAlimenti = {
-    _nota:      string;
-    categorie:  string[];
-    alimenti:   BancaAlimentiAlimenti[];
-    inEvidenza: InEvidenza;
-    _notaUnita: string;
+    _nota:            string;
+    categorie:        string[];
+    alimenti:         BancaAlimentiAlimenti[];
+    filtroCondimenti: FiltroCondimenti;
+    _notaUnita:       string;
 }
 
 export type BancaAlimentiAlimenti = {
@@ -89,9 +89,11 @@ export type UnitaPratica = {
     passo:     number;
 }
 
-export type InEvidenza = {
-    titolo:   string;
-    alimenti: string[];
+export type FiltroCondimenti = {
+    titolo:    string;
+    nota:      string;
+    categorie: string[];
+    alimenti:  string[];
 }
 
 export type Blocchi = {

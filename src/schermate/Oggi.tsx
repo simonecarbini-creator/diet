@@ -1,55 +1,29 @@
 // Schermata Oggi (SPEC.md §3.1): cosa mangio adesso. Serve anche per il dettaglio di un
 // giorno dalla Settimana o dal Mese, anche passato (per segnare i pasti in ritardo).
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { CardPasto } from '../componenti/CardPasto'
 import { CardPastoLibero } from '../componenti/CardPastoLibero'
-import { Conferma } from '../componenti/Conferma'
+import { RiepilogoGiornata } from '../componenti/RiepilogoGiornata'
 import { etichettePasti } from '../etichette'
 import { formatData, formatNumero } from '../formato'
-import { cercaGiorno, confrontoGrassi, confrontoProteine, giornataEquivalente, grassiDelPiano, proteineDelPiano, type ConfrontoProteine, giornoDopo, indicePastoCorrente, totaliPasti, totaliSenza, vociDelGiorno } from '../giornata'
+import { cercaGiorno, grassiDelPiano, proteineDelPiano, giornoDopo, indicePastoCorrente, totaliPasti, totaliSenza, vociDelGiorno } from '../giornata'
 import { useStatiGiorni, useStatoGiorno } from '../statoGiorno'
 import { settimane } from '../piano'
 import { conteggiVincoli, pastiEffettiviDi, vincoliSeraPrima, type PastiDelGiorno } from '../vincoli'
 import type { ContestoSettimana } from '../componenti/CardPasto'
-import { dati, idAlternative, isCategoriaConId, isTipoGiornata, type CategoriaPasto } from '../dati'
-
-/** "Proteine 142 g" e sotto "target 120–135 g · 7 g sopra": il riferimento sempre scritto. */
-function RigaTarget({ nome, valore, confronto, classe }: { nome: string; valore: number; confronto: ConfrontoProteine | null; classe: string }) {
-  return (
-    <div className="mt-1 text-sm leading-tight">
-      <span className={`font-semibold ${classe}`}>
-        {nome} {formatNumero(valore)} g
-      </span>
-      {confronto && (
-        <div className="text-xs">
-          <span className="opacity-70">
-            target {confronto.min}–{confronto.max} g ·{' '}
-          </span>
-          <span className={`whitespace-nowrap font-semibold ${confronto.esito === 'dentro' ? 'text-ok' : ''}`}>
-            {confronto.esito === 'dentro'
-              ? 'nel target'
-              : `${formatNumero(Math.abs(confronto.scarto))} g ${confronto.esito === 'sopra' ? 'sopra' : 'sotto'}`}
-          </span>
-        </div>
-      )}
-    </div>
-  )
-}
+import { dati, idAlternative, isCategoriaConId, isTipoGiornata } from '../dati'
 
 type Props = {
   data: string
   /** Ora corrente (HH:MM), solo se `data` è oggi: serve a evidenziare il pasto corrente. */
   ora: string | null
-  /** Giorno passato: resta modificabile (si segna dopo), con un avviso. */
+  /** Giorno passato: resta modificabile (si segna dopo). */
   passato?: boolean
 }
 
 export function Oggi({ data, ora, passato = false }: Props) {
   const trovato = cercaGiorno(data)
-  const { stato, scegli, segnaConsumato, annota, impostaSgarro, confermaPasto, pastoLibero, ripristinaPasto, dolce } =
-    useStatoGiorno(data)
-  const [daTogliere, setDaTogliere] = useState<CategoriaPasto | null>(null)
-  const [chiudiLibera, setChiudiLibera] = useState(false)
+  const { stato, scegli, segnaConsumato, annota, pastoLibero, ripristinaPasto, dolce } = useStatoGiorno(data)
   const giorniSettimana = trovato?.settimana.giorni ?? []
   const statiAltri = useStatiGiorni(giorniSettimana.map((g) => g.data).filter((d) => d !== data))
   const voci = trovato ? vociDelGiorno(trovato.giorno, stato.scelte, stato.liberi, stato.dolci) : []
@@ -84,7 +58,6 @@ export function Oggi({ data, ora, passato = false }: Props) {
 
   const { giorno } = trovato
   const tipo = isTipoGiornata(giorno.tipo) ? dati.tipiGiornata[giorno.tipo] : null
-  const confronto = confrontoProteine(proteineDelPiano(giorno), giorno.tipo)
   // Solo i pasti spuntati: cresce in tempo reale man mano che si mangia.
   const consumati = totaliPasti(voci.filter((v) => stato.consumati.includes(v.categoria)))
 
@@ -104,11 +77,6 @@ export function Oggi({ data, ora, passato = false }: Props) {
 
   return (
     <>
-      {passato && (
-        <p className="mb-3 rounded-xl bg-superficie px-3 py-2 text-sm">
-          <span className="font-semibold">Giorno passato:</span> puoi ancora segnare i pasti, sceglierli o cambiarli.
-        </p>
-      )}
       <header>
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-xl font-bold first-letter:uppercase">{formatData(giorno.data)}</h1>
@@ -126,79 +94,20 @@ export function Oggi({ data, ora, passato = false }: Props) {
         )}
       </header>
 
-      <section className="mt-4 grid grid-cols-2 gap-3">
-        <div className="rounded-xl border border-bordo bg-superficie p-3">
-          <div className="text-xs font-semibold uppercase opacity-70">Piano</div>
-          <div className="text-4xl font-bold leading-tight tabular-nums text-cho">
-            {formatNumero(giorno.cho)}
-            <span className="ml-1 text-base">g CHO</span>
-          </div>
-          <div className="text-sm opacity-70">{formatNumero(giorno.kcal)} kcal</div>
-          <RigaTarget nome="Proteine" valore={proteineDelPiano(giorno)} confronto={confronto} classe="text-pro" />
-          <RigaTarget nome="Grassi" valore={grassiDelPiano(giorno)} confronto={confrontoGrassi(grassiDelPiano(giorno), giorno.tipo)} classe="" />
-        </div>
-        <div className="rounded-xl border border-bordo bg-superficie p-3">
-          <div className="text-xs font-semibold uppercase opacity-70">Consumati finora</div>
-          <div className="text-4xl font-bold leading-tight tabular-nums text-cho">
-            {formatNumero(consumati.cho)}
-            <span className="ml-1 text-base">g CHO</span>
-          </div>
-          <div className="text-sm opacity-70">{formatNumero(consumati.kcal)} kcal</div>
-          <div className="mt-1 text-sm leading-tight">
-            <span className="font-semibold text-pro">Proteine {formatNumero(Math.round(consumati.proteine))} g</span>
-          </div>
-          <div className="mt-1 text-sm leading-tight">
-            <span className="font-semibold">Grassi {formatNumero(Math.round(consumati.grassi))} g</span>
-          </div>
-          {consumati.pastiLiberi.length > 0 && (
-            <div className="mt-1 text-xs font-semibold text-ko">
-              + {consumati.pastiLiberi.length} {consumati.pastiLiberi.length === 1 ? 'pasto libero' : 'pasti liberi'} ND
-            </div>
-          )}
-        </div>
-      </section>
-
-      <label className={`mt-3 flex items-start gap-3 rounded-xl border bg-superficie p-3 ${stato.sgarro ? 'border-2 border-dashed border-cho' : 'border-bordo'}`}>
-        <input
-          type="checkbox"
-          checked={!!stato.sgarro}
-          onChange={(e) => {
-            if (e.target.checked) impostaSgarro(true)
-            else if (Object.keys(stato.liberi ?? {}).length > 0) setChiudiLibera(true)
-            else impostaSgarro(false)
-          }}
-          className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--cho)]"
+      <div className="mt-4">
+        <RiepilogoGiornata
+          piano={{ kcal: giorno.kcal, cho: giorno.cho, proteine: proteineDelPiano(giorno), grassi: grassiDelPiano(giorno) }}
+          consumati={consumati}
+          liberiSenzaValori={consumati.pastiLiberi.length}
         />
-        <span>
-          <span className="block font-semibold">Giornata libera</span>
-          <span className="block text-xs opacity-70">
-            Decidi pasto per pasto: ✓ lo tieni come da piano, ✕ lo togli e scrivi cosa hai mangiato.
-          </span>
-        </span>
-      </label>
+      </div>
 
-      {stato.sgarro && Object.keys(stato.liberi ?? {}).length > 0 && giornataEquivalente(giorno, stato) && (
-        <p className="mt-2 rounded-xl bg-ok/15 px-3 py-2 text-sm">
-          Giornata libera, ma con totali equivalenti al piano (entro ±{dati.regole.giornataLibera.tolleranzaPercento}% su
-          kcal, CHO e proteine): conta come rispettata.
+      {giorno.gelCho > 0 && (
+        <p className="mt-3 rounded-xl border border-bordo bg-superficie p-3 text-sm">
+          <span className="font-semibold">Gel in corsa: </span>
+          <span className="font-bold text-cho">{formatNumero(giorno.gelCho)} g CHO</span>
+          <span className="opacity-70"> · non inclusi nei totali</span>
         </p>
-      )}
-
-      {(giorno.gelCho > 0 || giorno.spuntinoSerale) && (
-        <section className="mt-3 space-y-1 rounded-xl border border-bordo bg-superficie p-3 text-sm">
-          {giorno.gelCho > 0 && (
-            <p>
-              <span className="font-semibold">Gel in corsa: </span>
-              <span className="font-bold text-cho">{formatNumero(giorno.gelCho)} g CHO</span>
-              <span className="opacity-70"> · non inclusi nei totali</span>
-            </p>
-          )}
-          {giorno.spuntinoSerale && (
-            <p>
-              <span className="font-semibold">Spuntino serale previsto</span>
-            </p>
-          )}
-        </section>
       )}
 
       {giorno.ricarica && (
@@ -266,44 +175,11 @@ export function Oggi({ data, ora, passato = false }: Props) {
             }}
             onLibero={(libero) => pastoLibero(voce.categoria, libero, !futuro)}
             onDolce={voce.categoria === 'pranzo' || voce.categoria === 'cena' ? (id) => dolce(voce.categoria, id) : undefined}
-            sgarro={
-              stato.sgarro && !(stato.confermati ?? []).includes(voce.categoria)
-                ? { onConferma: () => confermaPasto(voce.categoria), onElimina: () => setDaTogliere(voce.categoria) }
-                : undefined
-            }
           />
           )
         })}
       </section>
 
-      {daTogliere && (
-        <Conferma
-          titolo={`Togli ${etichettePasti[daTogliere].toLowerCase()}`}
-          etichettaConferma="Togli"
-          distruttiva
-          onAnnulla={() => setDaTogliere(null)}
-          onConferma={() => {
-            pastoLibero(daTogliere, { testo: '' })
-            setDaTogliere(null)
-          }}
-        >
-          Al posto del pasto del piano scriverai cosa hai mangiato. Se non ne inserisci i valori, i suoi CHO restano ND.
-        </Conferma>
-      )}
-      {chiudiLibera && (
-        <Conferma
-          titolo="Giornata normale"
-          etichettaConferma="Conferma"
-          distruttiva
-          onAnnulla={() => setChiudiLibera(false)}
-          onConferma={() => {
-            impostaSgarro(false)
-            setChiudiLibera(false)
-          }}
-        >
-          Togliendo la giornata libera tornano i pasti del piano e si cancellano i pasti liberi che hai scritto.
-        </Conferma>
-      )}
     </>
   )
 }

@@ -11,6 +11,7 @@ import {
   unitaPratica,
   valoriPezzi,
   corrisponde,
+  eCondimento,
   gruppiAlimenti,
   totaleComposto,
   trovaAlimento,
@@ -26,6 +27,7 @@ import { formatNumero } from '../formato'
 import { targetGiorno, valutaAlternativa, type PastoLibero } from '../giornata'
 import { BoxGiornata } from './BoxGiornata'
 import type { ContestoGiornata } from './PannelloScelta'
+import { RigaFiltri } from './RigaFiltri'
 import { SelettoreQuantita } from './SelettoreQuantita'
 import { avvisiAlimento, type AvvisoAlimento, type ContestoAvvisi } from '../vincoli'
 
@@ -243,6 +245,9 @@ function SceltaQuantita({
   )
 }
 
+/** Chiave del filtro condimenti tra i filtri per categoria. */
+const CONDIMENTI = '__condimenti'
+
 export function Calcolatore({ nomeCategoria, iniziali, obiettivo, idPasto, idCategoria, giornata, contestoAvvisi, onUsa, onChiudi }: Props) {
   const [voci, setVoci] = useState<VoceComposta[]>(iniziali ?? [])
   const [cerca, setCerca] = useState('')
@@ -266,7 +271,8 @@ export function Calcolatore({ nomeCategoria, iniziali, obiettivo, idPasto, idCat
   const totale = totaleComposto(vociConAnteprima)
   const confronti = confrontaObiettivo(obiettivo.valori, totale)
   const inRicerca = cerca.trim().length >= 2
-  const filtra = (a: AlimentoBanca) => (!categoria || a.categoria === categoria) && (!inRicerca || corrisponde(a, cerca))
+  const filtra = (a: AlimentoBanca) =>
+    (!categoria || (categoria === CONDIMENTI ? eCondimento(a) : a.categoria === categoria)) && (!inRicerca || corrisponde(a, cerca))
   const avvisiDi = (id: string) => (contestoAvvisi ? avvisiAlimento(id, contestoAvvisi) : [])
   const sconsigliato = (id: string) => avvisiDi(id).some((a) => a.livello === 'sconsigliato')
   // In ogni gruppo gli alimenti sconsigliati vanno in fondo (restano sceglibili).
@@ -277,7 +283,6 @@ export function Calcolatore({ nomeCategoria, iniziali, obiettivo, idPasto, idCat
     }))
     .filter((g) => g.alimenti.length > 0)
   const titoli = {
-    evidenza: dati.bancaAlimenti.inEvidenza.titolo,
     pasto: `Nel pasto ${obiettivo.etichetta}`,
     categoria: `Negli altri pasti (${nomeCategoria})`,
     altri: 'Altri alimenti',
@@ -396,8 +401,9 @@ export function Calcolatore({ nomeCategoria, iniziali, obiettivo, idPasto, idCat
             <path d="m20 20-3.5-3.5" />
           </svg>
         </label>
-        <div className="-mx-4 mt-2 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {[null, ...categorieAlimenti()].map((c) => (
+        <RigaFiltri className="mt-2">
+          {/* Dopo "tutte" i condimenti (olio, parmigiano...), poi le categorie della banca. */}
+          {[null, CONDIMENTI, ...categorieAlimenti().filter((c) => !dati.bancaAlimenti.filtroCondimenti.categorie.includes(c))].map((c) => (
             <button
               key={c ?? 'tutte'}
               type="button"
@@ -407,10 +413,10 @@ export function Calcolatore({ nomeCategoria, iniziali, obiettivo, idPasto, idCat
                 categoria === c ? 'border-cho bg-cho text-white' : 'border-bordo bg-superficie'
               }`}
             >
-              {c ?? 'tutte'}
+              {c === CONDIMENTI ? dati.bancaAlimenti.filtroCondimenti.titolo : (c ?? 'tutte')}
             </button>
           ))}
-        </div>
+        </RigaFiltri>
 
         {gruppi.length === 0 && <p className="mt-4 text-sm opacity-70">Nessun alimento trovato.</p>}
         {gruppi.map((g) => (

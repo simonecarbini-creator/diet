@@ -1,5 +1,5 @@
 // Campi del pasto libero: cosa si è mangiato e, se si conoscono, kcal, CHO e proteine.
-// Gli stessi nella giornata libera e tra le alternative del pannello di scelta.
+// Gli stessi nella card del pasto libero e tra le alternative del pannello di scelta.
 import type { PastoLibero } from '../giornata'
 
 export type BozzaLibero = { testo: string; kcal: string; cho: string; proteine: string }

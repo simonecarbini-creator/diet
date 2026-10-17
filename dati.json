@@ -340,7 +340,7 @@
     },
     "giornataLibera": {
       "tolleranzaPercento": 5,
-      "nota": "Una giornata libera conta come rispettata se tutti i pasti liberi hanno kcal, CHO e proteine e il totale del giorno resta entro questa percentuale da quello dei pasti del piano. Decisione dell'utente del 2026-10-02."
+      "nota": "Un giorno con pasti liberi conta come rispettato se tutti i pasti liberi hanno kcal, CHO e proteine e il totale del giorno resta entro questa percentuale da quello dei pasti del piano. Decisione dell'utente del 2026-10-02."
     },
     "regolaSabato": "Si tagliano SOLO i cereali. Proteine (120-135 g) e grassi (90 g) NON si tagliano: la riparazione muscolare avviene proprio nel giorno di riposo. Nessun pre-corsa, nessuno spuntino serale.",
     "assegnazionePasti": {
@@ -11594,10 +11594,13 @@
         ]
       }
     ],
-    "inEvidenza": {
-      "titolo": "Condimenti",
+    "filtroCondimenti": {
+      "titolo": "condimenti",
+      "nota": "Filtro del calcolatore subito dopo 'tutte': gli alimenti di queste categorie piu' quelli elencati (es. parmigiano, che sta tra i formaggi).",
+      "categorie": [
+        "grassi e condimenti"
+      ],
       "alimenti": [
-        "olio-evo",
         "parmigiano"
       ]
     },

@@ -2,13 +2,15 @@
 import { etichettaProteina } from '../dati'
 import { IconaProteina } from './Icone'
 
-export function EtichettaProteina({ tipo }: { tipo?: string }) {
+/** `volte` > 1: la stessa fonte in piu' pasti del giorno (vista settimanale). */
+export function EtichettaProteina({ tipo, volte = 1 }: { tipo?: string; volte?: number }) {
   const etichetta = tipo ? etichettaProteina(tipo) : undefined
   if (!tipo || !etichetta) return null
   return (
     <span className="inline-flex items-center gap-1 whitespace-nowrap rounded bg-bordo px-1.5 py-0.5 align-middle text-xs font-medium">
       <IconaProteina tipo={tipo} />
       {etichetta}
+      {volte > 1 && <span className="font-bold">×{volte}</span>}
     </span>
   )
 }

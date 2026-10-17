@@ -6,8 +6,10 @@ import { dati, isTipoGiornata, type Giorno, type Settimana as TipoSettimana } fr
 import { formatDataBreve, formatGiornoMese, formatNumero } from '../formato'
 import { link } from '../navigazione'
 import { settimane } from '../piano'
-import { confrontoProteine, esitoGiorno, esitoTarget, giornoRegistrato, proteineDelPiano } from '../giornata'
-import { NumeroProteine } from '../componenti/NumeriPasto'
+import { esitoGiorno, esitoTarget, giornoRegistrato, grassiDelPiano, proteineDelPiano, totaliPasti, vociDelGiorno } from '../giornata'
+import { NumeroGrassi, NumeroProteine } from '../componenti/NumeriPasto'
+import { AnelliSettimana } from '../componenti/AnelliSettimana'
+import { EtichettaProteina } from '../componenti/EtichettaProteina'
 import { BadgeEsito } from '../componenti/BadgeEsito'
 import { useStatiGiorni, type StatoGiorno } from '../statoGiorno'
 import { controllaVincoli, pastiEffettiviDi } from '../vincoli'
@@ -21,26 +23,24 @@ function scegliSettimana(numero: number | null, oggi: string): TipoSettimana | u
   )
 }
 
-function Codice({ id, cambiato }: { id: string; cambiato?: boolean }) {
-  // Stesso aspetto per codici dei pasti, spuntino serale e gel.
-  return (
-    <span
-      className={`rounded px-1.5 py-0.5 text-xs font-semibold ${
-        cambiato ? 'border border-cho text-cho' : 'bg-bordo'
-      }`}
-    >
-      {id}
-      {cambiato && '*'}
-    </span>
-  )
+/** Fonti proteiche dei pasti del giorno (con le sostituzioni), nell'ordine dei pasti; ×2 se ripetute. */
+function fontiProteiche(giorno: Giorno, stato?: StatoGiorno): { tipo: string; volte: number }[] {
+  const fonti: { tipo: string; volte: number }[] = []
+  for (const voce of vociDelGiorno(giorno, stato?.scelte ?? {}, stato?.liberi ?? {})) {
+    const tipo = voce.libero === undefined ? voce.pasto?.proteina : undefined
+    if (!tipo) continue
+    const gia = fonti.find((f) => f.tipo === tipo)
+    if (gia) gia.volte++
+    else fonti.push({ tipo, volte: 1 })
+  }
+  return fonti
 }
 
 /** Giorni passati: 👍 / 👎 / ND. Oggi: pasti spuntati finora. Giorni futuri: niente. */
 function Riepilogo({ giorno, stato, oggi }: { giorno: Giorno; stato?: StatoGiorno; oggi: string }) {
   if (giorno.data > oggi) return null
   const { esito, fatti, totali } = esitoGiorno(giorno, stato ?? { scelte: {}, consumati: [] })
-  // La giornata libera ha subito il pollice verso, anche se è oggi.
-  if (giorno.data === oggi && !stato?.sgarro) {
+  if (giorno.data === oggi) {
     return (
       <span className="rounded-full bg-bordo px-2 py-0.5 text-xs font-bold tabular-nums text-testo" title="pasti spuntati oggi">
         {fatti}/{totali}
@@ -95,13 +95,7 @@ function RigaGiorno({
 }) {
   const diario = useDiario()
   const tipo = isTipoGiornata(giorno.tipo) ? dati.tipiGiornata[giorno.tipo] : null
-  const scelte = stato?.scelte ?? {}
-  const pasti = [
-    { id: scelte.colazione ?? giorno.colazione, cambiato: !!scelte.colazione },
-    { id: scelte.pranzo ?? giorno.pranzo, cambiato: !!scelte.pranzo },
-    { id: scelte.cena ?? giorno.cena, cambiato: !!scelte.cena },
-  ]
-  const merenda = scelte.merenda ?? giorno.merenda
+  const fonti = fontiProteiche(giorno, stato)
 
   return (
     <li
@@ -140,19 +134,22 @@ function RigaGiorno({
             )}
           </div>
           <p className="mt-0.5 line-clamp-2 text-sm">{giorno.allenamento}</p>
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-            {pasti.map((pasto, i) => (
-              <Codice key={i} id={pasto.id} cambiato={pasto.cambiato} />
-            ))}
-            {merenda && <Codice id={merenda} cambiato={!!scelte.merenda} />}
-            {giorno.spuntinoSerale && <Codice id={giorno.spuntinoSeraleScelta ?? 'serale'} />}
-            {giorno.gelCho > 0 && <Codice id={`gel ${formatNumero(giorno.gelCho)} g`} />}
-          </div>
+          {(fonti.length > 0 || giorno.gelCho > 0) && (
+            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+              {fonti.map((f) => (
+                <EtichettaProteina key={f.tipo} tipo={f.tipo} volte={f.volte} />
+              ))}
+              {giorno.gelCho > 0 && (
+                <span className="rounded bg-bordo px-1.5 py-0.5 text-xs font-medium">gel {formatNumero(giorno.gelCho)} g</span>
+              )}
+            </div>
+          )}
         </div>
         <div className="shrink-0 text-right text-cho">
           <div className="text-2xl font-bold leading-none tabular-nums">{formatNumero(giorno.cho)}</div>
           <div className="text-xs font-semibold">g CHO</div>
-          <NumeroProteine proteine={proteineDelPiano(giorno)} confronto={confrontoProteine(proteineDelPiano(giorno), giorno.tipo)} />
+          <NumeroProteine proteine={proteineDelPiano(giorno)} />
+          <NumeroGrassi grassi={grassiDelPiano(giorno)} />
           <div className="mt-1 text-xs text-testo opacity-70">{formatNumero(giorno.kcal)} kcal</div>
           {diario && (
             <div className="mt-2 flex justify-end">
@@ -174,7 +171,6 @@ export function Settimana({ numero, oggi }: Props) {
   const settimana = scegliSettimana(numero, oggi)
   const giorni = settimana?.giorni ?? []
   const stati = useStatiGiorni(giorni.map((g) => g.data))
-  const diario = useDiario()
   const contieneOggi = giorni.some((g) => g.data === oggi)
   const [riflettore, setRiflettore] = useState(false)
   useEffect(() => {
@@ -201,17 +197,32 @@ export function Settimana({ numero, oggi }: Props) {
   const successiva = elenco[indice + 1]
   const pastiEffettivi = Object.fromEntries(giorni.map((g) => [g.data, pastiEffettiviDi(g, stati[g.data])]))
   const esiti = controllaVincoli(giorni, pastiEffettivi)
-  const cambiamenti = giorni.some((g) => Object.keys(stati[g.data]?.scelte ?? {}).length > 0)
+  // Riepilogo: piano dei 7 giorni e pasti spuntati (con sostituzioni, pasti liberi e dolci).
+  const riepilogo = { piano: { cho: 0, proteine: 0, grassi: 0 }, consumati: { cho: 0, proteine: 0, grassi: 0 }, liberiSenzaValori: 0 }
+  for (const g of giorni) {
+    riepilogo.piano.cho += g.cho
+    riepilogo.piano.proteine += proteineDelPiano(g)
+    riepilogo.piano.grassi += grassiDelPiano(g)
+    const st = stati[g.data]
+    if (!st) continue
+    const voci = vociDelGiorno(g, st.scelte, st.liberi ?? {}, st.dolci ?? {})
+    const fatti = totaliPasti(voci.filter((v) => st.consumati.includes(v.categoria)))
+    riepilogo.consumati.cho += fatti.cho
+    riepilogo.consumati.proteine += fatti.proteine
+    riepilogo.consumati.grassi += fatti.grassi
+    riepilogo.liberiSenzaValori += fatti.pastiLiberi.length
+  }
 
   return (
     <>
-      <header className="flex items-center justify-between gap-2">
+      {/* Titolo sempre al centro: ai lati due colonne della stessa larghezza, anche vuote. */}
+      <header className="grid grid-cols-[2.75rem_1fr_2.75rem] items-center gap-2">
         {precedente ? (
-          <a href={link.settimana(precedente.numero)} aria-label="Settimana precedente" className="p-2 text-2xl">
+          <a href={link.settimana(precedente.numero)} aria-label="Settimana precedente" className="flex h-11 items-center justify-center text-2xl">
             ‹
           </a>
         ) : (
-          <span className="w-10" />
+          <span />
         )}
         <div className="text-center">
           <h1 className="text-xl font-bold">Settimana {settimana.numero}</h1>
@@ -220,11 +231,16 @@ export function Settimana({ numero, oggi }: Props) {
           </p>
         </div>
         {successiva ? (
-          <a href={link.settimana(successiva.numero)} aria-label="Settimana successiva" className="p-2 text-2xl">
+          <a href={link.settimana(successiva.numero)} aria-label="Settimana successiva" className="flex h-11 items-center justify-center text-2xl">
             ›
           </a>
         ) : (
-          <span className="w-10" />
+          // Ultima settimana: al posto della freccia, il + per preparare la successiva.
+          <a href={link.nuova} aria-label="Prepara la settimana successiva" className="flex h-11 items-center justify-center text-cho">
+            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </a>
         )}
       </header>
 
@@ -233,21 +249,10 @@ export function Settimana({ numero, oggi }: Props) {
           <RigaGiorno key={giorno.data} giorno={giorno} stato={stati[giorno.data]} oggi={oggi} riflettore={riflettore && contieneOggi} />
         ))}
       </ul>
-      <p className="mt-2 text-xs opacity-70">
-        Codici: colazione · pranzo · cena · merenda, poi spuntino serale e gel se previsti. CHO
-        e kcal sono quelli del piano; anche le proteine, con ✓ dentro il target del tipo di giornata, ▲ sopra, ▼ sotto.{cambiamenti && ' * = cambiato per quel giorno.'}
-        {' Giorni conclusi: ✓ nel target con i pasti registrati, ✕ fuori target, ? non registrato. Sotto le proteine: il piano del giorno rispetto al target del tipo di giornata.'}
-        {diario && ' Pollice su: tutti i pasti spuntati · pollice giù: solo alcuni · ND: nessuno.'}
-      </p>
 
-      {!successiva && (
-        <a
-          href={link.nuova}
-          className="mt-4 block rounded-xl border-2 border-dashed border-cho p-3 text-center font-semibold text-cho"
-        >
-          + Prepara la settimana successiva
-        </a>
-      )}
+      <div className="mt-6">
+        <AnelliSettimana {...riepilogo} />
+      </div>
 
       <section className="mt-6">
         <h2 className="text-lg font-bold">Vincoli della settimana</h2>

@@ -23,7 +23,7 @@ import {
 import { proponiSettimana, type GiornoInserito } from '../src/motore'
 import { verificaDati } from '../src/verifica'
 import { formatScarto } from '../src/formato'
-import { confrontaObiettivo, obiettivoDi, descriviQuantita, fasciaDelPasto, pezziDa, unitaPratica, gruppiAlimenti, totaleComposto, valoriAlimento, trovaAlimento, valoriSelettore, corrisponde } from '../src/calcolatore'
+import { confrontaObiettivo, obiettivoDi, descriviQuantita, fasciaDelPasto, pezziDa, unitaPratica, gruppiAlimenti, eCondimento, totaleComposto, valoriAlimento, trovaAlimento, valoriSelettore, corrisponde } from '../src/calcolatore'
 import { avvisiAlimento, conteggiVincoli, controllaVincoli, pastiEffettiviDi } from '../src/vincoli'
 
 function giorno(data: string) {
@@ -193,9 +193,9 @@ describe('target quando si cambia un pasto', () => {
   })
 })
 
-describe('giornata libera', () => {
+describe('pasti liberi equivalenti al piano', () => {
   const lunedi = giorno('2026-10-05')
-  const libera = (pranzo: object) => ({ scelte: {}, consumati: [], sgarro: true, liberi: { pranzo } })
+  const libera = (pranzo: object) => ({ scelte: {}, consumati: [], liberi: { pranzo } })
 
   // Proteine del 5 ottobre: pre-corsa 1 + STD 37 + solo frutto 1 + P2 48 + C4 39 = 126 g (±5% = ±6,3 g).
   it('pasto libero con valori vicini al piano (P2: 1030 kcal, 148 g CHO, 48 g pro): equivalente', () => {
@@ -214,8 +214,8 @@ describe('giornata libera', () => {
     expect(giornataEquivalente(lunedi, libera({ testo: 'pizza' }))).toBe(false)
   })
 
-  it('esito: libera non equivalente = non rispettato', () => {
-    expect(esitoGiorno(lunedi, libera({ testo: 'pizza' })).esito).toBe('nonRispettato')
+  it('esito: pasto libero spuntato senza valori = non rispettato', () => {
+    expect(esitoGiorno(lunedi, { ...libera({ testo: 'pizza' }), consumati: ['pranzo'] }).esito).toBe('nonRispettato')
   })
 })
 
@@ -650,11 +650,15 @@ describe('calcolatore del pasto', () => {
   })
   it('prima gli alimenti del pasto (STD), poi quelli delle altre colazioni, poi gli altri', () => {
     const gruppi = gruppiAlimenti(['STD'], idAlternative('colazione'))
-    expect(gruppi.map((g) => g.titolo)).toEqual(['evidenza', 'pasto', 'categoria', 'altri'])
-    expect(gruppi[0].alimenti.map((a) => a.id)).toEqual(['olio-evo', 'parmigiano'])
-    expect(gruppi[1].alimenti.map((a) => a.id)).toContain('avena-fiocchi')
-    expect(gruppi[2].alimenti.map((a) => a.id)).toContain('skyr')
-    expect(gruppi[3].alimenti.map((a) => a.id)).toContain('pasta')
+    expect(gruppi.map((g) => g.titolo)).toEqual(['pasto', 'categoria', 'altri'])
+    expect(gruppi[0].alimenti.map((a) => a.id)).toContain('avena-fiocchi')
+    expect(gruppi[1].alimenti.map((a) => a.id)).toContain('skyr')
+    expect(gruppi[2].alimenti.map((a) => a.id)).toContain('pasta')
+  })
+  it('filtro condimenti: olio (grassi e condimenti) e parmigiano (formaggi), non la mozzarella', () => {
+    expect(eCondimento(trovaAlimento('olio-evo')!)).toBe(true)
+    expect(eCondimento(trovaAlimento('parmigiano')!)).toBe(true)
+    expect(eCondimento(trovaAlimento('mozzarella')!)).toBe(false)
   })
   it('ricerca anche nei sinonimi e senza accenti', () => {
     expect(corrisponde(trovaAlimento('burro-d-arachidi')!, 'arachidi')).toBe(true)

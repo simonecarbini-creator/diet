@@ -1,4 +1,4 @@
-// Pasto al posto di quello del piano: libero (giornata libera, testo e valori facoltativi:
+// Pasto al posto di quello del piano: libero (testo e valori facoltativi:
 // senza, i CHO sono "ND") o composto con il calcolatore (alimenti e quantita', valori sempre noti).
 // Il pasto composto si riconosce dal fondo azzurro, mostra i valori rispetto al pasto del piano
 // e si modifica riaprendo il calcolatore con gli stessi alimenti.
@@ -9,6 +9,7 @@ import { formatNumero } from '../formato'
 import { haValori, type PastoLibero, type VocePasto } from '../giornata'
 import type { ContestoAvvisi } from '../vincoli'
 import { Calcolatore } from './Calcolatore'
+import { CorpoPasto } from './CorpoPasto'
 import { NumeriPasto } from './NumeriPasto'
 import type { ContestoGiornata } from './PannelloScelta'
 import { bozzaDa, CampiPastoLibero, daBozza, type BozzaLibero } from './CampiPastoLibero'
@@ -112,52 +113,39 @@ export function CardPastoLibero({ voce, etichetta, consumato, onConsumato, onSal
         composto ? 'border-pro/40 bg-[color-mix(in_srgb,var(--pro)_7%,var(--superficie))]' : 'border-bordo bg-superficie'
       }`}
     >
-      <div className="flex items-start">
-        <button
-          type="button"
-          onClick={() => onConsumato(!consumato)}
-          aria-pressed={consumato}
-          aria-label={consumato ? `${etichetta}: consumato` : `Segna ${etichetta} come consumato`}
-          className="flex shrink-0 self-stretch py-4 pl-4 pr-1"
-        >
-          <span
-            className={`flex h-7 w-7 items-center justify-center rounded-full border-2 text-sm font-bold ${
-              consumato ? 'border-cho bg-cho text-white' : 'border-bordo'
-            }`}
-          >
-            {consumato && '✓'}
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setAperto(!aperto)}
-          aria-expanded={aperto}
-          className="flex min-w-0 flex-1 items-start gap-3 py-4 pl-2 pr-4 text-left"
-        >
-          <div className="w-11 shrink-0 pt-0.5 text-sm tabular-nums opacity-70">{voce.orario}</div>
-          <div className="min-w-0 flex-1">
-            <div className="text-xs font-semibold uppercase tracking-wide opacity-70">
-              {etichetta} ·{' '}
-              {composto ? <span className="text-pro">composto da te</span> : <span className="text-ko">libero</span>}
-            </div>
-            {/* Il testo di un pasto composto puo' essere lungo: due righe, tutto quando si apre. */}
-            <div className={`font-semibold leading-snug ${aperto ? '' : 'line-clamp-2'}`}>{libero.testo}</div>
-            <div className="text-sm opacity-70">
-              {composto
-                ? `al posto di ${delPiano?.id ?? 'del pasto del piano'}`
-                : conValori
-                  ? `${formatNumero(libero.kcal ?? 0)} kcal`
-                  : `al posto di ${voce.pasto?.id ?? 'del pasto del piano'}`}
-            </div>
-          </div>
+      <CorpoPasto
+        etichetta={etichetta}
+        orario={voce.orario}
+        dopoEtichetta={
+          <>
+            {' · '}
+            {composto ? <span className="text-pro">composto da te</span> : <span className="text-ko">libero</span>}
+          </>
+        }
+        consumato={consumato}
+        onConsumato={onConsumato}
+        onApri={() => setAperto(!aperto)}
+        aperto={aperto}
+        numeri={
           <NumeriPasto
             cho={conValori ? (libero.cho ?? 0) : null}
             proteine={conValori ? (libero.proteine ?? 0) : null}
+            grassi={conValori ? (libero.grassi ?? null) : null}
             mancante="ND"
             grande
           />
-        </button>
-      </div>
+        }
+      >
+        {/* Il testo di un pasto composto puo' essere lungo: due righe, tutto quando si apre. */}
+        <div className={`font-semibold leading-snug ${aperto ? '' : 'line-clamp-2'}`}>{libero.testo}</div>
+        <div className="mt-1 text-sm opacity-70">
+          {composto
+            ? `al posto di ${delPiano?.id ?? 'del pasto del piano'}`
+            : conValori
+              ? `${formatNumero(libero.kcal ?? 0)} kcal`
+              : `al posto di ${voce.pasto?.id ?? 'del pasto del piano'}`}
+        </div>
+      </CorpoPasto>
       {confronti && <ValoriComposti confronti={confronti} />}
       {aperto && (
         <div className="grid grid-cols-2 gap-2 border-t border-bordo px-4 pb-4 pt-3">

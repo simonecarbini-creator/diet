@@ -222,15 +222,11 @@ export function Calcoli() {
           <Nota>Sabato: {regole.regolaSabato}</Nota>
         </Sezione>
 
-        <Sezione titolo="Giornata libera">
+        <Sezione titolo="Pasti liberi e sgarri">
           <p>
-            Il riepilogo del giorno è pollice verso, a meno che tutti i pasti liberi abbiano kcal, CHO e proteine e il
-            totale resti entro ±{regole.giornataLibera.tolleranzaPercento}% da quello dei pasti del piano: allora conta
-            come rispettata.
-          </p>
-          <p className="mt-2">
-            Un pasto libero scelto in un giorno normale (dal pannello «Cambia») vale come pasto spuntato, con la stessa
-            regola: il giorno è rispettato solo se i totali restano entro ±{regole.giornataLibera.tolleranzaPercento}%.
+            Un pasto libero scelto dal pannello «Cambia» vale come pasto spuntato, ma il giorno è rispettato solo se tutti
+            i pasti liberi hanno kcal, CHO e proteine e i totali restano entro ±{regole.giornataLibera.tolleranzaPercento}%
+            da quelli dei pasti del piano.
             Una merenda libera, dove il piano non ne indica una, si confronta con la media delle merende.
           </p>
           <p className="mt-2">

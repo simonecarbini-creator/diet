@@ -151,7 +151,6 @@ function vociDiario(stati: [string, unknown][]): VoceDiario[] {
           righe.push({ pasto: etichettePasti[categoria as CategoriaPasto], testo: `pasto libero: «${libero.testo}»${cho}` })
         }
       }
-      if (stato.sgarro && righe.length === 0) righe.push({ pasto: 'Giornata', testo: 'libera' })
       for (const [categoria, testo] of Object.entries(stato.note ?? {})) {
         if (testo) righe.push({ pasto: etichettePasti[categoria as CategoriaPasto], testo: `«${testo}»` })
       }

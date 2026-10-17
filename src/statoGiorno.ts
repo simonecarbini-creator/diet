@@ -11,11 +11,7 @@ export type StatoGiorno = {
   consumati: CategoriaPasto[]
   /** Diario: cosa è stato mangiato davvero, se diverso dal piano (facoltativo). */
   note?: Partial<Record<CategoriaPasto, string>>
-  /** Giornata libera (di sgarro): si decide pasto per pasto se tenerlo o sostituirlo. */
-  sgarro?: boolean
-  /** Giornata libera: pasti del piano confermati così come sono. */
-  confermati?: CategoriaPasto[]
-  /** Giornata libera: pasti sostituiti da ciò che si è mangiato (testo '' = ancora da scrivere). */
+  /** Pasti sostituiti da ciò che si è mangiato, liberi o composti (testo '' = ancora da scrivere). */
   liberi?: Partial<Record<CategoriaPasto, string | PastoLibero>>
   /** Dolce aggiunto a pranzo o cena (id di dati.json → dolci). */
   dolci?: Partial<Record<CategoriaPasto, string>>
@@ -61,14 +57,6 @@ export function useStatoGiorno(data: string) {
       const consumati = consumato ? [...stato.consumati.filter((c) => c !== categoria), categoria] : stato.consumati
       aggiorna({ ...stato, scelte, consumati })
     },
-    /** Spegnendo la giornata libera si perdono conferme e pasti liberi. */
-    impostaSgarro(attivo: boolean) {
-      aggiorna(attivo ? { ...stato, sgarro: true } : { ...stato, sgarro: false, confermati: [], liberi: {} })
-    },
-    confermaPasto(categoria: CategoriaPasto) {
-      const confermati = [...(stato.confermati ?? []).filter((c) => c !== categoria), categoria]
-      aggiorna({ ...stato, confermati })
-    },
     /** testo '' = pasto tolto, in attesa di scrivere cosa si è mangiato. */
     pastoLibero(categoria: CategoriaPasto, libero: PastoLibero, consumato = false) {
       const consumati = consumato ? [...stato.consumati.filter((c) => c !== categoria), categoria] : stato.consumati
@@ -80,7 +68,7 @@ export function useStatoGiorno(data: string) {
     ripristinaPasto(categoria: CategoriaPasto) {
       const liberi = { ...stato.liberi }
       delete liberi[categoria]
-      aggiorna({ ...stato, liberi, confermati: (stato.confermati ?? []).filter((c) => c !== categoria) })
+      aggiorna({ ...stato, liberi })
     },
     /** id null toglie il dolce. */
     dolce(categoria: CategoriaPasto, id: string | null) {

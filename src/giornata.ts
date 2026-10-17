@@ -14,7 +14,7 @@ import {
   type Settimana,
 } from './dati'
 
-/** Pasto libero della giornata di sgarro; i valori sono facoltativi (se si conoscono). */
+/** Pasto libero al posto di quello del piano; i valori sono facoltativi (se si conoscono). */
 export type PastoLibero = {
   testo: string
   kcal?: number
@@ -43,7 +43,7 @@ export type VocePasto = {
   delPiano?: PastoRisolto | null
   /** Id previsto dal piano (null se il piano lo lascia da scegliere). */
   idPiano: string | null
-  /** Giornata libera: cosa si è mangiato al posto del pasto (testo '' = ancora da scrivere). */
+  /** Pasto libero o composto: cosa si è mangiato al posto del pasto (testo '' = ancora da scrivere). */
   libero?: PastoLibero
   /** Dolce aggiunto al pasto (pranzo o cena): i suoi valori entrano nei totali. */
   dolce?: PastoRisolto
@@ -174,15 +174,10 @@ export type Esito = 'rispettato' | 'nonRispettato' | 'nonDichiarato'
 type StatoPerEsito = {
   scelte: Partial<Record<CategoriaConId, string>>
   consumati: CategoriaPasto[]
-  sgarro?: boolean
   liberi?: Partial<Record<CategoriaPasto, string | PastoLibero>>
   dolci?: Partial<Record<CategoriaPasto, string>>
 }
 
-/**
- * Giornata libera "equivalente": tutti i pasti liberi hanno i valori e kcal, CHO e proteine
- * del giorno restano entro la tolleranza di dati.json rispetto ai pasti del piano.
- */
 /** Le scelte del giorno senza gli sgarri (pizza, sushi…): il piano con cui confrontarli. */
 function senzaSgarri(scelte: Partial<Record<CategoriaConId, string>>): Partial<Record<CategoriaConId, string>> {
   return Object.fromEntries(
@@ -194,6 +189,10 @@ function conSgarri(scelte: Partial<Record<CategoriaConId, string>>): boolean {
   return Object.keys(senzaSgarri(scelte)).length < Object.keys(scelte).length
 }
 
+/**
+ * Giornata "equivalente" al piano: tutti i pasti liberi hanno i valori e kcal, CHO e proteine
+ * del giorno restano entro la tolleranza di dati.json rispetto ai pasti del piano.
+ */
 export function giornataEquivalente(giorno: Giorno, stato: StatoPerEsito): boolean {
   const piano = totaliPasti(vociDelGiorno(giorno, senzaSgarri(stato.scelte)))
   const reale = totaliPasti(vociDelGiorno(giorno, stato.scelte, stato.liberi ?? {}, stato.dolci ?? {}))
@@ -217,23 +216,21 @@ export function giornataEquivalente(giorno: Giorno, stato: StatoPerEsito): boole
  * Riepilogo del giorno dai pasti spuntati: tutti → rispettato, nessuno → non dichiarato,
  * solo alcuni → non rispettato. La merenda non scelta conta come non consumata.
  * Un pasto libero o uno sgarro scelti in un giorno normale contano come spuntati, ma il giorno
- * è rispettato solo se i totali restano equivalenti al piano (come nella giornata libera).
+ * è rispettato solo se i totali restano equivalenti al piano.
  */
 export function esitoGiorno(
   giorno: Giorno,
   stato: StatoPerEsito,
 ): { esito: Esito; fatti: number; totali: number } {
-  const liberi = stato.sgarro ? {} : (stato.liberi ?? {})
+  const liberi = stato.liberi ?? {}
   const voci = vociDelGiorno(giorno, stato.scelte, liberi)
   const fatti = voci.filter((v) => (v.pasto || v.libero) && stato.consumati.includes(v.categoria)).length
   const tuttiFatti = fatti === voci.length
   // Fuori dal piano: pasti liberi, sgarri e dolci.
   const fuoriPiano =
     Object.keys(liberi).length > 0 || conSgarri(stato.scelte) || Object.values(stato.dolci ?? {}).some(Boolean)
-  // Giornata libera: rispettata solo se i totali restano equivalenti al piano.
-  const esito = stato.sgarro
-    ? giornataEquivalente(giorno, stato) ? 'rispettato' : 'nonRispettato'
-    : fatti === 0
+  const esito =
+    fatti === 0
       ? 'nonDichiarato'
       : tuttiFatti && (!fuoriPiano || giornataEquivalente(giorno, stato))
         ? 'rispettato'
@@ -297,15 +294,14 @@ export function grassiDelPiano(giorno: Giorno): number {
   return totaliPasti(voci).grassi + (merendaDaStimare ? merendaMedia().grassi : 0)
 }
 
-/** Il giorno ha qualcosa di registrato: pasti spuntati, cambiati, liberi o composti, dolci, giornata libera. */
+/** Il giorno ha qualcosa di registrato: pasti spuntati, cambiati, liberi o composti, dolci. */
 export function giornoRegistrato(stato?: StatoPerEsito): boolean {
   if (!stato) return false
   return (
     stato.consumati.length > 0 ||
     Object.keys(stato.scelte).length > 0 ||
     Object.keys(stato.liberi ?? {}).length > 0 ||
-    Object.values(stato.dolci ?? {}).some(Boolean) ||
-    !!stato.sgarro
+    Object.values(stato.dolci ?? {}).some(Boolean)
   )
 }
 

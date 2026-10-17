@@ -18,6 +18,8 @@
   --ko: #dc2626;
   /* Proteine: blu, ben distinto dal rosa dei CHO. */
   --pro: #3a66c4;
+  /* Grassi: ambra, distinto da CHO (rosa), proteine (blu) e dai giorni non registrati (giallo tenue). */
+  --grassi: #c27803;
   /* Giorni non registrati: giallo tenue. */
   --avviso: #f7e9a8;
   --avviso-testo: #6b5300;
@@ -35,6 +37,7 @@
     --ok: #4fbf80;
     --ko: #f87171;
     --pro: #8fb0ff;
+    --grassi: #f5b041;
     --avviso: #5a4b15;
     --avviso-testo: #f7e9a8;
   }
@@ -50,6 +53,7 @@
   --color-ok: var(--ok);
   --color-ko: var(--ko);
   --color-pro: var(--pro);
+  --color-grassi: var(--grassi);
   --color-avviso: var(--avviso);
   --color-avviso-testo: var(--avviso-testo);
 }
@@ -71,22 +75,6 @@ body {
   background-color: var(--sfondo);
   color: var(--testo);
   -webkit-text-size-adjust: 100%;
-}
-
-/* Giornata libera: le card dei pasti vibrano come le app dell'iPhone in modifica. */
-@keyframes vibra {
-  0%, 100% { transform: rotate(-0.6deg); }
-  50% { transform: rotate(0.6deg); }
-}
-.vibra {
-  animation: vibra 0.28s ease-in-out infinite;
-}
-.vibra:nth-child(even) {
-  animation-duration: 0.31s;
-  animation-delay: -0.15s;
-}
-@media (prefers-reduced-motion: reduce) {
-  .vibra { animation: none; }
 }
 
 /* Pannello delle alternative: accenno allo swipe all'apertura e ricomparsa delle nascoste. */
